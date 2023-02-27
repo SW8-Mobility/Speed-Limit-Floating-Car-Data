@@ -9,7 +9,7 @@ To setup the python container
 2. Insert your API key from https://fcd-share.civil.aau.dk/ into `FCD_API_KEY`
 3. Run `docker compose up -d` in this directory
 
-You can now use the terminal feature within docker desktop or use the command `docker exec -ti python-docker-python-1 python /scripts/api-script.py`
+You can now use the terminal feature within docker desktop or use the command `docker compose exec -ti python python /scripts/api-script.py`
 
 Any changes you make to `./scripts/api-script.py` will be reflected into the container instantly.
 
@@ -19,5 +19,5 @@ Any changes you make to `./scripts/api-script.py` will be reflected into the con
 You can save data by using the append operator `>>` eg: 
 
 ```
-docker exec -ti python-docker-python-1 python /scripts/api-script.py >> data.json
+docker compose exec -ti python python /scripts/api-script.py >> data.json
 ```
