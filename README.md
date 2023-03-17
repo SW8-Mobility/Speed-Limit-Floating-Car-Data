@@ -24,3 +24,31 @@ You can save data by using the append operator `>>` eg:
 ```
 docker compose exec -ti python python /scripts/api-script.py >> data.json
 ```
+
+# Old readme
+## geo_json_metrics
+script in open_street folder is for reading the open street map files, extracting road and their information.
+script in geo_json_metrics is for requesting from the https://fcd-share.civil.aau.dk/ api and saving the response as json. 
+
+## Be aware
+The osm_id column contains None / null values. This may correspond to update fallouts.
+
+## Memory issues 
+The 3 dataframes are very large. For model training, perhaps create a random forest on each dataset, and combine them:
+
+example:
+```
+from sklearn.ensemble import VotingClassifier
+
+est_AB = AdaBoostClassifier()
+score_AB=est_AB.fit(X_train,y_train).score(X_test,y_test)
+
+est_RF = RandomForestClassifier()
+score_RF=est_RF.fit(X_train,y_train).score(X_test,y_test)
+
+est_Ensemble = VotingClassifier(estimators=[('AB', est_AB), ('RF', est_RF)],
+                        voting='soft',
+                        weights=[1, 1])
+
+score_Ensemble=est_Ensemble.fit(X_train,y_train).score(X_test,y_test)
+```
