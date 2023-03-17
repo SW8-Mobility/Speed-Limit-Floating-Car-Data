@@ -1,1 +1,7 @@
 .env
+*.osm.pbf
+*.json
+*.pkl
+*.rar
+*.pyc
+*.csv
