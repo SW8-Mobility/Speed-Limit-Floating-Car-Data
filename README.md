@@ -1,5 +1,5 @@
 # Speed-Limit-Floating-Car-Data
-
+This is a project from 8th semester software on Aalborg University.
 
 ## Docker
 
