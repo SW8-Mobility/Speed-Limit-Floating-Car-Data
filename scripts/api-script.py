@@ -10,6 +10,6 @@ my_json = res.content.decode('utf8').replace("'", '"')
 data = json.loads(my_json)
 s = json.dumps(data, indent=4, sort_keys=True)
 
-        print("this will breka the lint"); # ; is intentional dont flame
+print("this will breka the lint"); # ; is intentional dont flame
 
 print(s)
