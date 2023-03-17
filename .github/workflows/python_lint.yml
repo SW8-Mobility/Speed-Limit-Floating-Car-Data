@@ -31,4 +31,5 @@ jobs:
       - name: Run Black Linter
         uses: wearerequired/lint-action@v2
         with:
+          auto_fix: true 
           black: true
