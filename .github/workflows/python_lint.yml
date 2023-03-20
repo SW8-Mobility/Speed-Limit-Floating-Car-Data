@@ -29,7 +29,7 @@ jobs:
         run: pip install black mypy && pip install -r ./scripts/requirements.txt
 
       - name: Install Python Types
-        run: mypy --install-types --non-interactive $(git ls-files '*.py') || true
+        run: mypy --install-types --non-interactive $(git ls-files '*.py') || true # Need to pipe true since --install-types also runs static analysis and can therefore fail.
 
       - name: Run Linter and Static Analysis
         uses: wearerequired/lint-action@v2
