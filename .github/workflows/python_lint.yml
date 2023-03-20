@@ -33,3 +33,5 @@ jobs:
         with:
           auto_fix: true 
           black: true
+          mypy: true
+          mypy_auto_fix: false
