@@ -24,7 +24,6 @@ You can save data by using the append operator `>>` eg:
 ```
 docker compose exec -ti python python /scripts/api-script.py >> data.json
 ```
-
 # Old readme
 ## geo_json_metrics
 script in open_street folder is for reading the open street map files, extracting road and their information.

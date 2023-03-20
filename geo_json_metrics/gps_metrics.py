@@ -53,11 +53,11 @@ def create_df_from_json(filename: str) -> pd.DataFrame:
         lambda geometry_dict: geometry_dict["coordinates"]
     )
 
-    df.drop( # drop unused columns
+    df.drop(  # drop unused columns
         ["geometry", "properties", "type"], inplace=True, axis=1
     )  # drop unused columns
 
-    df = df.infer_objects() # infer types in dataframes
+    df = df.infer_objects()  # infer types in dataframes
 
     return df
 
