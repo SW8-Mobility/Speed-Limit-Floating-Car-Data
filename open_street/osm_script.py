@@ -1,7 +1,7 @@
 import sys
 
-import osmium # type: ignore
-from osmium.osm.types import Way, Relation, Node, Area, Changeset # type: ignore
+import osmium  # type: ignore
+from osmium.osm.types import Way, Relation, Node, Area, Changeset  # type: ignore
 import dataclasses
 import json
 
