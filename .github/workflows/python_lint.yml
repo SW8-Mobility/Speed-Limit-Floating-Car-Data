@@ -29,7 +29,7 @@ jobs:
         run: pip install black mypy && pip install -r ./scripts/requirements.txt
 
       - name: Install Python Types
-        run: mypy --install-types $(git ls-files '*.py')
+        run: mypy --install-types --non-interactive $(git ls-files '*.py')
 
       - name: Run Black Linter
         uses: wearerequired/lint-action@v2
