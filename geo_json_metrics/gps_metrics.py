@@ -198,7 +198,6 @@ def calculate_speeds(df: None) -> None:
     df['speeds'] = df['speeds'].apply(lambda d: [speed / scale for speed, scale in zip(d['speeds'], d['time_difference'])]) 
     
 
-
 def calculate_metrics(df: pd.DataFrame) -> tuple[float, float, float]:
     """Calculate aggregate min, max, and avg for dataframe
 
