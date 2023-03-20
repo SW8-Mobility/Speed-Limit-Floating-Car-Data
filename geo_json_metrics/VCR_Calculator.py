@@ -2,7 +2,6 @@ def map_vcr(velocities: list[float]) -> list[float]:
     """Map the VCR function over each pair from the list, skipping the first element
     Args:
         velocities (list[float]): A list of floats corresponding to the velocities/speeds
-
     Returns:
         list[float]: new list of Velocity Change Rates (the list is length of inputlist - 1)
     """
@@ -14,7 +13,6 @@ def vcr(v1: float, v2: float) -> float:
     Args:
         v1 (float): Velocity 1
         v2 (float): Velocity 2
-
     Returns:
         float: Velocity Change Rate between the two inputs
     """
@@ -27,6 +25,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-
