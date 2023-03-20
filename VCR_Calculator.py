@@ -1,7 +1,7 @@
 
 myList = [1,2,3,4]
 def wrapper_VCR(velocities: list[float]) -> list[float]:
-    return map(lambda v1, v2: VCR(v1, v2), velocities)
+    return list(map(lambda v1, v2: VCR(v1, v2), velocities));
 
 
 def VCR(v1: float, v2: float) -> float:
