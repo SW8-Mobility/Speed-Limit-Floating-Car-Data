@@ -1,7 +1,7 @@
 from geo_json_metrics.gps_metrics import calc_utm_dist
 
 
-def test_calc_utm_dist() -> bool:
+def test_calc_utm_dist() -> None:
     # Arrange
     coordinate = tuple[float, float]  # type alias
     cord1: coordinate = (2, 3)
