@@ -1,16 +1,11 @@
 from functools import reduce
 import json
 from math import sqrt
-import pandas as pd
 from itertools import tee as copy_iterable
 from statistics import median, mean
-
-"""Warning: there is an assumption that for all trips, the distance is updated every second
-this is NOT the case, sometimes there are a few "jumps" in time ie. more than 1 second between 
-each recorded distance.
-Should be fixed, if script needs to be used for more data...
-"""
-
+import sys
+from typing import Iterator
+import pandas as pd
 
 def shift_elems(l: list) -> list:
     """shift elemets of list, ie:
@@ -54,7 +49,7 @@ def create_df_from_json(filename: str) -> pd.DataFrame:
         pd.DataFrame: dataframe with keys: ['id', 'length', 'end_date', 'start_date', 'osm_id', 'coordinates']
     """
     # url for segment 10240935:
-    # https://fcd-share.civil.aau.dk/api/linestrings/?year=2014&osm_id=10240935&apikey=<API-KEY>
+    # https://fcd-share.civil.aau.dk/api/linestrings/?year=2014&osm_id=10240935&apikey=d287886f-f5d4-4727-a41c-97d7446344f4
     with open(filename, "r") as json_file:
         data = json.load(json_file)
 
@@ -104,7 +99,7 @@ def filter_segments(df: pd.DataFrame, osm_id: int) -> pd.DataFrame:
         pd.DataFrame: dataframe only with coordinates corresponding to given osm_id
     """
 
-    def verify_solution(l: list[bool]):
+    def verify_solution(l: tuple[list[bool], list[bool]]):
         """I assume that trips do not loop back and go through the same
         segment more than once. This function is a sanitity check for this.
 
@@ -119,9 +114,9 @@ def filter_segments(df: pd.DataFrame, osm_id: int) -> pd.DataFrame:
 
         # if there are more than one true in list
         # then the car has looped and break assumption
-        if len(list(filter(lambda e: e == True, reduced))) > 1:
+        if len(list(filter(lambda e: e is True, reduced))) > 1:
             print("Bad assumption...")
-            exit()
+            sys.exit()
 
     def filter_func(row):
         valid_osm_ids = map(  # id mask corresponding to which coordinates to keep
@@ -179,25 +174,29 @@ def calculate_distance_and_speed(df: pd.DataFrame):
     df.drop("shifted_coordinates", axis=1, inplace=True)
 
 
-def calculate_speeds(df: None) -> None:
+def calculate_speeds(df: pd.DataFrame) -> None:
     """Calculate the speeds for each coordinate for each trip
 
     Args:
-        df (None): updated df with speeds
+        df (Pd.Dataframe): updated df with speeds
     """
     df["speeds"] = df["distances"].apply(ms_to_kmh)
-    df["time_difference"] = df.apply(
+
+    df["time_difference"] = df.apply( # get time difference between each coordinate element
         lambda d: [
             c[2] - sc[2] for c, sc in zip(d["coordinates"], d["shifted_coordinates"])
         ],
-        axis=1,
-    ).astype("int")
+        axis=1
+    )
 
-    # scale speed by time difference
-    # if two seconds have passed, then speed/2
-    df['speeds'] = df['speeds'].apply(lambda d: [speed / scale for speed, scale in zip(d['speeds'], d['time_difference'])]) 
-    
-
+    # # scale speed by time difference
+    # # if two seconds have passed, then speed/2
+    df["speeds"] = df.apply(
+        lambda d: [
+            speed / int(scale) for speed, scale in zip(d["speeds"], d["time_difference"])
+        ],
+        axis=1
+    )
 
 def calculate_metrics(df: pd.DataFrame) -> tuple[float, float, float]:
     """Calculate aggregate min, max, and avg for dataframe
@@ -232,8 +231,8 @@ def main():
     # avg, min, max = calculate_metrics(filtered_df)
     # print(avg, min, max, sep=", ")
 
-    # for (x, y, time), speed in zip(filtered_df.iloc[7]['coordinates'], filtered_df.iloc[7]['speeds']):
-    #     print(time, speed, sep=", ")
+    for (x, y, time), speed in zip(filtered_df.iloc[7]['coordinates'], filtered_df.iloc[7]['speeds']):
+        print(time, speed, sep=", ")
 
 
 if __name__ == "__main__":
