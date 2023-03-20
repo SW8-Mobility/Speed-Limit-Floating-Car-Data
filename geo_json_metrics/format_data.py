@@ -33,6 +33,7 @@ def map_segments(segments, coordinates):
         print(e)
         return None
 
+
 def append_coordinates(key_coordinates: list[tuple[int, list]]) -> None:
     if key_coordinates is None:
         print(key_coordinates)
@@ -45,24 +46,33 @@ def append_coordinates(key_coordinates: list[tuple[int, list]]) -> None:
             segment_to_coordinates[key].extend(coordinates)
         return key_coordinates
 
+
 def create_segment_to_coordinate_df(df: pd.DataFrame) -> pd.DataFrame:
     mapped_coordinates: pd.Series = df.apply(
         lambda d: map_segments_to_coordinates(d["osm_id"], d["coordinates"]), axis=1
     )
 
     mapped_coordinates.apply(lambda seg_and_cor: append_coordinates(seg_and_cor))
-    l = [(k, v) for k, v in segment_to_coordinates.items()] # convert dictionary to list 
+    l = [
+        (k, v) for k, v in segment_to_coordinates.items()
+    ]  # convert dictionary to list
     mapped_df = pd.DataFrame(l, columns=["segment", "coordinates"])
     return mapped_df
+
 
 def main():
     sys.setrecursionlimit(10000)
     df: pd.DataFrame = (
-        pd.read_pickle("C:\\Users\\ax111\\Documents\\Personal documents\\Coding\\SW8\\geo_json_metrics\\geo_json_metrics\\data\\pickle_files\\2012.pkl").infer_objects().head(1000)
+        pd.read_pickle(
+            "C:\\Users\\ax111\\Documents\\Personal documents\\Coding\\SW8\\geo_json_metrics\\geo_json_metrics\\data\\pickle_files\\2012.pkl"
+        )
+        .infer_objects()
+        .head(1000)
     )
     mapped_df = create_segment_to_coordinate_df(df)
-    sys.setrecursionlimit(1000) # reset 
-    mapped_df.to_csv('test.csv', index=False)
+    sys.setrecursionlimit(1000)  # reset
+    mapped_df.to_csv("test.csv", index=False)
+
 
 if __name__ == "__main__":
     main()
