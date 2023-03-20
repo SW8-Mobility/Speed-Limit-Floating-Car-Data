@@ -1,7 +1,7 @@
 from functools import reduce
 import json
 from math import sqrt
-import pandas as pd
+import pandas as pd # type: ignore
 from itertools import tee as copy_iterable
 from statistics import median, mean
 
