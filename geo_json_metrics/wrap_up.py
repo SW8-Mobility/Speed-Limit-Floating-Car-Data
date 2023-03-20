@@ -58,7 +58,9 @@ def untangle_wrapup(wrapup_out: list[list[tuple]]) -> list[tuple[Any, list[Any]]
     return result
 
 
-def map_segments_to_coordinates(segments: list, coordinates: list) -> list[tuple[Any, list[Any]]]:
+def map_segments_to_coordinates(
+    segments: list, coordinates: list
+) -> list[tuple[Any, list[Any]]]:
     temp = segment_wrap_up(list(zip(segments, coordinates)))
     return untangle_wrapup(temp)
 
