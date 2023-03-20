@@ -48,10 +48,10 @@ def segment_wrap_up(combined: list[tuple]) -> list[list[tuple]]:
         return __wrap_up(combined[0], combined[1:])
 
 
-def untangle_wrapup(wrapup_out: list[list[tuple]]) -> list[tuple]:
+def untangle_wrapup(wrapup_out: list[list[tuple]]) -> list[tuple[Any, list[Any]]]:
     result = []
     for segment in wrapup_out:
-        temp = (segment[0][0], [])
+        temp: tuple[Any, list] = (segment[0][0], [])
         for _, coordinate in segment:
             temp[1].append(coordinate)
         result.append(temp)
