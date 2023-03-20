@@ -31,7 +31,7 @@ jobs:
       - name: Install Python Types
         run: mypy --install-types --non-interactive $(git ls-files '*.py') || true
 
-      - name: Run Black Linter
+      - name: Run Linter and Static Analysis
         uses: wearerequired/lint-action@v2
         with:
           auto_fix: true 
