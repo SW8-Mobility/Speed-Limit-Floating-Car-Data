@@ -1,28 +1,21 @@
+import pytest
 from geo_json_metrics.vcr_calculator import map_vcr, vcr
 
 
-def test_map_vcr() -> None:
-    # Arrange
-    testList: list[float] = [1, 2, 3, 4, 5, 6, 7]
-    expected_vcrs: list[float] = [0.5, 0.33333333333, 0.25, 0.2, 0.16666666666, 14285714285]
-
-    # Act
-    actual_vcrs: list[float] = map_vcr(testList)
-
-    # Assert
-    assert actual_vcrs == expected_vcrs
-    assert len(actual_vcrs) == len(testList)-1
+@pytest.mark.parametrize("test_input, expected_vcrs", [
+    ("map_vcr([1,2,3,4,5,6,7])", [0.5, 0.3333333333333333, 0.25, 0.2, 0.16666666666666666, 0.14285714285714285]),
+    ("map_vcr([3, 2])", [-0.5])
+    #("map_vcr([])", []) adds new test
+])
+def test_map_vcr(test_input, expected_vcrs: list[float]) -> None:
+    assert eval(test_input) == expected_vcrs
 
 
-def test_vcr() -> None:
-    # Arrange
-    v1: float = 55.78
-    v2: float = 45.0
-    expected_vcr: float = -0.23955555555555558
+@pytest.mark.parametrize("test_input, expected_vcr", [
+    ("vcr(55.78, 45.0)", -0.23955555555555558),
+    #("vcr()", ) adds new test
+])
+def test_vcr(test_input, expected_vcr) -> None:
+    assert eval(test_input) == expected_vcr
+    assert eval(test_input) < 0
 
-    # Act
-    actual_vcr: float = vcr(v1, v2)
-
-    # Assert
-    assert actual_vcr == expected_vcr
-    assert actual_vcr < 0
