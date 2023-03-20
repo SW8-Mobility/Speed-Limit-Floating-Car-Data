@@ -87,7 +87,7 @@ def filter_segments(df: pd.DataFrame, osm_id: int) -> pd.DataFrame:
         reduced: list[
             bool
         ] = reduce(  # convert [False, False, True, True, True, False] -> [False, True, False]
-            lambda acc, item: acc + [item] if safe_cmp(item, acc) else acc, l, [bool]
+            lambda acc, item: acc + [item] if safe_cmp(item, acc) else acc, l, []
         )
 
         # if there are more than one true in list
