@@ -16,7 +16,7 @@ def vcr(v1: float, v2: float) -> float:
     Returns:
         float: Velocity Change Rate between the two inputs
     """
-    return (v2 - v1)/v2
+    return (v2 - v1) / v2
 
 
 def main():
