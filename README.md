@@ -1,8 +1,11 @@
-# python-docker
+# Speed-Limit-Floating-Car-Data
+This is a project from 8th semester software on Aalborg University. It revolves around using Floating Car Data to categorise Speed Limits within Denmark.
+
+## Docker
 
 This docker container was made so that the setup for the python environment for using FCD was easier
 
-## Setup
+### Setup
 
 To setup the python container
 1. Copy `.env.example` and rename it `.env`
@@ -14,7 +17,7 @@ You can now use the terminal feature within docker desktop or use the command `d
 Any changes you make to `./scripts/api-script.py` will be reflected into the container instantly.
 
 
-## Saving data to file
+### Saving data to file
 
 You can save data by using the append operator `>>` eg: 
 
@@ -22,7 +25,7 @@ You can save data by using the append operator `>>` eg:
 docker compose exec -ti python python /scripts/api-script.py >> data.json
 ```
 
-# Old Readme
+# Old readme
 ## geo_json_metrics
 script in open_street folder is for reading the open street map files, extracting road and their information.
 script in geo_json_metrics is for requesting from the https://fcd-share.civil.aau.dk/ api and saving the response as json. 
