@@ -11,16 +11,16 @@ dfs = []
 for path in tqdm.tqdm(paths_2012):
     dfs.append(create_df_from_json(path))
 concat = pd.concat(dfs, axis=0)
-concat.to_pickle('pickle_files/2012.pkl')
+concat.to_pickle("pickle_files/2012.pkl")
 
 dfs = []
 for path in tqdm.tqdm(paths_2013):
     dfs.append(create_df_from_json(path))
 concat = pd.concat(dfs, axis=0)
-concat.to_pickle('pickle_files/2013.pkl')
+concat.to_pickle("pickle_files/2013.pkl")
 
 dfs = []
 for path in tqdm.tqdm(paths_2014):
     dfs.append(create_df_from_json(path))
 concat = pd.concat(dfs, axis=0)
-concat.to_pickle('pickle_files/2014.pkl')
+concat.to_pickle("pickle_files/2014.pkl")

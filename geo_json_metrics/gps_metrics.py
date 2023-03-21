@@ -38,7 +38,7 @@ def calc_utm_dist(utm1: coordinate, utm2: coordinate) -> float:
     """
     x1, y1 = utm1
     x2, y2 = utm2
-    return sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2)
+    return sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
 
 
 def create_df_from_json(filename: str) -> pd.DataFrame:
@@ -48,7 +48,7 @@ def create_df_from_json(filename: str) -> pd.DataFrame:
         pd.DataFrame: dataframe with keys: ['id', 'length', 'end_date', 'start_date', 'osm_id', 'coordinates']
     """
     # url for segment 10240935:
-    # https://fcd-share.civil.aau.dk/api/linestrings/?year=2014&osm_id=10240935&apikey=d287886f-f5d4-4727-a41c-97d7446344f4
+    # https://fcd-share.civil.aau.dk/api/linestrings/?year=2014&osm_id=10240935&apikey=<API-KEY>
     with open(filename, "r") as json_file:
         data = json.load(json_file)
 

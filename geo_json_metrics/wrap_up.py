@@ -27,7 +27,6 @@ def wrap_up(l: list):
         l = [first_elem] + take_while(rest, lambda x: x == first_elem)
         rest = drop_while(rest, lambda x: x == first_elem)
         return [l] + wrap_up(rest)
-    
     if len(l) == 0:
         return []
     else:
