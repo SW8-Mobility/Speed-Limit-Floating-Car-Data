@@ -97,6 +97,7 @@ def filter_segments(df: pd.DataFrame, osm_id: int) -> pd.DataFrame:
             exit()
 
     def filter_func(row):
+        print(row)
         valid_osm_ids = map(  # id mask corresponding to which coordinates to keep
             lambda elem: elem == osm_id, row["osm_id"]
         )
@@ -113,11 +114,15 @@ def filter_segments(df: pd.DataFrame, osm_id: int) -> pd.DataFrame:
                 ),
             )
         )
+        print(valid_coordinates)
         row["coordinates"] = valid_coordinates
         return row
-
     return df.apply(filter_func, axis=1)  # type: ignore
 
+def filter_trips(df: pd.DataFrame) -> pd.DataFrame:
+    df = df.drop(df.index[df['coordinates'].str.len() == 0].to_list())
+    print(df)
+    return df
 
 def calculate_distance(df: pd.DataFrame):
     """Calculate the distance between each coordinate.
