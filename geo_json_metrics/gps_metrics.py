@@ -24,7 +24,6 @@ def shift_elems(l: list) -> list:
 
 coordinate = tuple[float, float]  # type alias
 
-
 def calc_utm_dist(utm1: coordinate, utm2: coordinate) -> float:
     """calculate the distance between two utm coordinates
     uses formula for euclidian distance, which is not 100% accurate?
@@ -122,7 +121,7 @@ def filter_segments(df: pd.DataFrame, osm_id: int) -> pd.DataFrame:
         valid_osm_ids = map(  # id mask corresponding to which coordinates to keep
             lambda elem: elem == osm_id, row["osm_id"]
         )
-        verify_solution(copy_iterable(valid_osm_ids))
+        verify_solution(copy_iterable(valid_osm_ids)) 
 
         valid_coordinates = list(
             map(
@@ -234,6 +233,6 @@ def main():
     for (x, y, time), speed in zip(filtered_df.iloc[7]['coordinates'], filtered_df.iloc[7]['speeds']):
         print(time, speed, sep=", ")
 
-
+    
 if __name__ == "__main__":
     main()
