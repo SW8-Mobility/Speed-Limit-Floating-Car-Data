@@ -18,9 +18,7 @@ def shift_elems(l: list) -> list:
     Returns:
         list: shifted list of same type
     """
-    l.pop(-1)
-    return [None] + l
-
+    return [None]+l[:-1]
 
 coordinate = tuple[float, float]  # type alias
 
@@ -98,7 +96,7 @@ def filter_segments(df: pd.DataFrame, osm_id: int) -> pd.DataFrame:
         pd.DataFrame: dataframe only with coordinates corresponding to given osm_id
     """
 
-    def verify_solution(l: tuple[list[bool], list[bool]]):
+    def verify_solution(l: tuple[Iterator[bool], Iterator[bool]]):
         """I assume that trips do not loop back and go through the same
         segment more than once. This function is a sanitity check for this.
 
@@ -149,9 +147,7 @@ def calculate_distance_and_speed(df: pd.DataFrame):
         df (pd.DataFrame): dataframe to calculate the distances on.
     """
 
-    df["shifted_coordinates"] = df["coordinates"].apply(
-        lambda coordinates: shift_elems(coordinates)
-    )
+    df["shifted_coordinates"] = df["coordinates"].apply(shift_elems)
 
     def calc_dist(row):
         coordinates = row["coordinates"]
@@ -196,6 +192,7 @@ def calculate_speeds(df: pd.DataFrame) -> None:
         ],
         axis=1
     )
+    df.drop(["time_difference"], axis=1, inplace=True)
 
 def calculate_metrics(df: pd.DataFrame) -> tuple[float, float, float]:
     """Calculate aggregate min, max, and avg for dataframe
@@ -226,13 +223,12 @@ def main():
     university_boulevard_osm_id = 10240935
     filtered_df = filter_segments(df, university_boulevard_osm_id)
     calculate_distance_and_speed(filtered_df)
-    print(filtered_df.iloc[7].time_difference)
-    # avg, min, max = calculate_metrics(filtered_df)
-    # print(avg, min, max, sep=", ")
+    avg, min, max = calculate_metrics(filtered_df)
+    print(avg, min, max, sep=", ")
+    # print(filtered_df.iloc[7].time_difference)
 
     for (x, y, time), speed in zip(filtered_df.iloc[7]['coordinates'], filtered_df.iloc[7]['speeds']):
         print(time, speed, sep=", ")
 
-    
 if __name__ == "__main__":
     main()
