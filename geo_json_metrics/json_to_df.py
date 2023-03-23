@@ -1,11 +1,11 @@
 import pandas as pd
-import glob 
+import glob
 from gps_metrics import create_df_from_json
 import tqdm
 
-paths_2012 = glob.glob('data_2012/*.json')
-paths_2013 = glob.glob('data_2013/*.json')
-paths_2014 = glob.glob('data_2014/*.json')
+paths_2012 = glob.glob("data_2012/*.json")
+paths_2013 = glob.glob("data_2013/*.json")
+paths_2014 = glob.glob("data_2014/*.json")
 
 dfs = []
 for path in tqdm.tqdm(paths_2012):

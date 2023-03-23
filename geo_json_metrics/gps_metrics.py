@@ -7,6 +7,7 @@ import sys
 from typing import Iterator
 import pandas as pd
 
+
 def shift_elems(l: list) -> list:
     """shift elemets of list, ie:
     [1,2,3,4] -> [None,1,2,3]
@@ -18,9 +19,11 @@ def shift_elems(l: list) -> list:
     Returns:
         list: shifted list of same type
     """
-    return [None]+l[:-1]
+    return [None] + l[:-1]
+
 
 coordinate = tuple[float, float]  # type alias
+
 
 def calc_utm_dist(utm1: coordinate, utm2: coordinate) -> float:
     """calculate the distance between two utm coordinates
@@ -119,7 +122,7 @@ def filter_segments(df: pd.DataFrame, osm_id: int) -> pd.DataFrame:
         valid_osm_ids = map(  # id mask corresponding to which coordinates to keep
             lambda elem: elem == osm_id, row["osm_id"]
         )
-        verify_solution(copy_iterable(valid_osm_ids)) 
+        verify_solution(copy_iterable(valid_osm_ids))
 
         valid_coordinates = list(
             map(
@@ -146,10 +149,13 @@ def calculate_distance_and_speed(df: pd.DataFrame):
     Args:
         df (pd.DataFrame): dataframe to calculate the distances on.
     """
+
     def calc_dist(row):
         coordinates = row["coordinates"]
         shifted_coordinates = row["shifted_coordinates"]
-        shifted_coordinates.pop(0)  # Pop first element to avoid None, ok to mutate, since column is dropped later
+        shifted_coordinates.pop(
+            0
+        )  # Pop first element to avoid None, ok to mutate, since column is dropped later
         coordinates = coordinates[1:]  # also drop first, but not mutate
 
         distances = map(
@@ -160,7 +166,7 @@ def calculate_distance_and_speed(df: pd.DataFrame):
             zip(coordinates, shifted_coordinates),
         )
         return list(distances)
-    
+
     df["shifted_coordinates"] = df["coordinates"].apply(shift_elems)
     df["distances"] = df.apply(calc_dist, axis=1)
     calculate_speeds(df)  # needs the shifted_coordinates column
@@ -175,22 +181,27 @@ def calculate_speeds(df: pd.DataFrame) -> None:
     """
     df["speeds"] = df["distances"].apply(ms_to_kmh)
 
-    df["time_difference"] = df.apply( # get time difference between each coordinate element
+    df[
+        "time_difference"
+    ] = df.apply(  # get time difference between each coordinate element
         lambda d: [
-            c[2] - sc[2] for c, sc in zip(d["coordinates"][1:], d["shifted_coordinates"])
+            c[2] - sc[2]
+            for c, sc in zip(d["coordinates"][1:], d["shifted_coordinates"])
         ],
-        axis=1
+        axis=1,
     )
 
     # # scale speed by time difference
     # # if two seconds have passed, then speed/2
     df["speeds"] = df.apply(
         lambda d: [
-            speed / int(scale) for speed, scale in zip(d["speeds"], d["time_difference"])
+            speed / int(scale)
+            for speed, scale in zip(d["speeds"], d["time_difference"])
         ],
-        axis=1
+        axis=1,
     )
     df.drop(["time_difference"], axis=1, inplace=True)
+
 
 def calculate_metrics(df: pd.DataFrame) -> tuple[float, float, float]:
     """Calculate aggregate min, max, and avg for dataframe
@@ -225,8 +236,11 @@ def main():
     print(avg, min, max, sep=", ")
     # print(filtered_df.iloc[7].time_difference)
 
-    for (x, y, time), speed in zip(filtered_df.iloc[7]['coordinates'], filtered_df.iloc[7]['speeds']):
+    for (x, y, time), speed in zip(
+        filtered_df.iloc[7]["coordinates"], filtered_df.iloc[7]["speeds"]
+    ):
         print(time, speed, sep=", ")
+
 
 if __name__ == "__main__":
     main()
