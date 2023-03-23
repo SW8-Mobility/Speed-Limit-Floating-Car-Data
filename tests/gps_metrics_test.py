@@ -22,11 +22,11 @@ from geo_json_metrics.gps_metrics import (
         (
             [1],
             [None],
-        ),  
+        ),
         (
             [],
             [None],
-        ),  
+        ),
     ],
 )
 def test_shift_elems(test_input: list, expected: list) -> None:
