@@ -146,14 +146,11 @@ def calculate_distance_and_speed(df: pd.DataFrame):
     Args:
         df (pd.DataFrame): dataframe to calculate the distances on.
     """
-
-    df["shifted_coordinates"] = df["coordinates"].apply(shift_elems)
-
     def calc_dist(row):
         coordinates = row["coordinates"]
         shifted_coordinates = row["shifted_coordinates"]
-        shifted_coordinates.pop(0)  # Pop first element to avoid None
-        coordinates.pop(0)  # Pop first element to have equal size
+        shifted_coordinates.pop(0)  # Pop first element to avoid None, ok to mutate, since column is dropped later
+        coordinates = coordinates[1:]  # also drop first, but not mutate
 
         distances = map(
             lambda cor_and_shif_cor: calc_utm_dist(
@@ -163,7 +160,8 @@ def calculate_distance_and_speed(df: pd.DataFrame):
             zip(coordinates, shifted_coordinates),
         )
         return list(distances)
-
+    
+    df["shifted_coordinates"] = df["coordinates"].apply(shift_elems)
     df["distances"] = df.apply(calc_dist, axis=1)
     calculate_speeds(df)  # needs the shifted_coordinates column
     df.drop("shifted_coordinates", axis=1, inplace=True)
@@ -179,7 +177,7 @@ def calculate_speeds(df: pd.DataFrame) -> None:
 
     df["time_difference"] = df.apply( # get time difference between each coordinate element
         lambda d: [
-            c[2] - sc[2] for c, sc in zip(d["coordinates"], d["shifted_coordinates"])
+            c[2] - sc[2] for c, sc in zip(d["coordinates"][1:], d["shifted_coordinates"])
         ],
         axis=1
     )

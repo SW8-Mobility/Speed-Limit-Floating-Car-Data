@@ -103,11 +103,45 @@ def test_calculate_distance_and_speed():
     }
     actual_df = pd.DataFrame(data=actual_data)
     calculate_distance_and_speed(actual_df)
-    assert actual_df.distances.equals(expected_df.distances)
-    for key in expected_df.keys():
-        print("key: ", key)
-        print(expected_df[key])
-        print(actual_df[key])
-        assert expected_df[key].equals(actual_df[key])
-    # assert actual_df.speeds.equals(expected_df.speeds, )
-    # assert actual_df.equals(expected_df)
+    assert actual_df.speeds.equals(expected_df.speeds)
+
+def test_calculate_distance_and_speed2():
+    expected_data = {
+        "id": "test_id",
+        "length": 1234,
+        "end_date": "test_date",
+        "start_date": "test_date",
+        "osm_id": [
+            [123456789, 123456789, 123456789]
+        ],
+        "coordinates": [
+            [
+                [100.0, 100.0, 1000000000.0],
+            ]
+        ],
+        "distances": [
+            []
+        ],
+        "speeds": [
+            []
+        ]
+    }
+    expected_df = pd.DataFrame(data=expected_data)
+
+    actual_data = {
+        "id": "test_id",
+        "length": 1234,
+        "end_date": "test_date",
+        "start_date": "test_date",
+        "osm_id": [
+            [123456789, 123456789, 123456789]
+        ],
+        "coordinates": [
+            [
+                [100.0, 100.0, 1000000000.0],
+            ]
+        ]
+    }
+    actual_df = pd.DataFrame(data=actual_data)
+    calculate_distance_and_speed(actual_df)
+    assert actual_df.speeds.equals(expected_df.speeds)
