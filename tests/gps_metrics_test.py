@@ -145,3 +145,63 @@ def test_calculate_distance_and_speed2():
     actual_df = pd.DataFrame(data=actual_data)
     calculate_distance_and_speed(actual_df)
     assert actual_df.speeds.equals(expected_df.speeds)
+
+
+def test_calculate_distance_and_speed3():
+    expected_data = {
+        "id": "test_id",
+        "length": 1234,
+        "end_date": "test_date",
+        "start_date": "test_date",
+        "osm_id": [
+            [123456789, 123456789, 123456789],
+            [123456789, 123456789, 123456789]
+        ],
+        "coordinates": [
+            [
+                [100.0, 100.0, 1000000000.0],
+                [100.0, 110.0, 1000000001.0],
+                [100.0, 130.0, 1000000002.0],
+            ],
+            [
+                [100.0, 100.0, 1000000000.0],
+                [150.0, 100.0, 1000000001.0],
+                [200.0, 100.0, 1000000002.0],
+            ]
+        ],
+        "distances": [
+            [10.0, 20.0],
+            [50.0, 50.0]
+        ],
+        "speeds": [
+            [36.0, 72.0],
+            [180.0, 180.0]
+        ]
+    }
+    expected_df = pd.DataFrame(data=expected_data)
+
+    actual_data = {
+        "id": "test_id",
+        "length": 1234,
+        "end_date": "test_date",
+        "start_date": "test_date",
+        "osm_id": [
+            [123456789, 123456789, 123456789],
+            [123456789, 123456789, 123456789]
+        ],
+        "coordinates": [
+            [
+                [100.0, 100.0, 1000000000.0],
+                [100.0, 110.0, 1000000001.0],
+                [100.0, 130.0, 1000000002.0],
+            ],
+            [
+                [100.0, 100.0, 1000000000.0],
+                [150.0, 100.0, 1000000001.0],
+                [200.0, 100.0, 1000000002.0],
+            ]
+        ]
+    }
+    actual_df = pd.DataFrame(data=actual_data)
+    calculate_distance_and_speed(actual_df)
+    assert actual_df.speeds.equals(expected_df.speeds)
