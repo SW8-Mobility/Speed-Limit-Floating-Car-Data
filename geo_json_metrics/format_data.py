@@ -2,12 +2,10 @@ import sys
 import pandas as pd
 
 path_root = "data/pickle_files"
-from wrap_up import map_segments_to_coordinates
 
 # :)
-segment_to_coordinates: dict[str, list[int, int, int]] = dict()
+segment_to_coordinates: dict[int, list[tuple[int, int, int]]] = dict()
 errors = []
-
 
 def clean_df(df: pd.DataFrame) -> None:
     """clean
@@ -59,6 +57,34 @@ def create_segment_to_coordinate_df(df: pd.DataFrame) -> pd.DataFrame:
     mapped_df = pd.DataFrame(l, columns=["segment", "coordinates"])
     return mapped_df
 
+
+segment_to_coordinates_list = list[tuple[int, list]]
+def map_segments_to_coordinates(segments: list, coordinates: list) -> segment_to_coordinates_list:
+    """Aggregate lists of segments and coordinates, such that coordinates are 
+    associated with its corresponding segment id.
+
+    Args:
+        segments (list): _description_
+        coordinates (list): _description_
+
+    Returns:
+        segment_to_coordinates_list: _description_
+    """
+    if len(segments) == 0:
+        return []
+
+    result = []
+    current_seg = (segments[0], [])
+    for seg, cor in zip(segments, coordinates):
+        if seg != current_seg[0]: # new segment starts
+            result.append(current_seg)
+            current_seg = (seg, [cor])
+        else:
+            current_seg[1].append(cor)
+    
+    result.append(current_seg)
+
+    return result
 
 def main():
     sys.setrecursionlimit(10000)
