@@ -28,7 +28,7 @@ def calc_utm_dist(utm1: coordinate, utm2: coordinate) -> float:
     """
     x1, y1 = utm1
     x2, y2 = utm2
-    return sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2)
+    return sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
 
 
 def create_df_from_json(filename: str) -> pd.DataFrame:
