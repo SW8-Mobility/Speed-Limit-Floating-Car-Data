@@ -14,6 +14,14 @@ from geo_json_metrics.gps_metrics import shift_elems, calc_utm_dist, create_df_f
             [1, 2, 3, 4],
             [None, 1, 2, 3],
         ),
+        (
+            [1],
+            [None],
+        ),  
+        (
+            [],
+            [None],
+        ),  
     ],
 )
 def test_shift_elems(test_input: list, expected: list) -> None:
