@@ -1,3 +1,5 @@
 requests
 pytest
 tqdm
+pandas 
+numpy
