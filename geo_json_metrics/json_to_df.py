@@ -1,6 +1,6 @@
 import pandas as pd # type: ignore
 import glob
-from gps_metrics import create_df_from_json
+from geo_json_metrics.gps_metrics import create_df_from_json
 import tqdm
 
 paths_2012 = glob.glob("data_2012/*.json")
