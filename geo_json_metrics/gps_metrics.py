@@ -5,7 +5,7 @@ from itertools import tee as copy_iterable
 from statistics import median, mean
 import sys
 from typing import Iterator
-import pandas as pd # type: ignore
+import pandas as pd  # type: ignore
 
 
 def shift_elems(l: list) -> list:
@@ -108,13 +108,15 @@ def filter_segments(df: pd.DataFrame, osm_id: int) -> pd.DataFrame:
             the segment of interest.
         """
         safe_cmp = lambda b, acc: True if len(acc) == 0 else acc[-1] != b
-        reduced: list[bool] = reduce(  # convert [False, False, True, True, True, False] -> [False, True, False]
+        reduced: list[
+            bool
+        ] = reduce(  # convert [False, False, True, True, True, False] -> [False, True, False]
             lambda acc, bool: acc + [bool] if safe_cmp(bool, acc) else acc, l, []
         )
 
         # if there are more than one true in list
         # then the car has looped and break assumption
-        if len(list(filter(lambda e: e is True, reduced))) > 1: # type: ignore
+        if len(list(filter(lambda e: e is True, reduced))) > 1:  # type: ignore
             print("Bad assumption...")
             sys.exit()
 
