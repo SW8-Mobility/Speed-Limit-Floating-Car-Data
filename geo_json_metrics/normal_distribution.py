@@ -17,8 +17,10 @@ def plot_normal_distribution(series: pd.Series) -> None:
     xmin, xmax = plt.xlim()
     x = np.linspace(xmin, xmax, 100)
     p = norm.pdf(x, mu, std)
-    plt.plot(x,p,'k',linewidth=2)
-    title = "Fit Values: {:.2F} and {:.2F}. Observations: {:d}".format(mu, std, len(series))
+    plt.plot(x, p, "k", linewidth=2)
+    title = "Fit Values: {:.2F} and {:.2F}. Observations: {:d}".format(
+        mu, std, len(series)
+    )
     plt.title(title)
     plt.show()
 
@@ -33,7 +35,9 @@ def main():
         df.reset_index()
     )  # The data frames indexes are, before reset, 0 to 9 repeatedly
     # Filter out any the coordinates of any trip, that are not on selected OSM_ID:
-    filtered_df = filter_segments(df, 8149020) # <- first segment on Universitetsboulevarden, 80km/t
+    filtered_df = filter_segments(
+        df, 8149020
+    )  # <- first segment on Universitetsboulevarden, 80km/t
     # Remove all unrelated trips:
     filtered_trips_df = filter_trips(filtered_df)
     # Create columns containing average speeds through the segment
