@@ -1,13 +1,12 @@
 import sys
-import pandas as pd
+from typing import Union
+import pandas as pd # type: ignore
 
 path_root = "data/pickle_files"
-from wrap_up import map_segments_to_coordinates
 
 # :)
-segment_to_coordinates: dict[str, list[int, int, int]] = dict()
-errors = []
-
+segment_to_coordinates: dict[int, list[tuple[int, int, int]]] = dict()
+errors: list[str] = []
 
 def clean_df(df: pd.DataFrame) -> None:
     """clean
@@ -34,7 +33,7 @@ def map_segments(segments, coordinates):
         return None
 
 
-def append_coordinates(key_coordinates: list[tuple[int, list]]) -> None:
+def append_coordinates(key_coordinates: list[tuple[int, list]]) -> Union[list[tuple[int, list]], None]:
     if key_coordinates is None:
         print(key_coordinates)
         return None  # Dont know why some are None
@@ -44,7 +43,7 @@ def append_coordinates(key_coordinates: list[tuple[int, list]]) -> None:
             segment_to_coordinates[key] = []
         else:
             segment_to_coordinates[key].extend(coordinates)
-        return key_coordinates
+    return key_coordinates
 
 
 def create_segment_to_coordinate_df(df: pd.DataFrame) -> pd.DataFrame:
@@ -60,8 +59,35 @@ def create_segment_to_coordinate_df(df: pd.DataFrame) -> pd.DataFrame:
     return mapped_df
 
 
+segment_to_coordinates_list = list[tuple[int, list]]
+def map_segments_to_coordinates(segments: list, coordinates: list) -> segment_to_coordinates_list:
+    """Aggregate lists of segments and coordinates, such that coordinates are 
+    associated with its corresponding segment id.
+
+    Args:
+        segments (list): _description_
+        coordinates (list): _description_
+
+    Returns:
+        segment_to_coordinates_list: _description_
+    """
+    if len(segments) == 0:
+        return []
+
+    result = []
+    current_seg: tuple[int, list] = (segments[0], [])
+    for seg, cor in zip(segments, coordinates):
+        if seg != current_seg[0]: # new segment starts
+            result.append(current_seg)
+            current_seg = (seg, [cor])
+        else:
+            current_seg[1].append(cor)
+    
+    result.append(current_seg)
+
+    return result
+
 def main():
-    sys.setrecursionlimit(10000)
     df: pd.DataFrame = (
         pd.read_pickle(
             "C:\\Users\\ax111\\Documents\\Personal documents\\Coding\\SW8\\geo_json_metrics\\geo_json_metrics\\data\\pickle_files\\2012.pkl"
@@ -70,7 +96,6 @@ def main():
         .head(1000)
     )
     mapped_df = create_segment_to_coordinate_df(df)
-    sys.setrecursionlimit(1000)  # reset
     mapped_df.to_csv("test.csv", index=False)
 
 

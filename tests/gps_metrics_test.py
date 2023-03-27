@@ -2,7 +2,7 @@ from cmath import sqrt
 import os
 from typing import Union
 import numpy as np
-import pandas as pd
+import pandas as pd # type: ignore
 import pytest
 from geo_json_metrics.gps_metrics import (
     shift_elems,
