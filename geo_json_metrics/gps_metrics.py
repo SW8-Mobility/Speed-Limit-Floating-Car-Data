@@ -11,7 +11,8 @@ each recorded distance.
 Should be fixed, if script needs to be used for more data...
 """
 
-coordinate = 'tuple[float, float]'  # type alias
+coordinate = "tuple[float, float]"  # type alias
+
 
 def calc_utm_dist(utm1: coordinate, utm2: coordinate) -> float:
     """calculate the distance between two utm coordinates
@@ -74,7 +75,7 @@ def filter_segments(df: pd.DataFrame, osm_id: int) -> pd.DataFrame:
         pd.DataFrame: dataframe only with coordinates corresponding to given osm_id
     """
 
-    def verify_solution(l: 'list[bool]'):
+    def verify_solution(l: "list[bool]"):
         """I assume that trips do not loop back and go through the same
         segment more than once. This function is a sanitity check for this.
 
@@ -114,11 +115,14 @@ def filter_segments(df: pd.DataFrame, osm_id: int) -> pd.DataFrame:
         )
         row["coordinates"] = valid_coordinates
         return row
+
     return df.apply(filter_func, axis=1)  # type: ignore
 
+
 def filter_trips(df: pd.DataFrame) -> pd.DataFrame:
-    df = df.drop(df.index[df['coordinates'].str.len() == 0].to_list())
+    df = df.drop(df.index[df["coordinates"].str.len() == 0].to_list())
     return df
+
 
 def calculate_distance(df: pd.DataFrame):
     """Calculate the distance between each coordinate.
@@ -156,7 +160,7 @@ def calculate_distance(df: pd.DataFrame):
     df.drop("shifted_coordinates", axis=1, inplace=True)
 
 
-def ms_to_kmh(speeds: 'list[float]') -> 'list[float]':
+def ms_to_kmh(speeds: "list[float]") -> "list[float]":
     """convert list of speeds in meters per second to list of speeds with
     km per second.
 
@@ -169,7 +173,7 @@ def ms_to_kmh(speeds: 'list[float]') -> 'list[float]':
     return [speed * 3.6 for speed in speeds]
 
 
-def calculate_metrics(df: pd.DataFrame) -> 'tuple[float, float, float]':
+def calculate_metrics(df: pd.DataFrame) -> "tuple[float, float, float]":
     """Calculate aggregate min, max, and avg for dataframe
 
     Args:
