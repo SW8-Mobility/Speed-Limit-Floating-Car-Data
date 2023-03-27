@@ -1,5 +1,6 @@
+import pandas as pd
 import pytest
-from geo_json_metrics.format_data import map_segments_to_coordinates
+from pipeline.preprocessing.format_data import clean_df, create_segment_to_coordinate_df, map_segments_to_coordinates
 
 
 @pytest.mark.parametrize(
@@ -20,3 +21,187 @@ from geo_json_metrics.format_data import map_segments_to_coordinates
 )
 def test_map_segments_to_coordinates(segments, coordinates, expected):
     assert map_segments_to_coordinates(segments, coordinates) == expected
+
+
+def test_create_segment_to_coordinate_df_one_segment():
+    expected_data = {
+        "osm_id": [1234],
+        "coordinates": [
+            [
+                [
+                    [100.0, 100.0, 1000000000.0],
+                    [100.0, 110.0, 1000000001.0],
+                    [100.0, 130.0, 1000000002.0],
+                ]
+            ]
+        ],
+    }
+    expected_df = pd.DataFrame(data=expected_data)
+
+    actual_data = {
+        "osm_id": [[1234, 1234, 1234]],
+        "coordinates": [
+            [
+                [100.0, 100.0, 1000000000.0],
+                [100.0, 110.0, 1000000001.0],
+                [100.0, 130.0, 1000000002.0],
+            ]
+        ],
+    }
+    df = pd.DataFrame(data=actual_data)
+    actual_df = create_segment_to_coordinate_df(df)
+
+    assert expected_df.equals(actual_df)
+
+# TODO: remember to uncomment
+# def test_create_segment_to_coordinate_df_one_segment_with_none():
+#     expected_data = {
+#         "osm_id": [1234],
+#         "coordinates": [
+#             [
+#                 [
+#                     [100.0, 100.0, 1000000000.0],
+#                     [100.0, 110.0, 1000000001.0],
+#                     [100.0, 130.0, 1000000002.0],
+#                 ]
+#             ]
+#         ],
+#     }
+#     expected_df = pd.DataFrame(data=expected_data)
+
+#     actual_data = {
+#         "osm_id": [[1234, 1234, 1234, None]],
+#         "coordinates": [
+#             [
+#                 [100.0, 100.0, 1000000000.0],
+#                 [100.0, 110.0, 1000000001.0],
+#                 [100.0, 130.0, 1000000002.0],
+#                 [100.0, 140.0, 1000000003.0],
+#             ]
+#         ],
+#     }
+
+#     df = pd.DataFrame(data=actual_data)
+#     actual_df = create_segment_to_coordinate_df(df)
+
+#     assert expected_df.equals(actual_df)
+
+def test_create_segment_to_coordinate_df_multiple_segments():
+    expected_data = {
+        "osm_id": [1111, 2222, 3333],
+        "coordinates": [
+            [
+                [
+                    [100.0, 100.0, 1000000000.0],
+                    [100.0, 110.0, 1000000001.0],
+                    [100.0, 130.0, 1000000002.0],
+                ]
+            ],
+            [
+                [
+                    [200.0, 100.0, 1000000000.0],
+                    [200.0, 110.0, 1000000001.0],
+                    [200.0, 130.0, 1000000002.0],
+                ]
+            ],
+            [
+                [
+                    [300.0, 100.0, 1000000000.0],
+                    [300.0, 110.0, 1000000001.0],
+                    [300.0, 130.0, 1000000002.0],
+                ]
+            ]
+        ],
+    }
+    expected_df = pd.DataFrame(data=expected_data)
+
+    actual_data = {
+        "osm_id": [
+            [1111, 1111, 1111],
+            [2222, 2222, 2222],
+            [3333, 3333, 3333],
+        ],
+        "coordinates": [
+            [
+                [100.0, 100.0, 1000000000.0],
+                [100.0, 110.0, 1000000001.0],
+                [100.0, 130.0, 1000000002.0],
+                
+            ],
+            [
+                [200.0, 100.0, 1000000000.0],
+                [200.0, 110.0, 1000000001.0],
+                [200.0, 130.0, 1000000002.0],
+            ],
+            [
+                [300.0, 100.0, 1000000000.0],
+                [300.0, 110.0, 1000000001.0],
+                [300.0, 130.0, 1000000002.0],
+            ]
+        ],
+    }
+    df = pd.DataFrame(data=actual_data)
+    actual_df = create_segment_to_coordinate_df(df)
+
+    assert expected_df.equals(actual_df)
+
+@pytest.mark.parametrize(
+    "osm_id, expected_coordinates",
+    [
+        
+        (
+            [1111, 1111, 1111, None],
+            [
+                [100.0, 100.0, 1000000000.0],
+                [100.0, 110.0, 1000000001.0],
+                [100.0, 130.0, 1000000002.0],
+            ]
+        ),
+        (
+            [1111, None, 1111, 1111],
+            [
+                [100.0, 100.0, 1000000000.0],
+                [100.0, 130.0, 1000000002.0],
+                [100.0, 140.0, 1000000003.0],
+            ]
+        ),
+        (
+            [1111, None, None, 1111],
+            [
+                [100.0, 100.0, 1000000000.0],
+                [100.0, 140.0, 1000000003.0],
+            ]
+        ),
+        (
+            [None, None, None, None],
+            []
+        )
+    ],
+)
+def test_clean_df(osm_id, expected_coordinates):
+    # :)
+    expected_data = {
+        "osm_id": [1111, 1111, 1111],
+        "coordinates": [
+            expected_coordinates
+        ],
+    }
+    expected_df = pd.DataFrame(data=expected_data)
+
+    actual_data = {
+        "osm_id": [
+            osm_id,
+        ],
+        "coordinates": [
+            [
+                [100.0, 100.0, 1000000000.0],
+                [100.0, 110.0, 1000000001.0],
+                [100.0, 130.0, 1000000002.0],
+                [100.0, 140.0, 1000000003.0],
+            ]
+        ]
+    }
+    actual_df = pd.DataFrame(data=actual_data)
+    clean_df(actual_df)
+
+    assert expected_df.equals(actual_df)
