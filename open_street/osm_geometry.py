@@ -9,7 +9,7 @@ class GeometryRoadHandler(osmium.SimpleHandler):
         self.geometryDictionary: dict[str, str] = {}
 
     def way(self, w: Any) -> None:
-        """This function gets called upon .apply_file for every road (OSM Way) that is in the file.
+        """This function gets called upon .apply_file for every road (OSM Way) that is in the file that apply_file is called with.
 
         Args:
             w (Any): OSM Way
