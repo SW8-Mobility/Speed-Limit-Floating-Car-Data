@@ -235,7 +235,7 @@ def main():
     filtered_df = filter_segments(df, university_boulevard_osm_id)
     calculate_distance_and_speed(filtered_df)
     avg, min, max = calculate_metrics(filtered_df)
-    print(avg, min, max, sep=", ")
+    # print(avg, min, max, sep=", ")
     # print(filtered_df.iloc[7].time_difference)
 
     for (x, y, time), speed in zip(
