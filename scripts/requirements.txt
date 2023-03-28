@@ -2,3 +2,5 @@ requests
 pytest
 tqdm
 osmium
+pandas 
+numpy
