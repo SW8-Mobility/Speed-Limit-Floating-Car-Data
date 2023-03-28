@@ -1,42 +1,57 @@
-
 import sys
 import os
+from typing import Any
+
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 grand_parent = os.path.dirname(parent)
 sys.path.append(grand_parent)
 
 import pandas as pd
-from pipeline.preprocessing.feature import Feature 
+from pipeline.preprocessing.feature import Feature
 
 path_root = "data/pickle_files"
 errors: list[str] = []
-coordinates_with_time = tuple[int, int, int]
-trip = list[coordinates_with_time]
+CoordinatesWithTime = tuple[int, int, int]
+Trip = list[CoordinatesWithTime]
 
-# types for refactoring 
-segmemt_to_coordinate_dict = dict[int, list[trip]]
-trip_with_features = dict[Feature, object] # feature and the values for the feature
-segment_to_trip_dict = dict[int, list[trip_with_features]]
+# types for refactoring, ignore for now
+SegmemtToCoordinateDict = dict[int, list[Trip]]
+TripWithFeatures = dict[Feature, Any]  # feature and the values for the feature
+SegmentToTripDict = dict[int, list[TripWithFeatures]]
+
 
 def clean_df(df: pd.DataFrame) -> None:
-    """clean
-    basically, remove the null values from osm_id and its corresponding coordinates
-    also wrong x
+    """Remove None values from trips. Some trips har None values
+    in the osm_id list. Remove these, and the corresponding coordinate
+    values.
 
     Args:
-        df (pd.DataFrame): _description_
+        df (pd.DataFrame): dataframe with trips
     """
-    combined_col = df.apply(lambda d: list(zip(d["osm_id"], d["coordinates"])), axis=1)
-    combined_col.apply(lambda sc: list(filter(lambda elem: elem[0] is not None, sc)))
-    segments, coordinates = list(zip(*combined_col))
-    df["coordinates"] = coordinates
-    df["osm_id"] = segments
+    combined_col = df.apply(  # combine osm_id's and coordinates for each trip
+        lambda d: list(zip(d["osm_id"], d["coordinates"])), axis=1
+    )
+    combined_col = combined_col.apply(  # filter the None values
+        lambda sc: list(filter(lambda elem: elem[0] is not None, sc))
+    )
+    df["osm_id"] = combined_col.apply(  # split apart the osm_ids
+        lambda d: [elem[0] for elem in d]
+    )
+    df["coordinates"] = combined_col.apply(  # split part the coordinates
+        lambda d: [elem[1] for elem in d]
+    )
 
-def append_coordinates(key_coordinates: list[tuple[int, list]], segment_dict: segmemt_to_coordinate_dict) -> None:
-    if key_coordinates is None:
-        return  # Dont know why some are None
-        
+
+def append_coordinates(
+    key_coordinates: list[tuple[int, list]], segment_dict: SegmemtToCoordinateDict
+) -> None:
+    """Appends to coordinate from a trip to the correct segment in segment_dict
+
+    Args:
+        key_coordinates (list[tuple[int, list]]): list of segments and coordinates from each trip
+        segment_dict (SegmemtToCoordinateDict): dict to append to
+    """
     for mapped_cords in key_coordinates:
         key, coordinates = mapped_cords
         if key not in segment_dict:
@@ -44,52 +59,64 @@ def append_coordinates(key_coordinates: list[tuple[int, list]], segment_dict: se
         else:
             segment_dict[key].extend([coordinates])
 
-def map_segments(segments, coordinates):
-    try:
-        return map_segments_to_coordinates(segments, coordinates)
-    except Exception as e:
-        print(e)
-        return None
 
 def create_segment_to_coordinate_df(df: pd.DataFrame) -> pd.DataFrame:
-    segment_to_coordinates: segmemt_to_coordinate_dict = dict()
-    
+    """Main method for converting our dataframe of a trip per row to a dataframe
+    of a segment per row.
 
-    ''' 
-    step 1: for each trip, seggregate the coordinates, according to the segment (osm_id)
-    so for each trip, something like [(segment1, coordinates), (segment2, coordinates)]
-    this will happen for each trip, so thefore a series.
-    '''
+    Args:
+        df (pd.DataFrame): dataframe with trips
+
+    Returns:
+        pd.DataFrame: dataframe with each segment as a row
+    """
+
+    segment_to_coordinates: SegmemtToCoordinateDict = dict()
+
+    # step 0:
+    # remove None values
+    clean_df(df)
+
+    # step 1:
+    # for each trip, seggregate the coordinates, according to the segment (osm_id)
+    # so for each trip, something like [(segment1, coordinates), (segment2, coordinates)]
+    # this will happen for each trip, so thefore a series.
+
     mapped_coordinates: pd.Series = df.apply(
         lambda d: map_segments_to_coordinates(d["osm_id"], d["coordinates"]), axis=1
     )
 
-    '''
-    step 2: 
-    '''
-    mapped_coordinates.apply(
-        lambda seg_and_cor: append_coordinates(seg_and_cor, segment_to_coordinates) # type: ignore
-    ) 
+    # step 2:
+    # For each trip, add to coordinates to the correct segment in the segment_to_coordinates dict
 
-    # create dataframe from the dictionary 
+    mapped_coordinates.apply(
+        lambda seg_and_cor: append_coordinates(seg_and_cor, segment_to_coordinates)  # type: ignore
+    )
+
+    # step 3:
+    # create the output dataframe from the dictionary
     l = [
-        (k, v) for k, v in segment_to_coordinates.items()
-    ]  # convert dictionary to list
+        (k, v) for k, v in segment_to_coordinates.items()  # converts dictionary to list
+    ]
     mapped_df = pd.DataFrame(l, columns=["osm_id", "coordinates"])
     return mapped_df
 
 
 segment_to_coordinates_list = list[tuple[int, list]]
-def map_segments_to_coordinates(segments: list, coordinates: list) -> segment_to_coordinates_list:
-    """Aggregate lists of segments and coordinates, such that coordinates are 
+
+
+def map_segments_to_coordinates(
+    segments: list, coordinates: list
+) -> segment_to_coordinates_list:
+    """Aggregate lists of segments and coordinates, such that coordinates are
     associated with its corresponding segment id.
 
     Args:
-        segments (list): _description_
-        coordinates (list): _description_
+        segments (list): list of osm_ids
+        coordinates (list): list of coordinates
 
     Returns:
-        segment_to_coordinates_list: _description_
+        segment_to_coordinates_list: list of tuples with a segment, and it's coordinates
     """
     if len(segments) == 0:
         return []
@@ -97,15 +124,16 @@ def map_segments_to_coordinates(segments: list, coordinates: list) -> segment_to
     result = []
     current_seg = (segments[0], [])
     for seg, cor in zip(segments, coordinates):
-        if seg != current_seg[0]: # new segment starts
+        if seg != current_seg[0]:  # new segment starts
             result.append(current_seg)
             current_seg = (seg, [cor])
         else:
             current_seg[1].append(cor)
-    
+
     result.append(current_seg)
 
     return result
+
 
 def main():
     df: pd.DataFrame = (
