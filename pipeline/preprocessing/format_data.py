@@ -21,7 +21,6 @@ TripWithFeatures = dict[Feature, Any]  # feature and the values for the feature
 SegmentToTripDict = dict[int, list[TripWithFeatures]]
 
 
-
 def clean_df(df: pd.DataFrame) -> None:
     """Remove None values from trips. Some trips har None values
     in the osm_id list. Remove these, and the corresponding coordinate
@@ -59,7 +58,6 @@ def append_coordinates(
             segment_dict[key] = [coordinates]
         else:
             segment_dict[key].extend([coordinates])
-
 
 
 def create_segment_to_coordinate_df(df: pd.DataFrame) -> pd.DataFrame:

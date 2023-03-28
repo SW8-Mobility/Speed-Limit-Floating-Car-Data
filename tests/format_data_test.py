@@ -53,6 +53,7 @@ def test_create_segment_to_coordinate_df_one_segment():
 
     assert expected_df.equals(actual_df)
 
+
 def test_create_segment_to_coordinate_df_one_segment_with_none():
     expected_data = {
         "osm_id": [1234],
@@ -174,19 +175,13 @@ def test_create_segment_to_coordinate_df_multiple_segments():
                 [100.0, 140.0, 1000000003.0],
             ],
         ),
-        (
-            [None, None, None, None],
-            [],
-            []
-        )
+        ([None, None, None, None], [], []),
     ],
 )
 def test_clean_df(osm_id, expected_osm, expected_coordinates):
     expected_data = {
         "osm_id": [expected_osm],
-        "coordinates": [
-            expected_coordinates
-        ],
+        "coordinates": [expected_coordinates],
     }
     expected_df = pd.DataFrame(data=expected_data)
 
