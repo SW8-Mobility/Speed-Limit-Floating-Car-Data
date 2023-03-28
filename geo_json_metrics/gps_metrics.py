@@ -1,10 +1,6 @@
 from functools import reduce
 import json
 from math import sqrt
-<<<<<<< HEAD
-import pandas as pd
-=======
->>>>>>> f4f0bbf68c317c807a3eb17adc068a72509e92f6
 from itertools import tee as copy_iterable
 from statistics import median, mean
 import sys
@@ -112,15 +108,10 @@ def filter_segments(df: pd.DataFrame, osm_id: int) -> pd.DataFrame:
             the segment of interest.
         """
         safe_cmp = lambda b, acc: True if len(acc) == 0 else acc[-1] != b
-<<<<<<< HEAD
-        reduced = reduce(  # convert [False, False, True, True, True, False] -> [False, True, False]
-            lambda acc, bool: acc + [bool] if safe_cmp(bool, acc) else acc, l, []
-=======
         reduced: Iterator[
             bool
         ] = reduce(  # convert [False, False, True, True, True, False] -> [False, True, False]
             lambda acc, bool: acc + [bool] if safe_cmp(bool, acc) else acc, l, []  # type: ignore
->>>>>>> f4f0bbf68c317c807a3eb17adc068a72509e92f6
         )
 
         # if there are more than one true in list
