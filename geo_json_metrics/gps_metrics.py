@@ -238,10 +238,10 @@ def main():
     # print(avg, min, max, sep=", ")
     # print(filtered_df.iloc[7].time_difference)
 
-    for (x, y, time), speed in zip(
-        filtered_df.iloc[7]["coordinates"], filtered_df.iloc[7]["speeds"]
-    ):
-        # print(time, speed, sep=", ")
+    # for (x, y, time), speed in zip(
+    #     filtered_df.iloc[7]["coordinates"], filtered_df.iloc[7]["speeds"]
+    # ):
+    #     print(time, speed, sep=", ")
 
 
 if __name__ == "__main__":
