@@ -193,7 +193,7 @@ def calculate_speeds(df: pd.DataFrame) -> None:
         axis=1,
     )
 
-    # # scale speed by time difference
+    # scale speed by time difference
     # # if two seconds have passed, then speed/2
     df["speeds"] = df.apply(
         lambda d: [
