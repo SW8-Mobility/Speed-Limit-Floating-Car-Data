@@ -1,0 +1,41 @@
+{
+    "results": {
+        "features": [
+            {
+                "geometry": {
+                    "coordinates": [
+                        [
+                            100.0,
+                            100.0,
+                            1000000000.0
+                        ],
+                        [
+                            100.0,
+                            110.0,
+                            1000000001.0
+                        ],
+                        [
+                            100.0,
+                            130.0,
+                            1000000002.0
+                        ]                   
+                    ],
+                    "type": "test_type"
+                },
+                "id": "test_id",
+                "properties": {
+                    "end_date": "test_date",
+                    "length": 1234,
+                    "osm_id": [
+                        123456789,
+                        123456789,
+                        123456789                   
+                    ],
+                    "start_date": "test_date"
+                },
+                "type": "test_type"
+            }       
+        ],
+        "type": "test_type"
+    }
+}

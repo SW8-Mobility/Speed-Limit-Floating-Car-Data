@@ -58,7 +58,7 @@ class RoadHandler(osmium.SimpleHandler):
             speed_limit = int(w.tags["maxspeed"])  # cause exception if not present
             # print(f'{name} ({id}): {speed_limit} km/h')
             self.road_dict[id] = Road(
-                id, name, speed_limit
+                id, str(name), speed_limit
             ).__dict__  # save object as dict, used for json serializing
             # self.i += 1
         except ValueError as e:
