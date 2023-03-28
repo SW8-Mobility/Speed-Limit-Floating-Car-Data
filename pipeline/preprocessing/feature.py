@@ -1,5 +1,6 @@
 from enum import Enum
 
+
 class Feature(Enum):
     ID = "id"
     COORDINATES = "coordinates"
@@ -15,10 +16,10 @@ class Feature(Enum):
     VCR = "vcr"
     DAY_OF_WEEK = "day_of_week"
     TIME_GROUP = "time_group"
-    # more to come 
-    
+    # more to come
+
     def __str__(self):
-        self.value 
+        self.value
 
     def type_check(self):
         """Might be useful to type check the format of a feature later.
