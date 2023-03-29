@@ -17,7 +17,7 @@ from geo_json_metrics.vcr_calculator import map_vcr, vcr
                 0.14285714285714285,
             ],
         ),
-        (f"{map_vcr([3, 2])}", [-0.5])
+        (f"{map_vcr([3, 2])}", [-0.5]),
     ],
 )
 def test_map_vcr(test_input, expected_vcrs: list[float]) -> None:
@@ -26,10 +26,7 @@ def test_map_vcr(test_input, expected_vcrs: list[float]) -> None:
 
 @pytest.mark.parametrize(
     "test_input, expected_vcr",
-    [
-        (f"{vcr(55.78, 45.0)}", -0.23955555555555558),
-        (f"{vcr(40, 50)}", 0.2)
-    ],
+    [(f"{vcr(55.78, 45.0)}", -0.23955555555555558), (f"{vcr(40, 50)}", 0.2)],
 )
 def test_vcr(test_input, expected_vcr) -> None:
     assert eval(test_input) == expected_vcr
