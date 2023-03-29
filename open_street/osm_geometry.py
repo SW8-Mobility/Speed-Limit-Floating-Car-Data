@@ -16,7 +16,7 @@ class GeometryRoadHandler(osmium.SimpleHandler):
         Args:
             w (Any): OSM Way
         """
-        if w.tags.get("highway") is not None:
+        if w.tags.get("highway") is not None: # The highway tag annotates the type of road, e.g. 'path' or 'motorway'
             try:
                 geo = GeoJSONFactory().create_linestring(w)  # Get the road linestring
                 self.geometryDictionary[w.id] = geo
