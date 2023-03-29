@@ -4,4 +4,5 @@ services:
     env_file: .env
     volumes:
       - ./scripts:/scripts
+      - ./open_street:/open_street
     working_dir: /scripts
