@@ -230,7 +230,7 @@ def calculate_metrics(df: pd.DataFrame) -> tuple[float, float, float]:
 
 def print_times_and_speeds(filtered_df: pd.DataFrame, row: int = 7) -> None:
     """Used to verify the outlier from segment_10240935_linestring.json.
-    The speed calculated was initially wrong. But now fixed. 
+    The speed calculated was initially wrong. But now fixed.
 
     Args:
         filtered_df (pd.DataFrame): dataframe
@@ -240,6 +240,7 @@ def print_times_and_speeds(filtered_df: pd.DataFrame, row: int = 7) -> None:
     ):
         print(time, speed, sep=", ")
 
+
 def main():
     filename = "segment_10240935_linestring.json"
     df = create_df_from_json(filename)
@@ -247,7 +248,7 @@ def main():
     filtered_df = filter_segments(df, university_boulevard_osm_id)
     calculate_distance_and_speed(filtered_df)
     avg, min, max = calculate_metrics(filtered_df)
-    print(avg, min, max, sep=", ") # keep
+    print(avg, min, max, sep=", ")  # keep
 
 
 if __name__ == "__main__":
