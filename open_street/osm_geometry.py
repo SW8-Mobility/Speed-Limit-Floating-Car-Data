@@ -11,7 +11,7 @@ class GeometryRoadHandler(osmium.SimpleHandler):
         self.geometryDictionary: dict[str, str] = {}
 
     def way(self, w: Any) -> None:
-        """Looks for all ways with the tag "highway" and adds their osm id and linestring to the self.geometryDictionary. 
+        """Looks for all ways with the tag "highway" and adds their osm id and linestring to the self.geometryDictionary.
         This function is used by apply_file(), which is method inherited by osmium.SimpleHandler.
         apply_file will look for a function called way() and apply the function on each OSM way (road) in a given .pbf file
 
