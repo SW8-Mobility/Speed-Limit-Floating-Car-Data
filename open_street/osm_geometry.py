@@ -4,8 +4,8 @@ from typing import Any
 
 
 class GeometryRoadHandler(osmium.SimpleHandler):
-    """This class is responsible for generating a dictionary between OSM ids and their respective LineString through .apply_file
-    """
+    """This class is responsible for generating a dictionary between OSM ids and their respective LineString through .apply_file"""
+
     def __init__(self) -> None:
         osmium.SimpleHandler.__init__(self)
         self.geometryDictionary: dict[str, str] = {}
