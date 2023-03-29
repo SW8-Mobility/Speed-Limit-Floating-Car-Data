@@ -58,7 +58,7 @@ def get_osmid_to_linestring_dictionary(OSMFilePath: str) -> dict[str, str]:
         OSMFilePath (str): File path to the .osm.pbf
 
     Returns:
-        dict[str, str]: osm_id -> geojson linestring dictionary
+        dict[str, str]: osm_id -> geojson LineString
     """
     geometryHandler = GeometryRoadHandler()
     geometryHandler.apply_file(OSMFilePath, locations=True)
