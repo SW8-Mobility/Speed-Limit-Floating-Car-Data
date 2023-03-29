@@ -96,8 +96,6 @@ def print_time_and_speeds(filtered_df: pd.DataFrame, row: int = 7):
     Args:
         filtered_df (pd.DataFrame): dataframe
     """
-    print(filtered_df.iloc[row].time_difference)
-
     for (x, y, time), speed in zip(
         filtered_df.iloc[row]["coordinates"], filtered_df.iloc[7]["speeds"]
     ):
