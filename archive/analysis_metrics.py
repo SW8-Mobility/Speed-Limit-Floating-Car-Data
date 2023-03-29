@@ -10,6 +10,7 @@ import sys
 from typing import Iterator
 import pandas as pd  # type: ignore
 
+
 def calculate_metrics(df: pd.DataFrame) -> tuple[float, float, float]:
     """Calculate aggregate min, max, and avg for dataframe
 
@@ -34,7 +35,7 @@ def calculate_metrics(df: pd.DataFrame) -> tuple[float, float, float]:
 
 
 def verify_solution(l: tuple[Iterator[bool], Iterator[bool]]):
-    """ Auxiliary fuction used in filter_segments, to verify the solution works.
+    """Auxiliary fuction used in filter_segments, to verify the solution works.
     I assume that trips do not loop back and go through the same
     segment more than once. This function is a sanitity check for this.
 
@@ -55,6 +56,7 @@ def verify_solution(l: tuple[Iterator[bool], Iterator[bool]]):
         print("Bad assumption...")
         sys.exit()
 
+
 def filter_segments(df: pd.DataFrame, osm_id: int) -> pd.DataFrame:
     """Discard all rows from coordinates that do not correspond to the given osm_id.
 
@@ -65,9 +67,9 @@ def filter_segments(df: pd.DataFrame, osm_id: int) -> pd.DataFrame:
     Returns:
         pd.DataFrame: dataframe only with coordinates corresponding to given osm_id
     """
+
     def filter_func(row):
-        """read above doc string
-        """
+        """read above doc string"""
         valid_osm_ids = map(  # id mask corresponding to which coordinates to keep
             lambda elem: elem == osm_id, row["osm_id"]
         )
@@ -89,9 +91,10 @@ def filter_segments(df: pd.DataFrame, osm_id: int) -> pd.DataFrame:
 
     return df.apply(filter_func, axis=1)  # type: ignore
 
+
 def verify_outlier(filtered_df: pd.DataFrame):
     """Used to verify the outlier from segment_10240935_linestring.json.
-    The speed calculated was initially wrong. But now fixed. 
+    The speed calculated was initially wrong. But now fixed.
 
     Args:
         filtered_df (pd.DataFrame): dataframe
@@ -103,5 +106,6 @@ def verify_outlier(filtered_df: pd.DataFrame):
     ):
         print(time, speed, sep=", ")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     pass

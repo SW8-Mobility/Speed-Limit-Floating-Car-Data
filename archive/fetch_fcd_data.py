@@ -5,6 +5,7 @@ Will create a json file for each request.
 import requests
 import json
 
+
 def save_json(json_data: dict, id: int) -> None:
     """Save the json dictionary to a file.
 
@@ -18,7 +19,7 @@ def save_json(json_data: dict, id: int) -> None:
 
 
 def make_request(url: str) -> dict:  # json as dict
-    """Make request for a FCD api url. Return the json response as dict. 
+    """Make request for a FCD api url. Return the json response as dict.
 
     Args:
         url (str): url for FCD api
@@ -33,10 +34,10 @@ def make_request(url: str) -> dict:  # json as dict
 
 
 def run_requests(start_url: str) -> None:
-    """Main run function. Given an initial FCD url, it 
+    """Main run function. Given an initial FCD url, it
     will keep requesting the url found in the "next" property
-    found in the json response. Will do so, until next is None ie. 
-    no more data for the url query. 
+    found in the json response. Will do so, until next is None ie.
+    no more data for the url query.
 
     Args:
         start_url (str): intial FCD url. ex. all data from 2012.
@@ -54,6 +55,7 @@ def run_requests(start_url: str) -> None:
 def main():
     url = f"https://fcd-share.civil.aau.dk/api/linestrings/?year=2014&format=json&apikey={API_KEY}"
     run_requests(url)
+
 
 if __name__ == "__main__":
     main()
