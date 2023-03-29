@@ -1,3 +1,8 @@
+""" Script to intially explore our json data.
+    for now, we only use the create_df_from_json and 
+    calculate_distance_and_speed function in the pipeline.
+"""
+
 from functools import reduce
 import json
 from math import sqrt
@@ -87,6 +92,27 @@ def ms_to_kmh(speeds: list[float]) -> list[float]:
     """
     return [speed * 3.6 for speed in speeds]
 
+def verify_solution(l: tuple[Iterator[bool], Iterator[bool]]):
+    """ Auxiliary fuction used in filter_segments, to verify the solution works.
+    I assume that trips do not loop back and go through the same
+    segment more than once. This function is a sanitity check for this.
+
+    Args:
+        l (list[bool]): list with boolean mask of all coordinates that are in
+        the segment of interest.
+    """
+    safe_cmp = lambda b, acc: True if len(acc) == 0 else acc[-1] != b
+    reduced: Iterator[
+        bool
+    ] = reduce(  # convert [False, False, True, True, True, False] -> [False, True, False]
+        lambda acc, bool: acc + [bool] if safe_cmp(bool, acc) else acc, l, []  # type: ignore
+    )
+
+    # if there are more than one true in list
+    # then the car has looped and break assumption
+    if len(list(filter(lambda e: e is True, reduced))) > 1:  # type: ignore
+        print("Bad assumption...")
+        sys.exit()
 
 def filter_segments(df: pd.DataFrame, osm_id: int) -> pd.DataFrame:
     """Discard all rows from coordinates that do not correspond to the given osm_id.
@@ -98,29 +124,9 @@ def filter_segments(df: pd.DataFrame, osm_id: int) -> pd.DataFrame:
     Returns:
         pd.DataFrame: dataframe only with coordinates corresponding to given osm_id
     """
-
-    def verify_solution(l: tuple[Iterator[bool], Iterator[bool]]):
-        """I assume that trips do not loop back and go through the same
-        segment more than once. This function is a sanitity check for this.
-
-        Args:
-            l (list[bool]): list with boolean mask of all coordinates that are in
-            the segment of interest.
-        """
-        safe_cmp = lambda b, acc: True if len(acc) == 0 else acc[-1] != b
-        reduced: Iterator[
-            bool
-        ] = reduce(  # convert [False, False, True, True, True, False] -> [False, True, False]
-            lambda acc, bool: acc + [bool] if safe_cmp(bool, acc) else acc, l, []  # type: ignore
-        )
-
-        # if there are more than one true in list
-        # then the car has looped and break assumption
-        if len(list(filter(lambda e: e is True, reduced))) > 1:  # type: ignore
-            print("Bad assumption...")
-            sys.exit()
-
     def filter_func(row):
+        """read above doc string
+        """
         valid_osm_ids = map(  # id mask corresponding to which coordinates to keep
             lambda elem: elem == osm_id, row["osm_id"]
         )
