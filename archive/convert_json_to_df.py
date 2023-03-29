@@ -5,6 +5,7 @@ and convert them into 3 dataframe. One for each year.
 import pandas as pd  # type: ignore
 import glob
 from pipeline.preprocessing.df_processing import create_df_from_json
+
 # from archive.gps_metrics import create_df_from_json
 import tqdm
 
@@ -17,8 +18,8 @@ paths_2014 = glob.glob("data_2014/*.json")
 dfs = []
 for path in tqdm.tqdm(paths_2012):
     dfs.append(create_df_from_json(path))
-concat = pd.concat(dfs, axis=0) # combine the dataframe
-concat.to_pickle("pickle_files/2012.pkl") # create the pickle file
+concat = pd.concat(dfs, axis=0)  # combine the dataframe
+concat.to_pickle("pickle_files/2012.pkl")  # create the pickle file
 
 # same for 2013
 dfs = []

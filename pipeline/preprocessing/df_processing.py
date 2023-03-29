@@ -6,6 +6,7 @@ from math import sqrt
 import pandas as pd
 from archive.analysis_metrics import calculate_metrics, filter_segments  # type: ignore
 
+
 def shift_elems(l: list) -> list:
     """shift elemets of list, ie:
     [1,2,3,4] -> [None,1,2,3]
@@ -21,6 +22,8 @@ def shift_elems(l: list) -> list:
 
 
 coordinate = tuple[float, float]  # type alias
+
+
 def calc_utm_dist(utm1: coordinate, utm2: coordinate) -> float:
     """calculate the distance between two utm coordinates
     uses formula for euclidian distance, which is not 100% accurate?
@@ -82,6 +85,7 @@ def ms_to_kmh(speeds: list[float]) -> list[float]:
         list[float]: new list of speeds
     """
     return [speed * 3.6 for speed in speeds]
+
 
 def calculate_distance_and_speed(df: pd.DataFrame):
     """Calculate the distance between each coordinate.
@@ -145,7 +149,6 @@ def calculate_speeds(df: pd.DataFrame) -> None:
     df.drop(["time_difference"], axis=1, inplace=True)
 
 
-
 def main():
     filename = "segment_10240935_linestring.json"
     df = create_df_from_json(filename)
@@ -153,7 +156,7 @@ def main():
     filtered_df = filter_segments(df, university_boulevard_osm_id)
     calculate_distance_and_speed(filtered_df)
     avg, min, max = calculate_metrics(filtered_df)
-    print(avg, min, max, sep=", ") # keep
+    print(avg, min, max, sep=", ")  # keep
 
 
 if __name__ == "__main__":
