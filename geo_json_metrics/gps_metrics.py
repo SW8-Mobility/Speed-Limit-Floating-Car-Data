@@ -228,17 +228,15 @@ def calculate_metrics(df: pd.DataFrame) -> tuple[float, float, float]:
     return (median_avg, median_min, median_max)
 
 
-def verify_outlier(filtered_df: pd.DataFrame):
+def print_times_and_speeds(filtered_df: pd.DataFrame, row: int = 7) -> None:
     """Used to verify the outlier from segment_10240935_linestring.json.
     The speed calculated was initially wrong. But now fixed. 
 
     Args:
         filtered_df (pd.DataFrame): dataframe
     """
-    print(filtered_df.iloc[7].time_difference)
-
     for (x, y, time), speed in zip(
-        filtered_df.iloc[7]["coordinates"], filtered_df.iloc[7]["speeds"]
+        filtered_df.iloc[row]["coordinates"], filtered_df.iloc[7]["speeds"]
     ):
         print(time, speed, sep=", ")
 
