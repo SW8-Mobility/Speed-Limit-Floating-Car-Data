@@ -26,7 +26,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Install Python dependencies
-        run: pip install black mypy && pip install -r ./scripts/requirements.txt
+        run: pip install black mypy && pip install -r requirements.txt
 
       - name: Install Python Types
         run: mypy --install-types --non-interactive $(git ls-files '*.py') || true # Need to pipe true since --install-types also runs static analysis and can therefore fail.
