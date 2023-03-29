@@ -89,17 +89,17 @@ def filter_segments(df: pd.DataFrame, osm_id: int) -> pd.DataFrame:
 
     return df.apply(filter_func, axis=1)  # type: ignore
 
-def verify_outlier(filtered_df: pd.DataFrame):
+def print_time_and_speeds(filtered_df: pd.DataFrame, row: int = 7):
     """Used to verify the outlier from segment_10240935_linestring.json.
     The speed calculated was initially wrong. But now fixed. 
 
     Args:
         filtered_df (pd.DataFrame): dataframe
     """
-    print(filtered_df.iloc[7].time_difference)
+    print(filtered_df.iloc[row].time_difference)
 
     for (x, y, time), speed in zip(
-        filtered_df.iloc[7]["coordinates"], filtered_df.iloc[7]["speeds"]
+        filtered_df.iloc[row]["coordinates"], filtered_df.iloc[7]["speeds"]
     ):
         print(time, speed, sep=", ")
 
