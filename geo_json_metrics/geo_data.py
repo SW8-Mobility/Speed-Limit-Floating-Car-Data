@@ -27,7 +27,6 @@ def run_requests(start_url: str) -> None:
 
 
 def main():
-    # url = f'https://fcd-share.civil.aau.dk/api/linestrings/?year=2014&osm_id=10240935&apikey={api_key}'
     url = f"https://fcd-share.civil.aau.dk/api/linestrings/?year=2014&format=json&apikey={API_KEY}"
     run_requests(url)
 
