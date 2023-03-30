@@ -11,9 +11,6 @@ from archive.df_processing import (
     calculate_distance_and_speed,
 )
 
-
-
-
 @pytest.mark.parametrize(
     "test_input, expected",
     [
