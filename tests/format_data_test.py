@@ -1,4 +1,4 @@
-import pandas as pd # type: ignore
+import pandas as pd  # type: ignore
 import pytest
 from pipeline.preprocessing.format_data import (
     clean_df,
