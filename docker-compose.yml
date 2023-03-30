@@ -3,5 +3,5 @@ services:
     build: .
     env_file: .env
     volumes:
-      - ./scripts:/scripts
+      - .:/Speed-Limit-Floating-Car-Data
     working_dir: /scripts
