@@ -3,7 +3,7 @@
 
 import json
 from math import sqrt
-import pandas as pd # type: ignore
+import pandas as pd  # type: ignore
 from archive.analysis_metrics import calculate_metrics, filter_segments  # type: ignore
 
 
@@ -147,7 +147,6 @@ def calculate_speeds(df: pd.DataFrame) -> None:
         axis=1,
     )
     df.drop(["time_difference"], axis=1, inplace=True)
-
 
 
 def main():
