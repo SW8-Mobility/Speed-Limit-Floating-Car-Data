@@ -7,7 +7,7 @@ parent = os.path.dirname(current)
 grand_parent = os.path.dirname(parent)
 sys.path.append(grand_parent)
 
-import pandas as pd # type: ignore
+import pandas as pd  # type: ignore
 from pipeline.preprocessing.feature import Feature
 
 path_root = "data/pickle_files"
