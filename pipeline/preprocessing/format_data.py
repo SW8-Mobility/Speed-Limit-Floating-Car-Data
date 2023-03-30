@@ -7,7 +7,7 @@ parent = os.path.dirname(current)
 grand_parent = os.path.dirname(parent)
 sys.path.append(grand_parent)
 
-import pandas as pd
+import pandas as pd # type: ignore
 from pipeline.preprocessing.feature import Feature
 
 path_root = "data/pickle_files"
@@ -122,7 +122,7 @@ def map_segments_to_coordinates(
         return []
 
     result = []
-    current_seg = (segments[0], [])
+    current_seg: tuple[int, Any] = (segments[0], [])
     for seg, cor in zip(segments, coordinates):
         if seg != current_seg[0]:  # new segment starts
             result.append(current_seg)

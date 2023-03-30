@@ -1,4 +1,4 @@
-import pandas as pd
+import pandas as pd # type: ignore
 import glob
 from geo_json_metrics.gps_metrics import create_df_from_json
 import tqdm
