@@ -35,19 +35,8 @@ The osm_id column contains None / null values. This may correspond to update fal
 ## Memory issues 
 The 3 dataframes are very large. For model training, perhaps create a random forest on each dataset, and combine them:
 
-example:
+## Mypy
+If errors are not shown in pull request, but mypy fails, run mypy locally with the command:
 ```
-from sklearn.ensemble import VotingClassifier
-
-est_AB = AdaBoostClassifier()
-score_AB=est_AB.fit(X_train,y_train).score(X_test,y_test)
-
-est_RF = RandomForestClassifier()
-score_RF=est_RF.fit(X_train,y_train).score(X_test,y_test)
-
-est_Ensemble = VotingClassifier(estimators=[('AB', est_AB), ('RF', est_RF)],
-                        voting='soft',
-                        weights=[1, 1])
-
-score_Ensemble=est_Ensemble.fit(X_train,y_train).score(X_test,y_test)
+python -m mypy.
 ```
