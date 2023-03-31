@@ -79,6 +79,5 @@ def main() -> None:
         f.write(geometry_dictionary_to_geojson(geoDict))
 
 
-
 if __name__ == "__main__":
     main()
