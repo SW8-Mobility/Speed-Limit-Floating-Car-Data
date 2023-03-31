@@ -2,6 +2,7 @@ import osmium
 from osmium.geom import GeoJSONFactory
 from typing import Any
 import json
+from typing import Tuple
 
 
 class GeometryRoadHandler(osmium.SimpleHandler):
@@ -9,7 +10,7 @@ class GeometryRoadHandler(osmium.SimpleHandler):
 
     def __init__(self) -> None:
         osmium.SimpleHandler.__init__(self)
-        self.geometryDictionary: dict[str, (str, str)] = {}
+        self.geometryDictionary: dict[str, Tuple[str, str]] = {}
 
     def way(self, w: Any) -> None:
         """Looks for all ways with the tag "highway" and adds their osm id and linestring to the self.geometryDictionary.
@@ -30,7 +31,7 @@ class GeometryRoadHandler(osmium.SimpleHandler):
                 return
 
 
-def geometry_dictionary_to_geojson(geoDict: dict[str, (str, str)]) -> str:
+def geometry_dictionary_to_geojson(geoDict: dict[str, Tuple[str, str]]) -> str:
     """outputs geoJson formatted string from at osm_id -> linestring dictionary
 
     Args:
@@ -56,14 +57,14 @@ def geometry_dictionary_to_geojson(geoDict: dict[str, (str, str)]) -> str:
     return featureCollecton
 
 
-def get_osmid_to_linestring_dictionary(OSMFilePath: str) -> dict[str, (str, (str, str))]:
+def get_osmid_to_linestring_dictionary(OSMFilePath: str) -> dict[str, Tuple[str, str]]:
     """Get the dictionary that maps osm_id to a geojson linestring
 
     Args:
         OSMFilePath (str): File path to the .osm.pbf
 
     Returns:
-        dict[str, (str, str)]: osm_id -> geojson LineString
+        dict[str, Tuple[str, str]]: osm_id -> geojson LineString
     """
     geometryHandler = GeometryRoadHandler()
     geometryHandler.apply_file(OSMFilePath, locations=True)
