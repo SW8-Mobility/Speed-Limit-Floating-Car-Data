@@ -31,6 +31,7 @@ def test_map_vcr(test_input, expected_vcrs: list[float]) -> None:
 def test_vcr(test_input, expected_vcr) -> None:
     assert eval(test_input) == expected_vcr
 
+
 @pytest.mark.parametrize(
     "test_input",
     [f"{[]}", f"{[100]}", f"{[-100]}", f"{[0]}", f"{[50]}"],

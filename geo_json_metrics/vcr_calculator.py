@@ -1,7 +1,7 @@
 class TooFewElementsException(Exception):
-    """ Raised when there is too few elements in the input list """
-    pass
+    """Raised when there is too few elements in the input list"""
 
+    pass
 
 
 def map_vcr(velocities: list[float]) -> list[float]:
