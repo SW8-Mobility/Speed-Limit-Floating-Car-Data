@@ -40,7 +40,7 @@ def geometry_dictionary_to_geojson(geoDict: 'dict[str, tuple[str, str]]') -> str
         str: the entire geoJson formatted string.
     """
     # Start geoJson string
-    featureCollecton = '{"type":"FeatureCollection","features":['
+    featureCollecton: str = '{"type":"FeatureCollection","features":['
 
     # Loop over geometry to build each LineString and give it an osm_id property
     for osm_id, (geometry, name) in geoDict.items():
