@@ -1,5 +1,5 @@
 class TooFewElementsException(Exception):
-    """Raised when there is too few elements in the input list"""
+    """Raised when there are too few elements in the input list"""
 
     pass
 
