@@ -35,7 +35,7 @@ def geometry_dictionary_to_geojson(geoDict: dict[str, Tuple[str, str]]) -> str:
     """outputs geoJson formatted string from at osm_id -> linestring dictionary
 
     Args:
-        geoDict (dict[str, str]): A dictionary that maps osm_ids to their geojson dictionary
+        geoDict (dict[str, Tuple[str, str]]): A dictionary that maps osm_ids to their geojson dictionary
 
     Returns:
         str: the entire geoJson formatted string.
