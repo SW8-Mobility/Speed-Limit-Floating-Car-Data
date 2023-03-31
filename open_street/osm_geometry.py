@@ -45,7 +45,13 @@ def geometry_dictionary_to_geojson(geoDict: dict[str, (str, str)]) -> str:
     # Loop over geometry to build each LineString and give it an osm_id property
     for osm_id, (geometry, name) in geoDict.items():
         featureCollecton += '{"type":"Feature","geometry":' + geometry
-        featureCollecton += ',"properties":{"osm_id":' + str(osm_id) + ',"osm_name":' + json.dumps(name) + '}},'
+        featureCollecton += (
+            ',"properties":{"osm_id":'
+            + str(osm_id)
+            + ',"osm_name":'
+            + json.dumps(name)
+            + "}},"
+        )
 
     # Remove last comma since we are finished with the array
     featureCollecton = featureCollecton.rstrip(featureCollecton[-1])
@@ -56,7 +62,9 @@ def geometry_dictionary_to_geojson(geoDict: dict[str, (str, str)]) -> str:
     return featureCollecton
 
 
-def get_osmid_to_linestring_dictionary(OSMFilePath: str) -> dict[str, (str, (str, str))]:
+def get_osmid_to_linestring_dictionary(
+    OSMFilePath: str,
+) -> dict[str, (str, (str, str))]:
     """Get the dictionary that maps osm_id to a geojson linestring
 
     Args:
