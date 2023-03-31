@@ -1,6 +1,6 @@
 import pytest
 
-from geo_json_metrics.vcr_calculator import map_vcr, vcr
+from geo_json_metrics.vcr_calculator import map_vcr, vcr, TooFewElementsException
 
 
 @pytest.mark.parametrize(
@@ -30,3 +30,11 @@ def test_map_vcr(test_input, expected_vcrs: list[float]) -> None:
 )
 def test_vcr(test_input, expected_vcr) -> None:
     assert eval(test_input) == expected_vcr
+
+@pytest.mark.parametrize(
+    "test_input",
+    [f"{[]}", f"{[100]}", f"{[-100]}", f"{[0]}", f"{[50]}"],
+)
+def test_too_few_elements_exception(test_input):
+    with pytest.raises(TooFewElementsException):
+        map_vcr([1])

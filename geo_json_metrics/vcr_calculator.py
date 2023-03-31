@@ -1,3 +1,9 @@
+class TooFewElementsException(Exception):
+    """ Raised when there is too few elements in the input list """
+    pass
+
+
+
 def map_vcr(velocities: list[float]) -> list[float]:
     """Map the VCR function over each pair from the list, skipping the first element
     Args:
@@ -6,6 +12,9 @@ def map_vcr(velocities: list[float]) -> list[float]:
     Returns:
         list[float]: new list of Velocity Change Rates (the list is length of inputlist - 1)
     """
+
+    if len(velocities) < 2:
+        raise TooFewElementsException
 
     # list[:-1] all elements except the last one
     # list[1:] all elements except the first one
