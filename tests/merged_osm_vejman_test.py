@@ -38,7 +38,7 @@ def test_process_merged_osm_from_json():
         ],
     }
     expected_df = pd.DataFrame(data=expected_data).astype({'hast_gaeldende_hast': 'float64'})
-    testfile_path = os.getcwd() + "/tests/test_files/merged_extract_v1.json"
+    testfile_path = os.getcwd() + "/tests/test_files/vejman_osm_merge_extract_data.json"
     actual_df = create_df_from_merged_osm_vejman(testfile_path)
 
     assert expected_df.equals(actual_df)

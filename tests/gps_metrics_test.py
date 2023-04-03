@@ -64,7 +64,7 @@ def test_create_df_from_json():
         ],
     }
     expected_df = pd.DataFrame(data=expected_data)
-    testfile_path = os.getcwd() + "/tests/test_files/test_json.txt"
+    testfile_path = os.getcwd() + "/tests/test_files/geo_json_trip_data.json"
     actual_df = create_df_from_json(testfile_path)
     assert expected_df.equals(actual_df)
 
