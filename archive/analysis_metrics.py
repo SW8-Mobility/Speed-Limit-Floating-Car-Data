@@ -1,4 +1,4 @@
-""" Some functions used to inspect and anlysize our data.
+""" Some functions used to inspect and analysize our data.
 """
 
 from functools import reduce
@@ -15,7 +15,8 @@ def calculate_metrics(df: pd.DataFrame) -> tuple[float, float, float]:
     """Calculate aggregate min, max, and avg for dataframe
 
     Args:
-        df (pd.DataFrame): Dataframe to calculate on
+        df (pd.DataFrame): Dataframe to calculate on.
+                           Dataframe must have 'speeds' column.
 
     Returns:
         tuple[float, float, float]: tuple containing the avg, min and max speed
