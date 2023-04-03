@@ -24,7 +24,7 @@ def create_df_from_json(filename: str) -> pd.DataFrame:
     )  # drop unused columns
 
     df = df.infer_objects()  # infer types in dataframes
-    '''
+
     print(df)
 
     return df
