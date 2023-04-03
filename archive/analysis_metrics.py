@@ -34,7 +34,7 @@ def calculate_metrics(df: pd.DataFrame) -> tuple[float, float, float]:
     return (median_avg, median_min, median_max)
 
 
-def verify_solution(l: tuple[Iterator[bool], Iterator[bool]]):
+def verify_solution(l: tuple[Iterator[bool], Iterator[bool]]) -> None:
     """Auxiliary fuction used in filter_segments, to verify the solution works.
     I assume that trips do not loop back and go through the same
     segment more than once. This function is a sanitity check for this.
