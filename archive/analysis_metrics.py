@@ -94,7 +94,6 @@ def filter_segments(df: pd.DataFrame, osm_id: int) -> pd.DataFrame:
 
 def print_time_and_speeds(filtered_df: pd.DataFrame, row: int = 7):
     """Used to verify the outlier from segment_10240935_linestring.json.
-    The speed calculated was initially wrong. But now fixed.
 
     Args:
         filtered_df (pd.DataFrame): dataframe
