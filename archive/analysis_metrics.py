@@ -18,7 +18,7 @@ def calculate_metrics(df: pd.DataFrame) -> tuple[float, float, float]:
         df (pd.DataFrame): Dataframe to calculate on
 
     Returns:
-        tuple[float, float, float]: tuple containing the avg, min and max
+        tuple[float, float, float]: tuple containing the avg, min and max speed
     """
     # per entry: max, min, avg speed across entire segment, median
     df["avg_speed"] = df["speeds"].apply(mean)  # type: ignore
