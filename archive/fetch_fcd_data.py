@@ -18,7 +18,7 @@ def save_json(json_data: dict, id: int) -> None:
         f.write(json_str)
 
 
-def make_request(url: str) -> dict:  # json as dict
+def make_request(url: str) -> dict: 
     """Make request for a FCD api url. Return the json response as dict.
 
     Args:
@@ -29,12 +29,11 @@ def make_request(url: str) -> dict:  # json as dict
     """
     res = requests.get(url)
     my_json = res.content.decode("utf8").replace("'", '"')
-    data = json.loads(my_json)
-    return data  # return json response as dictionary
+    return json.loads(my_json) # return json response as dictionary
 
 
 def run_requests(start_url: str) -> None:
-    """Main run function. Given an initial FCD url, it
+    """Given an initial FCD url, it
     will keep requesting the url found in the "next" property
     found in the json response. Will do so, until next is None ie.
     no more data for the url query.
