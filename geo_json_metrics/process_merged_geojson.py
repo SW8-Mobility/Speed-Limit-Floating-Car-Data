@@ -1,6 +1,7 @@
 import json
 import pandas as pd
 
+
 def create_df_from_merged_osm_vejman(filename: str) -> pd.DataFrame:
 
     with open(filename, "r") as json_file:
@@ -13,7 +14,7 @@ def create_df_from_merged_osm_vejman(filename: str) -> pd.DataFrame:
     # Unnest some of the nested values - TODO: this could easily be a function
     df["osm_id"] = df["properties"].apply(lambda prop_dict: prop_dict["osm_id"])
     df["vm_vejnavn"] = df["properties"].apply(lambda prop_dict: prop_dict["CPR_VEJNAVN"])
-    df["hast_general_hast"] = df["properties"].apply(lambda prop_dict: prop_dict["HAST_GENEREL_HAST"])
+    df["hast_generel_hast"] = df["properties"].apply(lambda prop_dict: prop_dict["HAST_GENEREL_HAST"])
     df["kode_hast_generel_hast"] = df["properties"].apply(lambda prop_dict: prop_dict["KODE_HAST_GENEREL_HAST"])
     df["hast_gaeldende_hast"] = df["properties"].apply(lambda prop_dict: prop_dict["HAST_GAELDENDE_HAST"])
     df["vejstiklasse"] = df["properties"].apply(lambda prop_dict: prop_dict["VEJSTIKLASSE"])
@@ -31,10 +32,3 @@ def create_df_from_merged_osm_vejman(filename: str) -> pd.DataFrame:
     df = df.infer_objects()  # infer types in dataframes
 
     return df
-
-def main():
-    filename = "C:/Users/freja/Desktop/Speed-Limit-Floating-Car-Data/tests/test_files/merged_extract_v1.json"
-    df = create_df_from_merged_osm_vejman(filename)
-
-if __name__ == "__main__":
-    main()
