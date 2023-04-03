@@ -1,4 +1,4 @@
-""" Some functions used to inspect an anlysize our data.
+""" Some functions used to inspect and anlysize our data.
 """
 
 from functools import reduce
