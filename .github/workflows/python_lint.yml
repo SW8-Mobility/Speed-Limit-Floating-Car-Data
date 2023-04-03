@@ -1,4 +1,4 @@
-name: Black Linting
+name: Linting and Static Analysis
 
 on:
   pull_request:

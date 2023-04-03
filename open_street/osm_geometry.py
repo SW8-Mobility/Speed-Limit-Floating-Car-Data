@@ -1,6 +1,7 @@
 import osmium
 from osmium.geom import GeoJSONFactory
 from typing import Any
+import json
 
 
 class GeometryRoadHandler(osmium.SimpleHandler):
@@ -8,7 +9,7 @@ class GeometryRoadHandler(osmium.SimpleHandler):
 
     def __init__(self) -> None:
         osmium.SimpleHandler.__init__(self)
-        self.geometryDictionary: dict[str, str] = {}
+        self.geometryDictionary: "dict[str, tuple[str, str]]" = {}
 
     def way(self, w: Any) -> None:
         """Looks for all ways with the tag "highway" and adds their osm id and linestring to the self.geometryDictionary.
@@ -19,32 +20,38 @@ class GeometryRoadHandler(osmium.SimpleHandler):
             w (Any): OSM Way
         """
         if (
-            w.tags.get("highway") is not None
+            w.tags.get("highway") is not None and w.tags.get("name") is not None
         ):  # The highway tag annotates the type of road, e.g. 'path' or 'motorway'
             try:
                 geo = GeoJSONFactory().create_linestring(w)  # Get the road linestring
-                self.geometryDictionary[w.id] = geo
+                self.geometryDictionary[w.id] = (geo, w.tags.get("name"))
             except Exception as e:
                 print("error", e)
                 return
 
 
-def geometry_dictionary_to_geojson(geoDict: dict[str, str]) -> str:
+def geometry_dictionary_to_geojson(geoDict: "dict[str, tuple[str, str]]") -> str:
     """outputs geoJson formatted string from at osm_id -> linestring dictionary
 
     Args:
-        geoDict (dict[str, str]): A dictionary that maps osm_ids to their geojson dictionary
+        geoDict ('dict[str, tuple[str, str]]'): A dictionary that maps osm_ids to their geojson dictionary
 
     Returns:
         str: the entire geoJson formatted string.
     """
     # Start geoJson string
-    featureCollecton = '{"type": "FeatureCollection","features": ['
+    featureCollecton: str = '{"type":"FeatureCollection","features":['
 
     # Loop over geometry to build each LineString and give it an osm_id property
-    for osm_id, geometry in geoDict.items():
-        featureCollecton += '{"type": "Feature","geometry":'
-        featureCollecton += geometry + ',"properties": {"osm_id":' + str(osm_id) + "}},"
+    for osm_id, (geometry, name) in geoDict.items():
+        featureCollecton += '{"type":"Feature","geometry":' + geometry
+        featureCollecton += (
+            ',"properties":{"osm_id":'
+            + str(osm_id)
+            + ',"osm_name":'
+            + json.dumps(name)
+            + "}},"
+        )
 
     # Remove last comma since we are finished with the array
     featureCollecton = featureCollecton.rstrip(featureCollecton[-1])
@@ -55,14 +62,16 @@ def geometry_dictionary_to_geojson(geoDict: dict[str, str]) -> str:
     return featureCollecton
 
 
-def get_osmid_to_linestring_dictionary(OSMFilePath: str) -> dict[str, str]:
+def get_osmid_to_linestring_dictionary(
+    OSMFilePath: str,
+) -> "dict[str, tuple[str, str]]":
     """Get the dictionary that maps osm_id to a geojson linestring
 
     Args:
         OSMFilePath (str): File path to the .osm.pbf
 
     Returns:
-        dict[str, str]: osm_id -> geojson LineString
+        'dict[str, tuple[str, str]]': osm_id -> geojson LineString
     """
     geometryHandler = GeometryRoadHandler()
     geometryHandler.apply_file(OSMFilePath, locations=True)
