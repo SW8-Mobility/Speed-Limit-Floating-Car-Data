@@ -1,7 +1,7 @@
 import json
 import pandas as pd
 
-def create_df_from_json(filename: str) -> pd.DataFrame:
+def create_df_from_merged_osm_vejman(filename: str) -> pd.DataFrame:
 
     with open(filename, "r") as json_file:
         data = json.load(json_file)
@@ -10,28 +10,31 @@ def create_df_from_json(filename: str) -> pd.DataFrame:
         data["features"] # Ignore other headers
     )
 
-    # Unnest some of the nested values
-    df["length"] = df["properties"].apply(lambda prop_dict: prop_dict["length"])
-    df["end_date"] = df["properties"].apply(lambda prop_dict: prop_dict["end_date"])
-    df["start_date"] = df["properties"].apply(lambda prop_dict: prop_dict["start_date"])
+    # Unnest some of the nested values - TODO: this could easily be a function
     df["osm_id"] = df["properties"].apply(lambda prop_dict: prop_dict["osm_id"])
-    df["coordinates"] = df["geometry"].apply(
-        lambda geometry_dict: geometry_dict["coordinates"]
-    )
+    df["vm_vejnavn"] = df["properties"].apply(lambda prop_dict: prop_dict["CPR_VEJNAVN"])
+    df["hast_general_hast"] = df["properties"].apply(lambda prop_dict: prop_dict["HAST_GENEREL_HAST"])
+    df["kode_hast_generel_hast"] = df["properties"].apply(lambda prop_dict: prop_dict["KODE_HAST_GENEREL_HAST"])
+    df["hast_gaeldende_hast"] = df["properties"].apply(lambda prop_dict: prop_dict["HAST_GAELDENDE_HAST"])
+    df["vejstiklasse"] = df["properties"].apply(lambda prop_dict: prop_dict["VEJSTIKLASSE"])
+    df["kode_vejstiklasse"] = df["properties"].apply(lambda prop_dict: prop_dict["KODE_VEJSTIKLASSE"])
+    df["vejtypeskiltet"] = df["properties"].apply(lambda prop_dict: prop_dict["VEJTYPESKILTET"])
+    df["kode_vejtypeskiltet"] = df["properties"].apply(lambda prop_dict: prop_dict["KODE_VEJTYPESKILTET"])
+    df["hast_senest_rettet"] = df["properties"].apply(lambda prop_dict: prop_dict["HAST_SENEST_RETTET"])
+
+    df["coordinates"] = df["geometry"].apply(lambda prop_dict: prop_dict["coordinates"])
 
     df.drop(  # drop unused columns
-        ["geometry", "properties", "type"], inplace=True, axis=1
-    )  # drop unused columns
+        ["type", "properties", "geometry"], inplace=True, axis=1
+    )
 
     df = df.infer_objects()  # infer types in dataframes
-
-    print(df)
 
     return df
 
 def main():
     filename = "C:/Users/freja/Desktop/Speed-Limit-Floating-Car-Data/tests/test_files/merged_extract_v1.json"
-    df = create_df_from_json(filename)
+    df = create_df_from_merged_osm_vejman(filename)
 
 if __name__ == "__main__":
     main()
