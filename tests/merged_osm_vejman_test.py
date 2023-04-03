@@ -1,22 +1,18 @@
 import pytest
-import pandas as pd #ignore
-
+import os
+import pandas as pd #type: ignore
+from geo_json_metrics import process_merged_geojson
 def test_create_df_from_json():
     expected_data = {
-        "id": "test_id",
-        "length": 1234,
-        "end_date": "test_date",
-        "start_date": "test_date",
-        "osm_id": [[123456789, 123456789, 123456789]],
+        "osm_id": [1080, 2081, 2082],
+        "cpr_vejnavn": ["Holbækmotorvejen", "Holbækmotorvejen", "Holbækmotorvejen"],
+
         "coordinates": [
-            [
-                [100.0, 100.0, 1000000000.0],
-                [100.0, 110.0, 1000000001.0],
-                [100.0, 130.0, 1000000002.0],
-            ]
+            [ 12.072963, 55.6345298 ], [ 12.0722614, 55.634588 ], [ 12.0711266, 55.6347107 ], [ 12.0705787, 55.6346358 ]
+            # Add the rest ...
         ],
     }
     expected_df = pd.DataFrame(data=expected_data)
-    testfile_path = os.getcwd() + "/tests/test_files/test_json.txt"
-    actual_df = create_df_from_json(testfile_path)
+    testfile_path = os.getcwd() + "/tests/test_files/merged_extract_v1.json"
+    actual_df = (testfile_path)
     assert expected_df.equals(actual_df)
