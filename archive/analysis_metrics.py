@@ -43,11 +43,11 @@ def verify_solution(l: tuple[Iterator[bool], Iterator[bool]]) -> None:
         l (list[bool]): list with boolean mask of all coordinates that are in
         the segment of interest.
     """
-    safe_cmp = lambda b, acc: True if len(acc) == 0 else acc[-1] != b
+    cmp_if_different = lambda b, acc: True if len(acc) == 0 else acc[-1] != b
     reduced: Iterator[
         bool
     ] = reduce(  # convert [False, False, True, True, True, False] -> [False, True, False]
-        lambda acc, bool: acc + [bool] if safe_cmp(bool, acc) else acc, l, []  # type: ignore
+        lambda acc, bool: acc + [bool] if cmp_if_different(bool, acc) else acc, l, []  # type: ignore
     )
 
     # if there are more than one true in list
