@@ -16,13 +16,13 @@ CoordinatesWithTime = tuple[int, int, int]
 Trip = list[CoordinatesWithTime]
 
 # types for refactoring, ignore for now
-SegmemtToCoordinateDict = dict[int, list[Trip]]
+SegmentToCoordinateDict = dict[int, list[Trip]]
 TripWithFeatures = dict[Feature, Any]  # feature and the values for the feature
 SegmentToTripDict = dict[int, list[TripWithFeatures]]
-
+SegmentToCoordinatesList = list[tuple[int, list]]
 
 def clean_df(df: pd.DataFrame) -> None:
-    """Remove None values from trips. Some trips har None values
+    """Remove None values from trips. Some trips have None values
     in the osm_id list. Remove these, and the corresponding coordinate
     values.
 
@@ -35,29 +35,28 @@ def clean_df(df: pd.DataFrame) -> None:
     combined_col = combined_col.apply(  # filter the None values
         lambda sc: list(filter(lambda elem: elem[0] is not None, sc))
     )
-    df["osm_id"] = combined_col.apply(  # split apart the osm_ids
+    df["osm_id"] = combined_col.apply(  # get osm_id from tuple list
         lambda d: [elem[0] for elem in d]
     )
-    df["coordinates"] = combined_col.apply(  # split part the coordinates
+    df["coordinates"] = combined_col.apply(  # get coordinates from tuple list
         lambda d: [elem[1] for elem in d]
     )
 
 
 def append_coordinates(
-    key_coordinates: list[tuple[int, list]], segment_dict: SegmemtToCoordinateDict
+    osm_and_coordinates: list[tuple[int, list]], segment_dict: SegmentToCoordinateDict
 ) -> None:
-    """Appends to coordinate from a trip to the correct segment in segment_dict
+    """Appends coordinates from a trip to the correct segment in segment_dict
 
     Args:
         key_coordinates (list[tuple[int, list]]): list of segments and coordinates from each trip
         segment_dict (SegmemtToCoordinateDict): dict to append to
     """
-    for mapped_cords in key_coordinates:
-        key, coordinates = mapped_cords
-        if key not in segment_dict:
-            segment_dict[key] = [coordinates]
+    for osm, coordinates in osm_and_coordinates:
+        if osm not in segment_dict:
+            segment_dict[osm] = [coordinates]
         else:
-            segment_dict[key].extend([coordinates])
+            segment_dict[osm].extend([coordinates])
 
 
 def create_segment_to_coordinate_df(df: pd.DataFrame) -> pd.DataFrame:
@@ -71,7 +70,7 @@ def create_segment_to_coordinate_df(df: pd.DataFrame) -> pd.DataFrame:
         pd.DataFrame: dataframe with each segment as a row
     """
 
-    segment_to_coordinates: SegmemtToCoordinateDict = dict()
+    segment_to_coordinates: SegmentToCoordinateDict = dict()
 
     # step 0:
     # remove None values
@@ -101,22 +100,19 @@ def create_segment_to_coordinate_df(df: pd.DataFrame) -> pd.DataFrame:
     mapped_df = pd.DataFrame(l, columns=["osm_id", "coordinates"])
     return mapped_df
 
-
-segment_to_coordinates_list = list[tuple[int, list]]
-
-
 def map_segments_to_coordinates(
     segments: list, coordinates: list
-) -> segment_to_coordinates_list:
-    """Aggregate lists of segments and coordinates, such that coordinates are
-    associated with its corresponding segment id.
+) -> SegmentToCoordinatesList:
+    """Aggregate lists of segments (osm_id) and coordinates for a trip, such that coordinates are
+    associated with its corresponding segment id. The reason why this works is that there is an
+    equal amount of osm id's and coordinates, e.g [osm_1, osm_1, osm_2] and [coor1, coor2, coor3]
 
     Args:
         segments (list): list of osm_ids
         coordinates (list): list of coordinates
 
     Returns:
-        segment_to_coordinates_list: list of tuples with a segment, and it's coordinates
+        segment_to_coordinates_list: list of tuples with a segment (osm_id), and it's coordinates as a list
     """
     if len(segments) == 0:
         return []
@@ -133,7 +129,6 @@ def map_segments_to_coordinates(
     result.append(current_seg)
 
     return result
-
 
 def main():
     df: pd.DataFrame = (
