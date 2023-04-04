@@ -4,7 +4,7 @@ from typing import Union
 import numpy as np
 import pandas as pd  # type: ignore
 import pytest
-from geo_json_metrics.gps_metrics import (
+from pipeline.preprocessing.df_processing import (
     shift_elems,
     calc_utm_dist,
     create_df_from_json,
