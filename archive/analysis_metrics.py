@@ -85,7 +85,7 @@ def filter_segments(df: pd.DataFrame, osm_id: int) -> pd.DataFrame:
     """
 
     def filter_func(row):
-        """read above doc string"""
+        """Used for filtering in df.apply"""
         valid_osm_ids: Iterator[
             bool
         ] = map(  # id mask corresponding to which coordinates to keep
