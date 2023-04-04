@@ -13,6 +13,15 @@ from pipeline.preprocessing.compute_features.type_alias import ListOfSpeeds, Tri
 from calculate_speeds_distances import calculate_speeds, calculate_distances
 
 def func_default_resturn(func: Callable, input: list[float]) -> Union[float, None]:
+    """Will return None if input for function is empty, otherwise result of function. 
+
+    Args:
+        func (Callable): _description_
+        input (list[float]): _description_
+
+    Returns:
+        Union[float, None]: _description_
+    """
     if len(input) == 0:
         return None
     else:
