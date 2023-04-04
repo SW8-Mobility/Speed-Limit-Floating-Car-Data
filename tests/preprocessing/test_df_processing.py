@@ -1,7 +1,8 @@
 import pytest
 import os
-import pandas as pd 
+import pandas as pd
 from pipeline.preprocessing.df_processing import create_df_from_json
+
 
 def test_create_df_from_json():
     expected_data = {
