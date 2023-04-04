@@ -8,17 +8,13 @@ grand_parent = os.path.dirname(parent)
 sys.path.append(grand_parent)
 
 import pandas as pd  # type: ignore
-from pipeline.preprocessing.feature import Feature
 
 path_root = "data/pickle_files"
 errors: list[str] = []
 CoordinatesWithTime = tuple[int, int, int]
 Trip = list[CoordinatesWithTime]
 
-# types for refactoring, ignore for now
 SegmentToCoordinateDict = dict[int, list[Trip]]
-TripWithFeatures = dict[Feature, Any]  # feature and the values for the feature
-SegmentToTripDict = dict[int, list[TripWithFeatures]]
 SegmentToCoordinatesList = list[tuple[int, list]]
 
 
@@ -142,7 +138,7 @@ def main():
         .head(1000)
     )
     mapped_df = create_segment_to_coordinate_df(df)
-    mapped_df.to_csv("test.csv", index=False)
+    mapped_df.to_pickle("test.pkl")
 
 
 if __name__ == "__main__":
