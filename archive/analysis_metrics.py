@@ -19,14 +19,14 @@ from pipeline.preprocessing.df_processing import (
 )
 
 
-def copy_iterable(iter: Iterator):
+def copy_iterable(iter: Iterator) -> Iterator:
     """Returns a copy of an iterator. Does not modify the original
 
     Args:
         iter (Iterator): the iterator to copy
 
     Returns:
-        _type_: a copy of the Iterator.
+        Iterator: a copy of the Iterator.
     """
     return tee(iter, 1)[0]  # tee returns a tuple of 1 elemt
 
@@ -96,7 +96,6 @@ def filter_segments(df: pd.DataFrame, osm_id: int) -> pd.DataFrame:
         ] = map(  # id mask corresponding to which coordinates to keep
             lambda elem: elem == osm_id, row["osm_id"]
         )
-        print(list(valid_osm_ids))
         verify_solution(copy_iterable(valid_osm_ids))
 
         valid_coordinates = list(
