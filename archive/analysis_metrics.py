@@ -9,7 +9,7 @@ from statistics import median, mean
 import sys
 from typing import Iterator
 import pandas as pd  # type: ignore
-from df_processing import create_df_from_json, calculate_distance_and_speed
+from pipeline.preprocessing.df_processing import create_df_from_json, calculate_distance_and_speed
 
 def calculate_metrics(df: pd.DataFrame) -> tuple[float, float, float]:
     """Calculate aggregate min, max, and avg for dataframe

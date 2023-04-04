@@ -1,6 +1,6 @@
 import pytest
 
-from geo_json_metrics.vcr_calculator import map_vcr, vcr, TooFewElementsException
+from pipeline.preprocessing.vcr_calculator import map_vcr, vcr, TooFewElementsException
 
 
 @pytest.mark.parametrize(
