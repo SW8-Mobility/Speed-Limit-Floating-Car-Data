@@ -55,7 +55,7 @@ def verify_solution(l: Iterator[bool]):
     segment more than once. This function is a sanitity check for this.
 
     Args:
-        l (tuple[Iterator[bool], Iterator[bool]]): list with boolean mask of all coordinates that are in
+        l (Iterator[bool]): list with boolean mask of all coordinates that are in
         the segment of interest.
     """
     cmp_if_different = lambda b, acc: True if len(acc) == 0 else acc[-1] != b
@@ -76,7 +76,7 @@ def filter_segments(df: pd.DataFrame, osm_id: int) -> pd.DataFrame:
     """Discard all rows from coordinates that do not correspond to the given osm_id.
 
     Args:
-        df (pd.DataFrame): geodata dataframe
+        df (pd.DataFrame): geodata dataframe, must have coordinates and osm_id cols
         osm_id (int): segment id
 
     Returns:
@@ -112,7 +112,7 @@ def print_time_and_speeds(filtered_df: pd.DataFrame, row: int = 7):
     """Used to verify the outlier from segment_10240935_linestring.json.
 
     Args:
-        filtered_df (pd.DataFrame): dataframe
+        filtered_df (pd.DataFrame): dataframe, must have coordinates and speed cols
     """
     for (x, y, time), speed in zip(
         filtered_df.iloc[row]["coordinates"], filtered_df.iloc[7]["speeds"]
