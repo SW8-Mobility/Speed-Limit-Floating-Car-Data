@@ -4,7 +4,7 @@
 import json
 from math import sqrt
 import pandas as pd  # type: ignore
-from analysis_metrics import calculate_metrics, filter_segments  # type: ignore
+from archive.analysis_metrics import calculate_metrics, filter_segments  # type: ignore
 
 
 def shift_elems(l: list) -> list:

@@ -1,4 +1,4 @@
-""" Some functions used to inspect an anlysize our data.
+""" Some functions used to inspect and analysize our data.
 """
 
 from functools import reduce
@@ -15,10 +15,11 @@ def calculate_metrics(df: pd.DataFrame) -> tuple[float, float, float]:
     """Calculate aggregate min, max, and avg for dataframe
 
     Args:
-        df (pd.DataFrame): Dataframe to calculate on
+        df (pd.DataFrame): Dataframe to calculate on.
+                           Dataframe must have 'speeds' column.
 
     Returns:
-        tuple[float, float, float]: tuple containing the avg, min and max
+        tuple[float, float, float]: tuple containing the avg, min and max speed
     """
     # per entry: max, min, avg speed across entire segment, median
     df["avg_speed"] = df["speeds"].apply(mean)  # type: ignore
@@ -43,11 +44,11 @@ def verify_solution(l: Iterator[bool]):
         l (tuple[Iterator[bool], Iterator[bool]]): list with boolean mask of all coordinates that are in
         the segment of interest.
     """
-    safe_cmp = lambda b, acc: True if len(acc) == 0 else acc[-1] != b
+    cmp_if_different = lambda b, acc: True if len(acc) == 0 else acc[-1] != b
     reduced: Iterator[
         bool
     ] = reduce(  # convert [False, False, True, True, True, False] -> [False, True, False]
-        lambda acc, bool: acc + [bool] if safe_cmp(bool, acc) else acc, l, []  # type: ignore
+        lambda acc, bool: acc + [bool] if cmp_if_different(bool, acc) else acc, l, []  # type: ignore
     )
 
     # if there are more than one true in list
@@ -94,7 +95,6 @@ def filter_segments(df: pd.DataFrame, osm_id: int) -> pd.DataFrame:
 
 def print_time_and_speeds(filtered_df: pd.DataFrame, row: int = 7):
     """Used to verify the outlier from segment_10240935_linestring.json.
-    The speed calculated was initially wrong. But now fixed.
 
     Args:
         filtered_df (pd.DataFrame): dataframe
