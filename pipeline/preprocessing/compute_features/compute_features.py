@@ -28,12 +28,14 @@ def none_if_empty(func: Callable, input: list[float]) -> Union[float, None]:
     else:
         return func(input)
 
+
 def per_trip_computation(func: Callable, row: pd.DataFrame) -> list[float]:
     return [
         func(speed_list)
         for speed_list in row[Feature.SPEEDS.value]
         if len(speed_list) > 0
     ]
+
 
 # def compute_min_speeds(row: pd.DataFrame) -> list[float]:
 #     return [
@@ -66,7 +68,10 @@ def per_trip_computation(func: Callable, row: pd.DataFrame) -> list[float]:
 #         if len(speed_list) > 0
 #     ]
 
-def aggregate_results(aggregate_func: Callable, feature: Feature, row: pd.DataFrame) -> Union[None, float]:
+
+def aggregate_results(
+    aggregate_func: Callable, feature: Feature, row: pd.DataFrame
+) -> Union[None, float]:
     results = row[feature.value]
     return none_if_empty(aggregate_func, results)  # type: ignore
 
