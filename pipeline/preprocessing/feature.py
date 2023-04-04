@@ -3,6 +3,7 @@ from enum import Enum
 # enum to represent our features
 # should be useful later
 
+
 class Feature(Enum):
     ID = "id"
     COORDINATES = "coordinates"
