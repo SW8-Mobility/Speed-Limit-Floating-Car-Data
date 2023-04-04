@@ -3,6 +3,7 @@
 import json
 import pandas as pd  # type: ignore
 
+
 def create_df_from_json(filename: str) -> pd.DataFrame:
     """Create dataframe for a linestring segment json file
 
@@ -35,5 +36,6 @@ def create_df_from_json(filename: str) -> pd.DataFrame:
 
     return df
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     pass

@@ -1,6 +1,7 @@
 # append root to path
 import sys
 from os.path import dirname, realpath
+
 current_dir = dirname(realpath(__file__))
 parentdir = dirname(dirname(dirname(current_dir)))
 sys.path.append(parentdir)
@@ -11,6 +12,7 @@ import pandas as pd
 from pipeline.preprocessing.compute_features.type_alias import Trip
 
 coordinate = tuple[float, float]  # type alias
+
 
 def calc_utm_dist(utm1: coordinate, utm2: coordinate) -> float:
     """calculate the distance between two utm coordinates
@@ -28,6 +30,7 @@ def calc_utm_dist(utm1: coordinate, utm2: coordinate) -> float:
     x2, y2 = utm2
     return sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
 
+
 def ms_to_kmh(speeds: list[float]) -> list[float]:
     """convert list of speeds in meters per second to list of speeds with
     km per second.
@@ -40,6 +43,7 @@ def ms_to_kmh(speeds: list[float]) -> list[float]:
     """
     return [speed * 3.6 for speed in speeds]
 
+
 def calculate_distances(trip: Trip) -> list[float]:
     """Calculate the distances between the coordinates in a trip.
 
@@ -50,10 +54,14 @@ def calculate_distances(trip: Trip) -> list[float]:
         list[float]: a list of distances in meters
     """
     # create two lists of the coordinates, list without last element and list without first element
-    coordinates_with_following_coordinates = zip(trip[:-1], trip[1:]) 
-    return [calc_utm_dist((x,y), (sx,sy)) for (x, y, _), (sx, sy, _) in coordinates_with_following_coordinates]
+    coordinates_with_following_coordinates = zip(trip[:-1], trip[1:])
+    return [
+        calc_utm_dist((x, y), (sx, sy))
+        for (x, y, _), (sx, sy, _) in coordinates_with_following_coordinates
+    ]
 
-def calculate_speeds(trip: Trip, distances: list[float]) -> list[float]: 
+
+def calculate_speeds(trip: Trip, distances: list[float]) -> list[float]:
     """Calculates the speeds in km/h betweeen each CoordinateWithTime in the trip.
 
     Args:
@@ -64,5 +72,7 @@ def calculate_speeds(trip: Trip, distances: list[float]) -> list[float]:
     """
     time_differences = [t2 - t1 for (_, _, t1), (_, _, t2) in zip(trip[:-1], trip[1:])]
     distances = calculate_distances(trip)
-    speed_ms = [distance / scaler for distance, scaler in zip(distances, time_differences)]
+    speed_ms = [
+        distance / scaler for distance, scaler in zip(distances, time_differences)
+    ]
     return ms_to_kmh(speed_ms)
