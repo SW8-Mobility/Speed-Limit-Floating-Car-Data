@@ -11,6 +11,7 @@ from typing import Iterator
 import pandas as pd  # type: ignore
 from df_processing import create_df_from_json, calculate_distance_and_speed
 
+
 def calculate_metrics(df: pd.DataFrame) -> tuple[float, float, float]:
     """Calculate aggregate min, max, and avg for dataframe
 
@@ -71,7 +72,9 @@ def filter_segments(df: pd.DataFrame, osm_id: int) -> pd.DataFrame:
 
     def filter_func(row):
         """read above doc string"""
-        valid_osm_ids: Iterator[bool] = map(  # id mask corresponding to which coordinates to keep
+        valid_osm_ids: Iterator[
+            bool
+        ] = map(  # id mask corresponding to which coordinates to keep
             lambda elem: elem == osm_id, row["osm_id"]
         )
         verify_solution(copy_iterable(valid_osm_ids))
