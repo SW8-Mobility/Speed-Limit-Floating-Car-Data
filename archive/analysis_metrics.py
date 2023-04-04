@@ -1,15 +1,29 @@
 """ Some functions used to inspect and analysize our data.
 """
 
+import sys, os 
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir))
+
 from functools import reduce
 import json
 from math import sqrt
-from itertools import tee as copy_iterable
+from itertools import tee 
 from statistics import median, mean
 import sys
 from typing import Iterator
 import pandas as pd  # type: ignore
 from pipeline.preprocessing.df_processing import create_df_from_json, calculate_distance_and_speed
+
+def copy_iterable(iter: Iterator):
+    """Returns a copy of an iterator. Does not modify the original
+
+    Args:
+        iter (Iterator): the iterator to copy
+
+    Returns:
+        _type_: a copy of the Iterator.
+    """
+    return tee(iter, 1)[0] # tee returns a tuple of 1 elemt
 
 def calculate_metrics(df: pd.DataFrame) -> tuple[float, float, float]:
     """Calculate aggregate min, max, and avg for dataframe
@@ -48,12 +62,12 @@ def verify_solution(l: Iterator[bool]):
     reduced: Iterator[
         bool
     ] = reduce(  # convert [False, False, True, True, True, False] -> [False, True, False]
-        lambda acc, bool: acc + [bool] if cmp_if_different(bool, acc) else acc, l, []  # type: ignore
+        lambda acc, bool: acc + [bool] if cmp_if_different(bool, acc) else acc, list(l), [] # type: ignore
     )
 
     # if there are more than one true in list
     # then the car has looped and break assumption
-    if len(list(filter(lambda e: e is True, reduced))) > 1:  # type: ignore
+    if len(list(filter(lambda e: e is True, reduced))) > 1: 
         print("Bad assumption...")
         sys.exit()
 
@@ -74,6 +88,7 @@ def filter_segments(df: pd.DataFrame, osm_id: int) -> pd.DataFrame:
         valid_osm_ids: Iterator[bool] = map(  # id mask corresponding to which coordinates to keep
             lambda elem: elem == osm_id, row["osm_id"]
         )
+        print(list(valid_osm_ids))
         verify_solution(copy_iterable(valid_osm_ids))
 
         valid_coordinates = list(
@@ -106,7 +121,7 @@ def print_time_and_speeds(filtered_df: pd.DataFrame, row: int = 7):
 
 
 def main():
-    filename = "segment_10240935_linestring.json"
+    filename = "C:/Users/ax111/Documents/Personal documents/Coding/SW8/speed_limit_floating_car_data/archive/segment_10240935_linestring.json"
     df = create_df_from_json(filename)
     university_boulevard_osm_id = 10240935
     filtered_df = filter_segments(df, university_boulevard_osm_id)

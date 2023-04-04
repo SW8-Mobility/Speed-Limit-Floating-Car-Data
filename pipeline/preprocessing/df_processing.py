@@ -4,7 +4,7 @@
 import json
 from math import sqrt
 import pandas as pd  # type: ignore
-from archive.analysis_metrics import calculate_metrics, filter_segments  # type: ignore
+# from archive.analysis_metrics import calculate_metrics, filter_segments  # type: ignore
 
 
 def shift_elems(l: list) -> list:
@@ -150,13 +150,13 @@ def calculate_speeds(df: pd.DataFrame) -> None:
 
 
 def main():
-    filename = "segment_10240935_linestring.json"
+    filename = "C:/Users/ax111/Documents/Personal documents/Coding/SW8/speed_limit_floating_car_data/pipeline/preprocessing/segment_10240935_linestring.json"
     df = create_df_from_json(filename)
     university_boulevard_osm_id = 10240935
-    filtered_df = filter_segments(df, university_boulevard_osm_id)
-    calculate_distance_and_speed(filtered_df)
-    avg, min, max = calculate_metrics(filtered_df)
-    print(avg, min, max, sep=", ")  # keep
+    # filtered_df = filter_segments(df, university_boulevard_osm_id)
+    calculate_distance_and_speed(df)
+    # avg, min, max = calculate_metrics(df)
+    # print(avg, min, max, sep=", ")  # keep
 
 
 if __name__ == "__main__":
