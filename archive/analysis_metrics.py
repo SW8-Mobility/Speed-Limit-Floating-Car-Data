@@ -1,18 +1,23 @@
 """ Some functions used to inspect and analysize our data.
 """
 
-import sys, os 
+import sys, os
+
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir))
 
 from functools import reduce
 import json
 from math import sqrt
-from itertools import tee 
+from itertools import tee
 from statistics import median, mean
 import sys
 from typing import Iterator
 import pandas as pd  # type: ignore
-from pipeline.preprocessing.df_processing import create_df_from_json, calculate_distance_and_speed
+from pipeline.preprocessing.df_processing import (
+    create_df_from_json,
+    calculate_distance_and_speed,
+)
+
 
 def copy_iterable(iter: Iterator):
     """Returns a copy of an iterator. Does not modify the original
@@ -23,7 +28,7 @@ def copy_iterable(iter: Iterator):
     Returns:
         _type_: a copy of the Iterator.
     """
-    return tee(iter, 1)[0] # tee returns a tuple of 1 elemt
+    return tee(iter, 1)[0]  # tee returns a tuple of 1 elemt
 
 
 def calculate_metrics(df: pd.DataFrame) -> tuple[float, float, float]:
@@ -63,12 +68,12 @@ def verify_solution(l: Iterator[bool]):
     reduced: Iterator[
         bool
     ] = reduce(  # convert [False, False, True, True, True, False] -> [False, True, False]
-        lambda acc, bool: acc + [bool] if cmp_if_different(bool, acc) else acc, list(l), [] # type: ignore
+        lambda acc, bool: acc + [bool] if cmp_if_different(bool, acc) else acc, list(l), []  # type: ignore
     )
 
     # if there are more than one true in list
     # then the car has looped and break assumption
-    if len(list(filter(lambda e: e is True, reduced))) > 1: 
+    if len(list(filter(lambda e: e is True, reduced))) > 1:
         print("Bad assumption...")
         sys.exit()
 
