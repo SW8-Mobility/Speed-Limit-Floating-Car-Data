@@ -90,7 +90,7 @@ def filter_segments(df: pd.DataFrame, osm_id: int) -> pd.DataFrame:
     """
 
     def filter_func(row):
-        """Used for filtering in df.apply"""
+        """Used for filtering in df.apply and is called upon every row in the dataframe"""
         valid_osm_ids: Iterator[
             bool
         ] = map(  # id mask corresponding to which coordinates to keep
