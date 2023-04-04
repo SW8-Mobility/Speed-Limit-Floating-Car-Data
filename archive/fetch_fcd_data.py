@@ -18,7 +18,7 @@ def save_json(json_data: dict, id: int) -> None:
         f.write(json_str)
 
 
-def make_request(url: str) -> dict: 
+def make_request(url: str) -> dict:
     """Make request for a FCD api url. Return the json response as dict.
 
     Args:
@@ -29,7 +29,7 @@ def make_request(url: str) -> dict:
     """
     res = requests.get(url)
     my_json = res.content.decode("utf8").replace("'", '"')
-    return json.loads(my_json) # return json response as dictionary
+    return json.loads(my_json)  # return json response as dictionary
 
 
 def run_requests(start_url: str) -> None:
