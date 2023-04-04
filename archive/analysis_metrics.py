@@ -9,7 +9,7 @@ from statistics import median, mean
 import sys
 from typing import Iterator
 import pandas as pd  # type: ignore
-
+from df_processing import create_df_from_json, calculate_distance_and_speed
 
 def calculate_metrics(df: pd.DataFrame) -> tuple[float, float, float]:
     """Calculate aggregate min, max, and avg for dataframe
@@ -34,13 +34,13 @@ def calculate_metrics(df: pd.DataFrame) -> tuple[float, float, float]:
     return (median_avg, median_min, median_max)
 
 
-def verify_solution(l: tuple[Iterator[bool], Iterator[bool]]):
+def verify_solution(l: Iterator[bool]):
     """Auxiliary fuction used in filter_segments, to verify the solution works.
     I assume that trips do not loop back and go through the same
     segment more than once. This function is a sanitity check for this.
 
     Args:
-        l (list[bool]): list with boolean mask of all coordinates that are in
+        l (tuple[Iterator[bool], Iterator[bool]]): list with boolean mask of all coordinates that are in
         the segment of interest.
     """
     safe_cmp = lambda b, acc: True if len(acc) == 0 else acc[-1] != b
@@ -70,7 +70,7 @@ def filter_segments(df: pd.DataFrame, osm_id: int) -> pd.DataFrame:
 
     def filter_func(row):
         """read above doc string"""
-        valid_osm_ids = map(  # id mask corresponding to which coordinates to keep
+        valid_osm_ids: Iterator[bool] = map(  # id mask corresponding to which coordinates to keep
             lambda elem: elem == osm_id, row["osm_id"]
         )
         verify_solution(copy_iterable(valid_osm_ids))
@@ -105,5 +105,15 @@ def print_time_and_speeds(filtered_df: pd.DataFrame, row: int = 7):
         print(time, speed, sep=", ")
 
 
+def main():
+    filename = "segment_10240935_linestring.json"
+    df = create_df_from_json(filename)
+    university_boulevard_osm_id = 10240935
+    filtered_df = filter_segments(df, university_boulevard_osm_id)
+    calculate_distance_and_speed(filtered_df)
+    avg, min, max = calculate_metrics(filtered_df)
+    print(avg, min, max, sep=", ")  # keep
+
+
 if __name__ == "__main__":
-    pass
+    main()
