@@ -3,7 +3,6 @@ import os
 import pandas as pd #type: ignore
 from pipeline.preprocessing.df_processing import create_df_from_json
 
-
 def test_create_df_from_json():
     expected_data = {
         "id": "test_id",
