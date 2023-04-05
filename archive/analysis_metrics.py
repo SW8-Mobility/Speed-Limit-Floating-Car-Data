@@ -1,10 +1,7 @@
 """ Some functions used to inspect and analysize our data.
 """
 
-import sys, os
-
 from functools import reduce
-import json
 from math import sqrt
 from itertools import tee
 from statistics import median, mean

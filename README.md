@@ -46,3 +46,25 @@ If errors are not shown in pull request, but mypy fails, run mypy locally with t
 ```
 python -m mypy.
 ```
+
+## Imports
+example filestructure:
+```
+\A
+    a.py > def func()...
+\B
+    \C
+        c.py
+```
+If you want to import a.py in your c.py, you must have a __init__.py file, in the A directory.
+Ways of importing:
+```
+from A.a import func
+import A.a as ModuleAlias
+```
+If it does not work, run the following command in the root of the directory, to discover new modules:
+```
+pip install -e .
+```
+
+
