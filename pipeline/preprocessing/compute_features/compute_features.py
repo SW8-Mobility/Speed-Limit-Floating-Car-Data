@@ -1,16 +1,19 @@
-import sys
-from os.path import dirname, realpath
-
-current_dir = dirname(realpath(__file__))
-parentdir = dirname(dirname(dirname(current_dir)))
-sys.path.append(parentdir)
+# import sys
+# from os.path import dirname, realpath
+#
+# current_dir = dirname(realpath(__file__))
+# parentdir = dirname(dirname(dirname(current_dir)))
+# sys.path.append(parentdir)
 
 from statistics import mean, median
 from typing import Any, Callable, Union
 from pipeline.preprocessing.compute_features.feature import Feature
 import pandas as pd  # type: ignore
 from functools import partial
-from calculate_speeds_distances import calculate_speeds, calculate_distances
+from pipeline.preprocessing.compute_features.calculate_speeds_distances import (
+    calculate_speeds,
+    calculate_distances,
+)
 
 
 def none_if_empty(func: Callable, input: list[float]) -> Union[float, None]:
@@ -29,7 +32,7 @@ def none_if_empty(func: Callable, input: list[float]) -> Union[float, None]:
         return func(input)
 
 
-def per_trip_computation(func: Callable, row: pd.DataFrame) -> list[float]:
+def per_trip_speed_computation(func: Callable, row: pd.DataFrame) -> list[float]:
     """
     Calls the given function on the speed column in the row.
 
@@ -121,10 +124,11 @@ def add_features_to_df(df: pd.DataFrame) -> None:
     feature_calculators = [
         compute_distances,
         compute_speeds,
-        partial(per_trip_computation, min),
-        partial(per_trip_computation, max),
-        partial(per_trip_computation, mean),
-        partial(per_trip_computation, median),
+        # partial() returns a new function where first parameter in per_trip_speed_computation is set to min
+        partial(per_trip_speed_computation, min),
+        partial(per_trip_speed_computation, max),
+        partial(per_trip_speed_computation, mean),
+        partial(per_trip_speed_computation, median),
         partial(aggregate_results, mean, Feature.MINS),
         partial(aggregate_results, mean, Feature.MAXS),
         partial(aggregate_results, mean, Feature.MEANS),
