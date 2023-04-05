@@ -57,7 +57,7 @@ def test_calculate_distances(input, expected):
 
 
 @pytest.mark.parametrize(
-    "input, expected",
+    "input, distances, expected",
     [
         (
             [
@@ -65,23 +65,26 @@ def test_calculate_distances(input, expected):
                 [100.0, 110.0, 1000000001.0],
                 [100.0, 130.0, 1000000002.0],
             ],
-            [36.0, 72.0],
+            [10.0, 20.0],
+            [36.0, 72.0]
         ),
         (
             [
                 [100.0, 100.0, 1000000000.0],
             ],
             [],
+            []
         ),
         (
             [
                 [100.0, 100.0, 1000000000.0],
                 [150.0, 100.0, 1000000001.0],
-                [200.0, 100.0, 1000000002.0],
+                [200.0, 100.0, 1000000002.0]
             ],
-            [180.0, 180.0],
+            [50.0, 50.0],
+            [180.0, 180.0]
         ),
     ],
 )
-def test_calculate_speeds(input, expected):
-    assert csd.calculate_speeds(input) == expected
+def test_calculate_speeds(input, distances, expected):
+    assert csd.calculate_speeds(input, distances) == expected

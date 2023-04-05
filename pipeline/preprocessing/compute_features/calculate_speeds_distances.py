@@ -71,7 +71,6 @@ def calculate_speeds(trip: Trip, distances: list[float]) -> list[float]:
         list[float]: list of speeds in km/h
     """
     time_differences = [t2 - t1 for (_, _, t1), (_, _, t2) in zip(trip[:-1], trip[1:])]
-    distances = calculate_distances(trip)
     speed_ms = [
         distance / scaler for distance, scaler in zip(distances, time_differences)
     ]
