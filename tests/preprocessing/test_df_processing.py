@@ -1,6 +1,6 @@
 import pytest
 import os
-import pandas as pd #type: ignore
+import pandas as pd  # type: ignore
 from pipeline.preprocessing.df_processing import create_df_from_json
 
 def test_create_df_from_json():

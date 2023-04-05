@@ -1,5 +1,5 @@
 from typing import Any, Callable
-import pandas as pd #type: ignore
+import pandas as pd  # type: ignore
 
 UnixTimestamp = int
 CoordinateWithTime = tuple[float, float, UnixTimestamp]

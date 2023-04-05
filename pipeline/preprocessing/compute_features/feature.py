@@ -1,5 +1,6 @@
 from enum import Enum
 
+
 # enum to represent our features
 class Feature(Enum):
     ID = "id"

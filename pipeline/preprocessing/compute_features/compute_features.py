@@ -8,7 +8,7 @@
 from statistics import mean, median
 from typing import Any, Callable, Union
 from pipeline.preprocessing.compute_features.feature import Feature
-import pandas as pd #type: ignore
+import pandas as pd  # type: ignore
 from functools import partial
 from pipeline.preprocessing.compute_features.calculate_speeds_distances import calculate_speeds, calculate_distances
 
@@ -47,6 +47,7 @@ def per_trip_speed_computation(func: Callable, row: pd.DataFrame) -> list[float]
         if len(speed_list) > 0
     ]
 
+
 def aggregate_results(
     aggregate_func: Callable, feature: Feature, row: pd.DataFrame
 ) -> Union[None, float]:
@@ -63,6 +64,7 @@ def aggregate_results(
     """
     results = row[feature.value]
     return none_if_empty(aggregate_func, results)  # type: ignore
+
 
 def compute_distances(row: pd.DataFrame) -> list[list[float]]:
     """
