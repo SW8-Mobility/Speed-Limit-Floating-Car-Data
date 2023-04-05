@@ -30,7 +30,6 @@ Anything todo with the pipeline, will be in the pipeline folder.
 Files in the preprocessing folder are for data cleaning and processing data, for calculating our features and annotating with ground truth. 
 More folders to come, for creating models...
 
-# Old readme
 ## geo_json_metrics
 script in open_street folder is for reading the open street map files, extracting road and their information.
 script in geo_json_metrics is for requesting from the https://fcd-share.civil.aau.dk/ api and saving the response as json. 
