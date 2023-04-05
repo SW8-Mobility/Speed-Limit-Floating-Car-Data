@@ -10,7 +10,10 @@ from typing import Any, Callable, Union
 from pipeline.preprocessing.compute_features.feature import Feature
 import pandas as pd  # type: ignore
 from functools import partial
-from pipeline.preprocessing.compute_features.calculate_speeds_distances import calculate_speeds, calculate_distances
+from pipeline.preprocessing.compute_features.calculate_speeds_distances import (
+    calculate_speeds,
+    calculate_distances,
+)
 
 
 def none_if_empty(func: Callable, input: list[float]) -> Union[float, None]:
