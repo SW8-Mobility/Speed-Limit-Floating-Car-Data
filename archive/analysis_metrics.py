@@ -1,6 +1,7 @@
 """ Some functions used to inspect and analysize our data.
 """
 import sys, os
+
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir))
 from functools import reduce
 from itertools import tee
@@ -11,6 +12,7 @@ import pandas as pd  # type: ignore
 from pipeline.preprocessing.df_processing import (
     create_df_from_json,
 )
+
 
 def copy_iterable(iter: Iterator) -> Iterator:
     """Returns a copy of an iterator. Does not modify the original
@@ -125,7 +127,7 @@ def main():
     df = create_df_from_json(filename)
     university_boulevard_osm_id = 10240935
     filtered_df = filter_segments(df, university_boulevard_osm_id)
-    #calculate_distance_and_speed(filtered_df)
+    # calculate_distance_and_speed(filtered_df)
     avg, min, max = calculate_metrics(filtered_df)
     print(avg, min, max, sep=", ")  # keep
 

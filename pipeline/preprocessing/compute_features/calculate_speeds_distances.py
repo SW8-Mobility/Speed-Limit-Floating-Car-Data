@@ -8,7 +8,7 @@ sys.path.append(parentdir)
 
 import json
 from math import sqrt
-import pandas as pd # type: ignore
+import pandas as pd  # type: ignore
 from pipeline.preprocessing.compute_features.type_alias import Trip
 
 coordinate = tuple[float, float]  # type alias
