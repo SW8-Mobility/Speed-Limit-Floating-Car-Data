@@ -66,6 +66,7 @@ def calculate_speeds(trip: Trip, distances: list[float]) -> list[float]:
 
     Args:
         trip (Trip): list coordinates with time
+        distances: list[float]: list of distances between each coordinate
 
     Returns:
         list[float]: list of speeds in km/h
