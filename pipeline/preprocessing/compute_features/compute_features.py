@@ -109,33 +109,20 @@ def add_features_to_df(df: pd.DataFrame) -> None:
         df: a formatted dataframe, where an osm id has a number of trips
 
     """
-    features = [
-        Feature.DISTANCES,
-        Feature.SPEEDS,
-        Feature.MINS,
-        Feature.MAXS,
-        Feature.MEANS,
-        Feature.MEDIANS,
-        Feature.AGGREGATE_MIN,
-        Feature.AGGREGATE_MAX,
-        Feature.AGGREGATE_MEAN,
-        Feature.AGGREGATE_MEDIAN,
-    ]
-    feature_calculators = [
-        compute_distances,
-        compute_speeds,
-        # partial() returns a new function where first parameter in per_trip_speed_computation is set to min
-        partial(per_trip_speed_computation, min),
-        partial(per_trip_speed_computation, max),
-        partial(per_trip_speed_computation, mean),
-        partial(per_trip_speed_computation, median),
-        partial(aggregate_results, mean, Feature.MINS),
-        partial(aggregate_results, mean, Feature.MAXS),
-        partial(aggregate_results, mean, Feature.MEANS),
-        partial(aggregate_results, mean, Feature.MEDIANS),
-    ]
+    features = { # feature to function dictionary
+        Feature.DISTANCES:        compute_distances, 
+        Feature.SPEEDS:           compute_speeds, 
+        Feature.MINS:             partial(per_trip_speed_computation, min), 
+        Feature.MAXS:             partial(per_trip_speed_computation, max), 
+        Feature.MEANS:            partial(per_trip_speed_computation, mean), 
+        Feature.MEDIANS:          partial(per_trip_speed_computation, median), 
+        Feature.AGGREGATE_MIN:    partial(aggregate_results, mean, Feature.MINS), 
+        Feature.AGGREGATE_MAX:    partial(aggregate_results, mean, Feature.MAXS), 
+        Feature.AGGREGATE_MEAN:   partial(aggregate_results, mean, Feature.MEANS), 
+        Feature.AGGREGATE_MEDIAN: partial(aggregate_results, mean, Feature.MEDIANS), 
+    }
 
-    for feature_name, func in zip(features, feature_calculators):
+    for feature_name, func in features.items():
         df[feature_name.value] = df.apply(func, axis=1)
 
 
