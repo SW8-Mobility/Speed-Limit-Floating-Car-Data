@@ -1,10 +1,3 @@
-# import sys
-# from os.path import dirname, realpath
-#
-# current_dir = dirname(realpath(__file__))
-# parentdir = dirname(dirname(dirname(current_dir)))
-# sys.path.append(parentdir)
-
 from statistics import mean, median
 from typing import Any, Callable, Union
 from pipeline.preprocessing.compute_features.feature import Feature
@@ -109,17 +102,17 @@ def add_features_to_df(df: pd.DataFrame) -> None:
         df: a formatted dataframe, where an osm id has a number of trips
 
     """
-    features = { # feature to function dictionary
-        Feature.DISTANCES:        compute_distances, 
-        Feature.SPEEDS:           compute_speeds, 
-        Feature.MINS:             partial(per_trip_speed_computation, min), 
-        Feature.MAXS:             partial(per_trip_speed_computation, max), 
-        Feature.MEANS:            partial(per_trip_speed_computation, mean), 
-        Feature.MEDIANS:          partial(per_trip_speed_computation, median), 
-        Feature.AGGREGATE_MIN:    partial(aggregate_results, mean, Feature.MINS), 
-        Feature.AGGREGATE_MAX:    partial(aggregate_results, mean, Feature.MAXS), 
-        Feature.AGGREGATE_MEAN:   partial(aggregate_results, mean, Feature.MEANS), 
-        Feature.AGGREGATE_MEDIAN: partial(aggregate_results, mean, Feature.MEDIANS), 
+    features: dict[Feature, Callable] = {  # feature to function dictionary
+        Feature.DISTANCES: compute_distances,
+        Feature.SPEEDS: compute_speeds,
+        Feature.MINS: partial(per_trip_speed_computation, min),
+        Feature.MAXS: partial(per_trip_speed_computation, max),
+        Feature.MEANS: partial(per_trip_speed_computation, mean),
+        Feature.MEDIANS: partial(per_trip_speed_computation, median),
+        Feature.AGGREGATE_MIN: partial(aggregate_results, mean, Feature.MINS),
+        Feature.AGGREGATE_MAX: partial(aggregate_results, mean, Feature.MAXS),
+        Feature.AGGREGATE_MEAN: partial(aggregate_results, mean, Feature.MEANS),
+        Feature.AGGREGATE_MEDIAN: partial(aggregate_results, mean, Feature.MEDIANS),
     }
 
     for feature_name, feature_calc_func in features.items():
