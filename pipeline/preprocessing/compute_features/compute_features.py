@@ -122,8 +122,8 @@ def add_features_to_df(df: pd.DataFrame) -> None:
         Feature.AGGREGATE_MEDIAN: partial(aggregate_results, mean, Feature.MEDIANS), 
     }
 
-    for feature_name, func in features.items():
-        df[feature_name.value] = df.apply(func, axis=1)
+    for feature_name, feature_calc_func in features.items():
+        df[feature_name.value] = df.apply(feature_calc_func, axis=1)
 
 
 def main():
