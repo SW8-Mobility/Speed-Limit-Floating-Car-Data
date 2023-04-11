@@ -1,6 +1,10 @@
 import pytest
 
-from pipeline.preprocessing.compute_features.vcr_calculator import map_vcr, vcr, TooFewElementsException
+from pipeline.preprocessing.compute_features.vcr_calculator import (
+    map_vcr,
+    vcr,
+    TooFewElementsException,
+)
 
 
 @pytest.mark.parametrize(
