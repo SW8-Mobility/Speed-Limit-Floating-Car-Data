@@ -10,7 +10,6 @@ from typing import Iterator
 import pandas as pd  # type: ignore
 from pipeline.preprocessing.df_processing import (
     create_df_from_json,
-    calculate_distance_and_speed,
 )
 
 
@@ -126,9 +125,9 @@ def main():
     filename = "C:/Users/ax111/Documents/Personal documents/Coding/SW8/speed_limit_floating_car_data/archive/segment_10240935_linestring.json"
     df = create_df_from_json(filename)
     university_boulevard_osm_id = 10240935
-    # filtered_df = filter_segments(df, university_boulevard_osm_id)
-    calculate_distance_and_speed(df)
-    avg, min, max = calculate_metrics(df)
+    filtered_df = filter_segments(df, university_boulevard_osm_id)
+    # calculate_distance_and_speed(filtered_df)
+    avg, min, max = calculate_metrics(filtered_df)
     print(avg, min, max, sep=", ")  # keep
 
 
