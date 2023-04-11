@@ -138,7 +138,7 @@ def add_features_to_df(df: pd.DataFrame) -> None:
         Feature.AGGREGATE_MEAN: partial(aggregate_results, mean, Feature.MEANS),
         Feature.AGGREGATE_MEDIAN: partial(aggregate_results, mean, Feature.MEDIANS),
         Feature.ROLLING_AVERAGES: partial(per_trip_speed_computation, k_rolling_avg),
-        Feature.VCR: partial(per_trip_speed_computation, multiple_trips_vcr)
+        Feature.VCR: partial(per_trip_speed_computation, multiple_trips_vcr),
     }
 
     for feature_name, feature_calc_func in features.items():

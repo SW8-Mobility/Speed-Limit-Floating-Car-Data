@@ -6,8 +6,10 @@ class TooFewElementsException(Exception):
 
     pass
 
+
 def multiple_trips_vcr(trips: list[ListOfSpeeds]) -> list[list[float]]:
     return [map_vcr(trip) for trip in trips if len(trip) >= 2]
+
 
 def map_vcr(velocities: list[float]) -> list[float]:
     """Map the VCR function over each pair from the list, skipping the first element
