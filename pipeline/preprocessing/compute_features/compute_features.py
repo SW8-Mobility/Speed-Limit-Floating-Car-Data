@@ -27,7 +27,9 @@ def none_if_empty(func: Callable, input: list[float]) -> Union[float, None]:
         return func(input)
 
 
-def per_trip_speed_computation(func: Callable[[ListOfSpeeds], Any], row: pd.DataFrame) -> list[float]:
+def per_trip_speed_computation(
+    func: Callable[[ListOfSpeeds], Any], row: pd.DataFrame
+) -> list[float]:
     """
     Calls the given function on the speed column in the row.
 
@@ -95,11 +97,12 @@ def compute_speeds(row: pd.DataFrame) -> list[ListOfSpeeds]:
         )
     ]
 
+
 def k_rolling_avg(speed_list: ListOfSpeeds, k: int = 3) -> list[float]:
     """Computes a rolling of averages. Default, average of every 3 speeds.
 
     Args:
-        speed_list (ListOfSpeeds): list of speeds 
+        speed_list (ListOfSpeeds): list of speeds
         k (int): number of speeds to compute avg of, defaults to 3
 
     Returns:
@@ -107,16 +110,17 @@ def k_rolling_avg(speed_list: ListOfSpeeds, k: int = 3) -> list[float]:
     """
     if len(speed_list) < k:
         return []
-    
+
     # create multiple lists, that each start at different index
     # make k lists of them
     temp_lists = []
     for i in range(k):
         temp_lists.append(speed_list[i:])
-    
+
     shifted_lists = zip(*temp_lists)
 
     return [mean(speeds) for speeds in shifted_lists]
+
 
 def add_features_to_df(df: pd.DataFrame) -> None:
     """
@@ -137,11 +141,11 @@ def add_features_to_df(df: pd.DataFrame) -> None:
         Feature.AGGREGATE_MAX: partial(aggregate_results, mean, Feature.MAXS),
         Feature.AGGREGATE_MEAN: partial(aggregate_results, mean, Feature.MEANS),
         Feature.AGGREGATE_MEDIAN: partial(aggregate_results, mean, Feature.MEDIANS),
-        Feature.ROLLING_AVERAGES: partial(per_trip_speed_computation, k_rolling_avg)
+        Feature.ROLLING_AVERAGES: partial(per_trip_speed_computation, k_rolling_avg),
     }
 
     for feature_name, feature_calc_func in features.items():
-        df[feature_name.value] = df.apply(feature_calc_func, axis=1) # type: ignore
+        df[feature_name.value] = df.apply(feature_calc_func, axis=1)  # type: ignore
 
 
 def main():
