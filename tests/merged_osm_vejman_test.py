@@ -1,7 +1,10 @@
 import pytest
 import os
 import pandas as pd  # type: ignore
-from pipeline.preprocessing.process_merged_geojson import create_df_from_merged_osm_vejman
+from pipeline.preprocessing.process_merged_geojson import (
+    create_df_from_merged_osm_vejman,
+)
+
 
 def test_process_merged_osm_from_json():
     expected_data = {
