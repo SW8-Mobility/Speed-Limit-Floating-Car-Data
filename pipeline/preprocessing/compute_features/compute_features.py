@@ -51,7 +51,7 @@ def aggregate_results(
     Aggregate results in a given feature coloumn with input aggregate function (e.g. mean).
 
     Args:
-        aggregate_func: the function to a
+        aggregate_func: the function to aggregate the values from a col
         feature: the row name to be aggregated
         row: a row from formatted dataframe
 
@@ -116,7 +116,7 @@ def add_features_to_df(df: pd.DataFrame) -> None:
     }
 
     for feature_name, feature_calc_func in features.items():
-        df[feature_name.value] = df.apply(feature_calc_func, axis=1)
+        df[feature_name.value] = df.apply(feature_calc_func, axis=1) # type: ignore
 
 
 def main():

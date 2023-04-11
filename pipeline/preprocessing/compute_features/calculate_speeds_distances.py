@@ -9,14 +9,12 @@ sys.path.append(parentdir)
 import json
 from math import sqrt
 import pandas as pd  # type: ignore
-from pipeline.preprocessing.compute_features.type_alias import Trip
-
-coordinate = tuple[float, float]  # type alias
+from pipeline.preprocessing.compute_features.type_alias import Coordinate, Trip
 
 
-def calc_utm_dist(utm1: coordinate, utm2: coordinate) -> float:
+def calc_utm_dist(utm1: Coordinate, utm2: Coordinate) -> float:
     """calculate the distance between two utm coordinates
-    uses formula for euclidian distance, which is not 100% accurate?
+    uses formula for euclidian distance, which is an approximation.
 
     Args:
         utm1 (coordinate): a tuple of x and y coordinate
