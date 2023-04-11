@@ -1,8 +1,10 @@
 from statistics import mean, median
 from typing import Any, Callable, Union
+from pipeline.preprocessing.compute_features.type_alias import ListOfSpeeds
 from pipeline.preprocessing.compute_features.feature import Feature
 import pandas as pd  # type: ignore
 from functools import partial
+
 from pipeline.preprocessing.compute_features.calculate_speeds_distances import (
     calculate_speeds,
     calculate_distances,
@@ -25,7 +27,7 @@ def none_if_empty(func: Callable, input: list[float]) -> Union[float, None]:
         return func(input)
 
 
-def per_trip_speed_computation(func: Callable, row: pd.DataFrame) -> list[float]:
+def per_trip_speed_computation(func: Callable[[ListOfSpeeds], Any], row: pd.DataFrame) -> list[float]:
     """
     Calls the given function on the speed column in the row.
 
@@ -76,7 +78,7 @@ def compute_distances(row: pd.DataFrame) -> list[list[float]]:
     return [calculate_distances(trip) for trip in row[Feature.COORDINATES.value]]
 
 
-def compute_speeds(row: pd.DataFrame) -> list[list[float]]:
+def compute_speeds(row: pd.DataFrame) -> list[ListOfSpeeds]:
     """
     Computes the speeds for a given row. The "distances" column must be computed first!
 
@@ -93,6 +95,28 @@ def compute_speeds(row: pd.DataFrame) -> list[list[float]]:
         )
     ]
 
+def k_rolling_avg(speed_list: ListOfSpeeds, k: int = 3) -> list[float]:
+    """Computes a rolling of averages. Default, average of every 3 speeds.
+
+    Args:
+        speed_list (ListOfSpeeds): list of speeds 
+        k (int): number of speeds to compute avg of
+
+    Returns:
+        list[float]: rolling averages
+    """
+
+
+    if len(speed_list) < k:
+        return []
+    
+    temp_lists = []
+    for i in range(k):
+        temp_lists.append(speed_list[i:])
+    
+    shifted_lists = zip(*temp_lists)
+    print(shifted_lists)
+        
 
 def add_features_to_df(df: pd.DataFrame) -> None:
     """
@@ -113,6 +137,7 @@ def add_features_to_df(df: pd.DataFrame) -> None:
         Feature.AGGREGATE_MAX: partial(aggregate_results, mean, Feature.MAXS),
         Feature.AGGREGATE_MEAN: partial(aggregate_results, mean, Feature.MEANS),
         Feature.AGGREGATE_MEDIAN: partial(aggregate_results, mean, Feature.MEDIANS),
+        Feature.ROLLING_AVERAGES: partial(per_trip_speed_computation, rolling_avg)
     }
 
     for feature_name, feature_calc_func in features.items():
@@ -128,4 +153,5 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    # main()
+    k_rolling_avg([1,2,3,4,5,6])
