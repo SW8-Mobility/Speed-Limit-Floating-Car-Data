@@ -1,9 +1,8 @@
 """ Some functions used to inspect and analysize our data.
 """
-import sys, os
 
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir))
 from functools import reduce
+from math import sqrt
 from itertools import tee
 from statistics import median, mean
 import sys
@@ -125,10 +124,10 @@ def print_time_and_speeds(filtered_df: pd.DataFrame, row: int = 7):
 def main():
     filename = "C:/Users/ax111/Documents/Personal documents/Coding/SW8/speed_limit_floating_car_data/archive/segment_10240935_linestring.json"
     df = create_df_from_json(filename)
-    university_boulevard_osm_id = 10240935
-    filtered_df = filter_segments(df, university_boulevard_osm_id)
-    # calculate_distance_and_speed(filtered_df)
-    avg, min, max = calculate_metrics(filtered_df)
+    # university_boulevard_osm_id = 10240935
+    # filtered_df = filter_segments(df, university_boulevard_osm_id)
+    # calculate_distance_and_speed(df)
+    avg, min, max = calculate_metrics(df)
     print(avg, min, max, sep=", ")  # keep
 
 
