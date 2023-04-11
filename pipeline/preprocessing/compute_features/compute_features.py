@@ -116,7 +116,7 @@ def add_features_to_df(df: pd.DataFrame) -> None:
     }
 
     for feature_name, feature_calc_func in features.items():
-        df[feature_name.value] = df.apply(feature_calc_func, axis=1) # type: ignore
+        df[feature_name.value] = df.apply(feature_calc_func, axis=1)  # type: ignore
 
 
 def main():

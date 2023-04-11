@@ -31,7 +31,6 @@ def test_none_if_empty(input, expected):
         (median, [[1, 2, 3, 4, 5]], [3]),
     ],
 )
-
 def test_per_trip_speed_computation(func, speed_column, expected):
     df = pd.DataFrame(data={Feature.SPEEDS.value: speed_column})
     assert cf.per_trip_speed_computation(func, df) == expected
