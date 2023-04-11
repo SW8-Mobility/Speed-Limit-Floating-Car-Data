@@ -100,23 +100,23 @@ def k_rolling_avg(speed_list: ListOfSpeeds, k: int = 3) -> list[float]:
 
     Args:
         speed_list (ListOfSpeeds): list of speeds 
-        k (int): number of speeds to compute avg of
+        k (int): number of speeds to compute avg of, defaults to 3
 
     Returns:
         list[float]: rolling averages
     """
-
-
     if len(speed_list) < k:
         return []
     
+    # create multiple lists, that each start at different index
+    # make k lists of them
     temp_lists = []
     for i in range(k):
         temp_lists.append(speed_list[i:])
     
     shifted_lists = zip(*temp_lists)
-    print(shifted_lists)
-        
+
+    return [mean(speeds) for speeds in shifted_lists]
 
 def add_features_to_df(df: pd.DataFrame) -> None:
     """
@@ -137,7 +137,7 @@ def add_features_to_df(df: pd.DataFrame) -> None:
         Feature.AGGREGATE_MAX: partial(aggregate_results, mean, Feature.MAXS),
         Feature.AGGREGATE_MEAN: partial(aggregate_results, mean, Feature.MEANS),
         Feature.AGGREGATE_MEDIAN: partial(aggregate_results, mean, Feature.MEDIANS),
-        Feature.ROLLING_AVERAGES: partial(per_trip_speed_computation, rolling_avg)
+        Feature.ROLLING_AVERAGES: partial(per_trip_speed_computation, k_rolling_avg)
     }
 
     for feature_name, feature_calc_func in features.items():
@@ -153,5 +153,4 @@ def main():
 
 
 if __name__ == "__main__":
-    # main()
-    k_rolling_avg([1,2,3,4,5,6])
+    main()
