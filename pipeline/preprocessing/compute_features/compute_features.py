@@ -27,7 +27,9 @@ def none_if_empty(func: Callable, input: list[float]) -> Union[float, None]:
         return func(input)
 
 
-def per_trip_speed_computation(func: Callable[[ListOfSpeeds], Any], row: pd.DataFrame) -> list[float]:
+def per_trip_speed_computation(
+    func: Callable[[ListOfSpeeds], Any], row: pd.DataFrame
+) -> list[float]:
     """
     Calls the given function on the speed column in the row.
 
@@ -113,6 +115,7 @@ def k_rolling_avg(speed_list: ListOfSpeeds, window_size: int = 3) -> list[float]
 
     return rolling_averages
 
+
 def add_features_to_df(df: pd.DataFrame) -> None:
     """
     Add features to formatted dataframe.
@@ -132,11 +135,11 @@ def add_features_to_df(df: pd.DataFrame) -> None:
         Feature.AGGREGATE_MAX: partial(aggregate_results, mean, Feature.MAXS),
         Feature.AGGREGATE_MEAN: partial(aggregate_results, mean, Feature.MEANS),
         Feature.AGGREGATE_MEDIAN: partial(aggregate_results, mean, Feature.MEDIANS),
-        Feature.ROLLING_AVERAGES: partial(per_trip_speed_computation, k_rolling_avg)
+        Feature.ROLLING_AVERAGES: partial(per_trip_speed_computation, k_rolling_avg),
     }
 
     for feature_name, feature_calc_func in features.items():
-        df[feature_name.value] = df.apply(feature_calc_func, axis=1) # type: ignore
+        df[feature_name.value] = df.apply(feature_calc_func, axis=1)  # type: ignore
 
 
 def main():
