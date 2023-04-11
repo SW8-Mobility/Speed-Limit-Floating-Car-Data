@@ -7,4 +7,5 @@
 *.rar
 *.pyc
 *.csv
+!tests/test_files/*.json
 !tests/*.json
