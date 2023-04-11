@@ -4,7 +4,7 @@ import pandas as pd
 
 def create_df_from_merged_osm_vejman(filename: str) -> pd.DataFrame:
     """
-    Create a dataframe from merged between osm and vejman data
+    Create a dataframe from merged between osm and vejman data.
     Args:
         filename: a file in geojson format
 
@@ -47,7 +47,8 @@ def create_df_from_merged_osm_vejman(filename: str) -> pd.DataFrame:
 
 def unnest_df(df: pd.DataFrame, nest_header: str, key_list: list[str]) -> None:
     """
-    Unnest a given key from a column, if the format is like a dictionary
+    Unnest a given key from a column, if the format is like a dictionary. The column is added to the dataframe and the
+    name will be in lower case.
     Args:
         df: a dataframe
         nest_header: the column where the nested values are
