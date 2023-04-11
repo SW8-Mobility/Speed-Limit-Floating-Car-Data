@@ -5,5 +5,5 @@ UnixTimestamp = int
 Coordinate = tuple[float, float]
 CoordinateWithTime = tuple[float, float, UnixTimestamp]
 Trip = list[CoordinateWithTime]
-ListOfSpeeds = list[list[float]]
+ListOfSpeeds = list[float]
 FeatureCalculator = Callable[[pd.DataFrame], Any]
