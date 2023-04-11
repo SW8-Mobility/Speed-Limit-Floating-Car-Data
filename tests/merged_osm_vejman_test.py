@@ -1,7 +1,7 @@
-import pytest
 import os
 import pandas as pd #type: ignore
-from geo_json_metrics import process_merged_geojson
+
+
 def test_create_df_from_json():
     expected_data = {
         "osm_id": [1080, 2081, 2082],
