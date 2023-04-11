@@ -1,8 +1,13 @@
+from pipeline.preprocessing.compute_features.type_alias import ListOfSpeeds
+
+
 class TooFewElementsException(Exception):
     """Raised when there are too few elements in the input list"""
 
     pass
 
+def multiple_trips_vcr(trips: list[ListOfSpeeds]) -> list[list[float]]:
+    return [map_vcr(trip) for trip in trips if len(trip) >= 2]
 
 def map_vcr(velocities: list[float]) -> list[float]:
     """Map the VCR function over each pair from the list, skipping the first element
