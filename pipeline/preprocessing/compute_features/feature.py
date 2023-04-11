@@ -23,11 +23,5 @@ class Feature(Enum):
     TIME_GROUP = "time_group"
     # more to come
 
-    def __str__(self):
-        self.value
-
-    def type_check(self):
-        """Might be useful to type check the format of a feature later.
-        example: maxs should be a list of floats
-        """
-        pass
+    def __str__(self) -> str:
+        return self.value
