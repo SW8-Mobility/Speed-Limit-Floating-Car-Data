@@ -7,5 +7,4 @@
 *.rar
 *.pyc
 *.csv
-*.idea/
-*.vscode/
+!tests/test_files/*.json
