@@ -16,19 +16,6 @@ def assert_lists_almost_equal(list1: list[float], list2: list[float], tolerance:
     """
     assert len(list1) == len(list2)
     for a, b in zip(list1, list2):
-         assert pytest.approx(a, tolerance) == b
-
-def assert_lists_almost_equal(list1: list[float], list2: list[float], tolerance: float):
-    """To account for impreciseness in float computations, this function will
-    check if two lists of floats are equal, with some tolerence for difference.
-
-    Args:
-        list1 (list[float]): actual
-        list2 (list[float]): expected
-        tolerance (float): tolerance for impreciseness
-    """
-    assert len(list1) == len(list2)
-    for a, b in zip(list1, list2):
         assert pytest.approx(a, tolerance) == b
 
 
