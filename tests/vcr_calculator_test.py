@@ -6,9 +6,8 @@ from pipeline.preprocessing.vcr_calculator import map_vcr, vcr, TooFewElementsEx
     "test_input, expected_vcrs",
     [
         (
-            [1,2,3,4,5,6,7],
+            [1, 2, 3, 4, 5, 6, 7],
             [
-
                 0.5,
                 0.3333333333333333,
                 0.25,
