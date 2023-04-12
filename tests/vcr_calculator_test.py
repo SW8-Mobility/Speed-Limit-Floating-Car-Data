@@ -2,6 +2,7 @@ import pytest
 
 from pipeline.preprocessing.vcr_calculator import map_vcr, vcr, TooFewElementsException
 
+
 @pytest.mark.parametrize(
     "test_input, expected_vcrs",
     [
