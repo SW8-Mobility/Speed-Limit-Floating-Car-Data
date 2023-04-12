@@ -6,11 +6,10 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import f1_score
 import pandas as pd
 
-from pipeline.models.utils import load_data  # type: ignore
+from pipeline.models.utils.find_closest_speed_limit import load_data  # type: ignore
 
 CORE_NUM = 16
 RANDOM_STATE = 42
-
 
 def create_mlp_grid_search(
     x_train: pd.DataFrame, y_train: pd.Series, k: int = 5
