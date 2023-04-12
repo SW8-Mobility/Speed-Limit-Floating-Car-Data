@@ -1,5 +1,5 @@
 import pandas as pd
-from compute_features.feature import Feature 
+from compute_features.feature import Feature
 from pipeline.preprocessing.compute_features.type_alias import ListOfSpeeds
 
 
@@ -10,7 +10,7 @@ class TooFewElementsException(Exception):
 
 
 def multiple_trips_vcr(row: pd.DataFrame) -> list[list[float]]:
-    """Compute vcr for each trip in the speeds col. 
+    """Compute vcr for each trip in the speeds col.
 
     Args:
         row (pd.DataFrame): row with speeds col
