@@ -46,10 +46,10 @@ If errors are not shown in pull request, but mypy fails, run mypy locally with t
 python -m mypy.
 ```
 
-## Mypy
+## Pytest
 Run all tests:
 ```
-pytest .
+python -m pytest
 ```
 
 ## Imports
