@@ -1,6 +1,5 @@
 import pandas as pd
-from compute_features.feature import Feature 
-from pipeline.preprocessing.compute_features.type_alias import ListOfSpeeds
+from pipeline.preprocessing.compute_features.feature import Feature
 
 
 class TooFewElementsException(Exception):
