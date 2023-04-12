@@ -1,7 +1,23 @@
+import pandas as pd
+from pipeline.preprocessing.compute_features.feature import Feature
+
+
 class TooFewElementsException(Exception):
     """Raised when there are too few elements in the input list"""
 
     pass
+
+
+def multiple_trips_vcr(row: pd.DataFrame) -> list[list[float]]:
+    """Compute vcr for each trip in the speeds col.
+
+    Args:
+        row (pd.DataFrame): row with speeds col
+
+    Returns:
+        list[list[float]]: vcr for each trip [[speeds],[speeds]] -> [[vcr's],[vcr's]]
+    """
+    return [map_vcr(trip) for trip in row[Feature.SPEEDS.value] if len(trip) >= 2]
 
 
 def map_vcr(velocities: list[float]) -> list[float]:

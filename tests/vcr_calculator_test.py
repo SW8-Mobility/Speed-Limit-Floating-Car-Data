@@ -1,6 +1,10 @@
 import pytest
 
-from pipeline.preprocessing.vcr_calculator import map_vcr, vcr, TooFewElementsException
+from pipeline.preprocessing.compute_features.vcr_calculator import (
+    map_vcr,
+    vcr,
+    TooFewElementsException,
+)
 
 
 @pytest.mark.parametrize(
@@ -34,8 +38,8 @@ def test_vcr(test_input, expected_vcr) -> None:
 
 @pytest.mark.parametrize(
     "test_input",
-    [f"{[]}", f"{[100]}", f"{[-100]}", f"{[0]}", f"{[50]}"],
+    [[], [100], [-100], [0], [50]],
 )
 def test_too_few_elements_exception(test_input):
     with pytest.raises(TooFewElementsException):
-        map_vcr([1])
+        map_vcr(test_input)
