@@ -4,7 +4,7 @@ import pandas as pd
 
 def create_df_from_merged_osm_vejman(filename: str) -> pd.DataFrame:
     """
-    Create a dataframe from merged between osm and vejman data.
+    Create a dataframe from qgis merge between osm and vejman data.
     Args:
         filename: a file in geojson format
 
@@ -34,8 +34,7 @@ def create_df_from_merged_osm_vejman(filename: str) -> pd.DataFrame:
     ]
     unnest_df(df, "properties", property_list)
 
-    geometry_list = ["coordinates"]
-    unnest_df(df, "geometry", geometry_list)
+    unnest_df(df, "geometry", ["coordinates"])
 
     # drop unused columns
     df.drop(["type", "properties", "geometry"], inplace=True, axis=1)
