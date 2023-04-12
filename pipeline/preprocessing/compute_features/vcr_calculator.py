@@ -9,7 +9,7 @@ class TooFewElementsException(Exception):
 
 
 def multiple_trips_vcr(row: pd.DataFrame) -> list[list[float]]:
-    """Compute vcr for each trip in the speeds col. 
+    """Compute vcr for each trip in the speeds col.
 
     Args:
         row (pd.DataFrame): row with speeds col
