@@ -44,7 +44,7 @@ def create_df_from_merged_osm_vejman(filename: str) -> pd.DataFrame:
     return df
 
 
-def unnest_df(df: pd.DataFrame, nest_header: str, key_list: list[str]) -> None:
+def unnest_df(df: pd.DataFrame, nest_header: str, key_list: [str]) -> None:
     """
     Unnest a given key from a column, if the format is like a dictionary. The column is added to the dataframe and the
     name will be in lower case.
@@ -58,9 +58,11 @@ def unnest_df(df: pd.DataFrame, nest_header: str, key_list: list[str]) -> None:
 
 
 def main():
-    filename = "C:/Users/freja/Desktop/Speed-Limit-Floating-Car-Data/tests/test_files/vejman_osm_merge_extract_data.json"
+    filename = "/qgis_data/join_by_nearest_max_distance_2.geojson"
     df = create_df_from_merged_osm_vejman(filename)
-    df.to_csv("from_fun.csv")
+    df.to_pickle("join_by_nearest_max_distance_2.pkl")
+    extract = df.head(5)
+    extract.to_csv("extract.csv")
 
 
 if __name__ == "__main__":
