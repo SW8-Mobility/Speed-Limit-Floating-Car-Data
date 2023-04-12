@@ -1,12 +1,13 @@
 from sklearn.neural_network import MLPClassifier
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import GridSearchCV, KFold, train_test_split
+from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
-from sklearn.metrics import f1_score
+from xgboost import XGBClassifier
 import pandas as pd
 
-from pipeline.models.utils.find_closest_speed_limit import load_data  # type: ignore
+from pipeline.models.statistical_model import StatisticalModel
 
 CORE_NUM = 16
 RANDOM_STATE = 42
@@ -54,10 +55,21 @@ def create_mlp_grid_search(
     # return the best random forest model and the best hyperparameters found by the grid search
     return grid_search.best_estimator_, grid_search.best_params_  # type: ignore
 
-
 def random_forest_regressor_gridsearch(
     X_train: pd.DataFrame, y_train: pd.DataFrame, k: int = 5
 ) -> tuple[RandomForestRegressor, dict]:
+    """
+    Create and tune the hyperparameters of a RandomForest regression modelusing GridSearchCV with k-fold cross-validation.
+    Remember to use quantize_results when predicting. 
+
+    Args:
+        x_train (pd.DataFrame): The training features.
+        y_train (pd.Series): The training target.
+
+    Returns:
+        tuple[MLPClassifier, dict]: A tuple of the best RandomForestRegressor and the best hyperparameters.
+    """
+
     # Create a random forest regressor
     rfr = RandomForestRegressor(random_state=42)
 
@@ -81,6 +93,75 @@ def random_forest_regressor_gridsearch(
 
     return grid_search.best_estimator_, grid_search.best_params_  # type: ignore
 
+def xgboost_classifier_gridsearch(x_train: pd.DataFrame, y_train: pd.DataFrame, k: int = 5) -> tuple[RandomForestRegressor, dict]:
+    """
+    Create and tune the hyperparameters of an xgboost classifier using GridSearchCV with k-fold cross-validation.
+
+    Args:
+        x_train (pd.DataFrame): The training features.
+        y_train (pd.Series): The training target.
+
+    Returns:
+        tuple[MLPClassifier, dict]: A tuple of the best xgboost classifier and the best hyperparameters.
+    """
+    # Create an XGBoost classifier
+    xgb = XGBClassifier(random_state=RANDOM_STATE)
+
+    # Set up the parameter grid to search over
+    param_grid = {
+        'n_estimators': [50, 100, 200],
+        'max_depth': [3, 5, 7],
+        'learning_rate': [0.01, 0.1, 0.5],
+        'subsample': [0.5, 0.8, 1.0],
+        'colsample_bytree': [0.5, 0.8, 1.0]
+    }
+
+    # Create the grid search object
+    kfold = KFold(n_splits=k, shuffle=True, random_state=RANDOM_STATE)
+    grid_search = GridSearchCV(estimator=xgb, param_grid=param_grid, cv=kfold, n_jobs=CORE_NUM)
+
+    # Fit the grid search object to the training data
+    grid_search.fit(x_train, y_train)
+
+    return grid_search.best_estimator_, grid_search.best_params_ # type: ignore
+
+def logistic_regression_gridsearch(X_train: pd.DataFrame, y_train: pd.DataFrame, k: int = 5) -> tuple[RandomForestRegressor, dict]:
+    """
+    Create and tune the hyperparameters of a Logistic regression classifier using GridSearchCV with k-fold cross-validation.
+
+    Args:
+        x_train (pd.DataFrame): The training features.
+        y_train (pd.Series): The training target.
+
+    Returns:
+        tuple[MLPClassifier, dict]: A tuple of the best Logistic Regression Classifier and the best hyperparameters.
+    """
+    # Create a Logistic Regression model
+    logreg = LogisticRegression(random_state=RANDOM_STATE)
+
+    # Set up the parameter grid to search over
+    param_grid = {
+        'C': [0.1, 1, 10],
+        'penalty': ['l1', 'l2', 'elasticnet'],
+        'solver': ['saga', 'liblinear']
+    }
+
+    # Create the grid search object
+    kfold = KFold(n_splits=k, shuffle=True, random_state=RANDOM_STATE)
+    grid_search = GridSearchCV(estimator=logreg, param_grid=param_grid, cv=kfold, n_jobs=CORE_NUM)
+
+    # Fit the grid search object to the training data
+    grid_search.fit(X_train, y_train)
+
+    return grid_search.best_estimator_, grid_search.best_params_ # type: ignore
+
+def statistical_model() -> StatisticalModel:
+    """Create a basic statistical model
+
+    Returns:
+        StatisticalModel: a statistical model with a predict function
+    """
+    return StatisticalModel()
 
 if __name__ == "__main__":
     pass
