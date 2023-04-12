@@ -30,7 +30,7 @@ def none_if_empty(func: Callable, input: list[float]) -> Union[float, None]:
 
 def per_trip_speed_computation(
     func: Callable[[ListOfSpeeds], Any], row: pd.DataFrame
-) -> list[float]:
+) -> list[Any]:
     """
     Calls the given function on the speed column in the row.
 
@@ -138,7 +138,7 @@ def add_features_to_df(df: pd.DataFrame) -> None:
         Feature.AGGREGATE_MEAN: partial(aggregate_results, mean, Feature.MEANS),
         Feature.AGGREGATE_MEDIAN: partial(aggregate_results, mean, Feature.MEDIANS),
         Feature.ROLLING_AVERAGES: partial(per_trip_speed_computation, k_rolling_avg),
-        Feature.VCR: partial(per_trip_speed_computation, multiple_trips_vcr),
+        Feature.VCR: multiple_trips_vcr,
     }
 
     for feature_name, feature_calc_func in features.items():
