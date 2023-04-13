@@ -1,4 +1,4 @@
-import pandas as pd # type: ignore
+import pandas as pd  # type: ignore
 from pipeline.preprocessing.compute_features.feature import Feature
 
 
