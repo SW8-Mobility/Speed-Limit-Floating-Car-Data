@@ -1,11 +1,11 @@
-from sklearn.neural_network import MLPClassifier
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.model_selection import GridSearchCV, KFold, train_test_split
-from sklearn.linear_model import LogisticRegression
-from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import StandardScaler
-from xgboost import XGBClassifier
-import pandas as pd
+from sklearn.neural_network import MLPClassifier # type: ignore
+from sklearn.ensemble import RandomForestRegressor # type: ignore
+from sklearn.model_selection import GridSearchCV, KFold, train_test_split # type: ignore
+from sklearn.linear_model import LogisticRegression # type: ignore
+from sklearn.pipeline import Pipeline # type: ignore
+from sklearn.preprocessing import StandardScaler # type: ignore
+from xgboost import XGBClassifier # type: ignore
+import pandas as pd # type: ignore
 
 from pipeline.models.statistical_model import StatisticalModel
 

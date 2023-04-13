@@ -1,6 +1,6 @@
-from sklearn.metrics import mean_absolute_error, mean_squared_error, explained_variance_score, r2_score
-import numpy as np
-import pandas as pd
+from sklearn.metrics import mean_absolute_error, mean_squared_error, explained_variance_score, r2_score # type: ignore
+import numpy as np 
+import pandas as pd # type: ignore
 from bisect import bisect_left
 
 SPEED_LIMITS = [15,30,40,50,60,70,80,90,100,110,120,130]
@@ -57,7 +57,7 @@ def mean_absolute_percentage_error(ground_truth, prediction) -> float:
         float: mean absolute percentage error
     """
     y_true, y_pred = np.array(ground_truth), np.array(prediction)
-    return np.mean(np.abs((y_true - y_pred) / y_true)) * 100
+    return np.mean(np.abs((y_true - y_pred) / y_true)) * 100 # type: ignore
 
 def score_model(ground_truth, prediction) -> dict[str, float]:
     """Scoring function with metrics used for regression models. Will compute:

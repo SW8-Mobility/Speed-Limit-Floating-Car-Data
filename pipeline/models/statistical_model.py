@@ -1,5 +1,5 @@
-from pipeline.models.utils.scoring import quantize_results
-import pandas as pd 
+from pipeline.models.utils.scoring import quantize_results  
+import pandas as pd # type: ignore
 from pipeline.preprocessing.compute_features.feature import Feature
 
 class StatisticalModel:
