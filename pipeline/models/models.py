@@ -9,7 +9,7 @@ import pandas as pd  # type: ignore
 
 from pipeline.models.statistical_model import StatisticalModel
 
-CORE_NUM = 16 # how many cores to use in grid_search
+CORE_NUM = 16  # how many cores to use in grid_search
 RANDOM_STATE = 42
 
 

@@ -13,6 +13,6 @@ class StatisticalModel:
             x (pd.DataFrame): Datafame to predict on.
 
         Returns:
-            list: list of predictions. 
+            list: list of predictions.
         """
         return quantize_results(x[Feature.AGGREGATE_MEDIAN.value])
