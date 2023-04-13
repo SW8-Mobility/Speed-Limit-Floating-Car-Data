@@ -98,6 +98,7 @@ def compute_speeds(row: pd.DataFrame) -> list[ListOfSpeeds]:
         )
     ]
 
+
 def k_rolling_avg(speed_list: ListOfSpeeds, window_size: int = 3) -> list[float]:
     """Computes a rolling of averages. Default, average of every 3 speeds.
 
@@ -141,7 +142,7 @@ def add_features_to_df(df: pd.DataFrame) -> None:
     }
 
     for feature_name, feature_calc_func in features.items():
-        df[feature_name.value] = df.apply(feature_calc_func, axis=1) # type: ignore
+        df[feature_name.value] = df.apply(feature_calc_func, axis=1)  # type: ignore
 
 
 def main():

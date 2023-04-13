@@ -1,5 +1,5 @@
 import json
-import pandas as pd # type: ignore
+import pandas as pd  # type: ignore
 
 
 def create_df_from_merged_osm_vejman(filename: str) -> pd.DataFrame:

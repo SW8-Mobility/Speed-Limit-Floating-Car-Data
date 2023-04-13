@@ -1,7 +1,11 @@
 import pytest
-from pipeline.models.utils.scoring import find_closest_speed_limit, mean_absolute_percentage_error
+from pipeline.models.utils.scoring import (
+    find_closest_speed_limit,
+    mean_absolute_percentage_error,
+)
 
 # SPEED_LIMITS = [15,30,40,50,60,70,80,90,100,110,120,130]
+
 
 @pytest.mark.parametrize(
     "input, expected",
@@ -31,11 +35,14 @@ def test_find_closest_speed_limit(input, expected):
 @pytest.mark.parametrize(
     "ground_truth, predictions, expected",
     [
-        ([10,20,30], [10,20,30], 0),
-        ([10,20,30], [11, 19, 29], 6.1111),
+        ([10, 20, 30], [10, 20, 30], 0),
+        ([10, 20, 30], [11, 19, 29], 6.1111),
         ([10, 20, 30], [5, 15, 25], 30.5555),
         ([-10, -20, -30], [-8, -22, -32], 12.2222),
     ],
 )
 def test_mean_absolute_percentage_error(ground_truth, predictions, expected):
-    assert pytest.approx(mean_absolute_percentage_error(ground_truth, predictions), 0.0001) == expected
+    assert (
+        pytest.approx(mean_absolute_percentage_error(ground_truth, predictions), 0.0001)
+        == expected
+    )

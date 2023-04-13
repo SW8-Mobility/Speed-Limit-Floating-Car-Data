@@ -1,9 +1,10 @@
-from sklearn.metrics import mean_absolute_error, mean_squared_error, explained_variance_score, r2_score # type: ignore
-import numpy as np 
-import pandas as pd # type: ignore
+from sklearn.metrics import mean_absolute_error, mean_squared_error, explained_variance_score, r2_score  # type: ignore
+import numpy as np
+import pandas as pd  # type: ignore
 from bisect import bisect_left
 
-SPEED_LIMITS = [15,30,40,50,60,70,80,90,100,110,120,130]
+SPEED_LIMITS = [15, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130]
+
 
 def find_closest_speed_limit(speed: float) -> float:
     """
@@ -22,6 +23,7 @@ def find_closest_speed_limit(speed: float) -> float:
     else:
         return before
 
+
 def classify_with_regressor(model, x: pd.DataFrame) -> list[float]:
     """calls predict on the model and quantizes the result.
 
@@ -35,8 +37,9 @@ def classify_with_regressor(model, x: pd.DataFrame) -> list[float]:
     predictions = model.predict(x)
     return quantize_results(predictions)
 
+
 def quantize_results(predictions: pd.Series) -> list[float]:
-    """Snaps each prediction to the closest speed limit.  
+    """Snaps each prediction to the closest speed limit.
 
     Args:
         predictions (list[float]): list of predictions made by regression model.
@@ -46,11 +49,12 @@ def quantize_results(predictions: pd.Series) -> list[float]:
     """
     return [find_closest_speed_limit(pred) for pred in predictions]
 
+
 def mean_absolute_percentage_error(ground_truth, prediction) -> float:
     """Computes mean absolute percentage error
 
     Args:
-        ground_truth (Array-like object): ground truth 
+        ground_truth (Array-like object): ground truth
         prediction (Array-like object): prediction made by regression / prediction model
 
     Returns:
@@ -66,16 +70,16 @@ def score_model(ground_truth, prediction) -> dict[str, float]:
 
     Args:
         ground_truth (Array-like object): ground truth
-        prediction (Array-like object): prediction made by a model 
+        prediction (Array-like object): prediction made by a model
 
     Returns:
         dict[str, float]: dict of metrics to their result
     """
     return {
-        'mae': mean_absolute_error(ground_truth, prediction),
-        'mape': mean_absolute_percentage_error(ground_truth, prediction),
-        'mse': mean_squared_error(ground_truth, prediction),
-        'rmse': mean_squared_error(ground_truth, prediction, squared=False),
-        'r2': r2_score(ground_truth, prediction),
-        'ev': explained_variance_score(ground_truth, prediction)
+        "mae": mean_absolute_error(ground_truth, prediction),
+        "mape": mean_absolute_percentage_error(ground_truth, prediction),
+        "mse": mean_squared_error(ground_truth, prediction),
+        "rmse": mean_squared_error(ground_truth, prediction, squared=False),
+        "r2": r2_score(ground_truth, prediction),
+        "ev": explained_variance_score(ground_truth, prediction),
     }  # type: ignore

@@ -5,6 +5,7 @@ import pytest
 import pipeline.preprocessing.compute_features.compute_features as cf
 from pipeline.preprocessing.compute_features.feature import Feature
 
+
 def assert_lists_almost_equal(list1: list[float], list2: list[float], tolerance: float):
     """To account for impreciseness in float computations, this function will
     check if two lists of floats are equal, with some tolerence for difference.
@@ -44,10 +45,10 @@ def test_none_if_empty(input, expected):
         (median, [[1, 2, 3, 4, 5]], [3]),
     ],
 )
-
 def test_per_trip_speed_computation(func, speed_column, expected):
     df = pd.DataFrame(data={Feature.SPEEDS.value: speed_column})
     assert cf.per_trip_speed_computation(func, df) == expected
+
 
 @pytest.mark.parametrize(
     "input_speeds, k, expected",
