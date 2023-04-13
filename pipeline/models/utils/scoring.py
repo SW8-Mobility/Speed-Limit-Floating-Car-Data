@@ -1,4 +1,3 @@
-from typing import Any
 from sklearn.metrics import mean_absolute_error, mean_squared_error, explained_variance_score, r2_score
 import numpy as np
 import pandas as pd
@@ -57,7 +56,8 @@ def mean_absolute_percentage_error(ground_truth, prediction) -> float:
     Returns:
         float: mean absolute percentage error
     """
-    return np.mean(np.abs((ground_truth - prediction) / ground_truth)) * 100
+    y_true, y_pred = np.array(ground_truth), np.array(prediction)
+    return np.mean(np.abs((y_true - y_pred) / y_true)) * 100
 
 def score_model(ground_truth, prediction) -> dict[str, float]:
     """Scoring function with metrics used for regression models. Will compute:
