@@ -61,8 +61,9 @@ def mean_absolute_percentage_error(ground_truth, prediction) -> float:
         float: mean absolute percentage error
     """
     y_true, y_pred = np.array(ground_truth), np.array(prediction)
-    return np.mean(np.abs((y_true - y_pred) / y_true)) * 100 # type: ignore
-                            
+    return np.mean(np.abs((y_true - y_pred) / y_true)) * 100  # type: ignore
+
+
 def score_model(ground_truth, prediction) -> dict[str, float]:
     """Scoring function with metrics used for regression models. Will compute:
     mean_absolute_error, mean_absolute_percentage_error, mean_squared_error, mean_squared_error,
