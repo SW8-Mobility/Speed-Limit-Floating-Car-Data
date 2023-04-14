@@ -36,16 +36,16 @@ def create_mlp_grid_search(
 
     # define the hyperparameters to search over
     parameters = {
-        "mlp__hidden_layer_sizes": [(50,), (100,), (50, 50), (100, 50)],
-        "mlp__alpha": [0.0001, 0.001, 0.01],
-        "mlp__activation": ["relu", "logistic"],
-        "mlp__solver": ["adam", "lbfgs"],
-        "mlp__learning_rate": ["constant", "adaptive"],
-        "mlp__early_stopping": [True, False],
-        "mlp__tol": [1e-3, 1e-4, 1e-5],
-        "mlp__beta_1": [0.9, 0.8, 0.7],
-        "mlp__beta_2": [0.999, 0.9, 0.8],
-        "mlp__validation_fraction": [0.1, 0.2, 0.3],
+        "hidden_layer_sizes": [(50,), (100,), (50, 50), (100, 50)],
+        "alpha": [0.0001, 0.001, 0.01],
+        "activation": ["relu", "logistic"],
+        "solver": ["adam", "lbfgs"],
+        "learning_rate": ["constant", "adaptive"],
+        "early_stopping": [True, False],
+        "tol": [1e-3, 1e-4, 1e-5],
+        "beta_1": [0.9, 0.8, 0.7],
+        "beta_2": [0.999, 0.9, 0.8],
+        "validation_fraction": [0.1, 0.2, 0.3],
     }
 
     # perform grid search with k-fold cross-validation
