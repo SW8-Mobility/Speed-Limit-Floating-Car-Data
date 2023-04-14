@@ -9,6 +9,7 @@ from pipeline.preprocessing.process_merged_geojson import (
 def test_process_merged_osm_from_json():
     expected_data = {
         "osm_id": [2080, 2081, 2082],
+        "osm_name": ["Møllehusene", "Møllehusvej", "Byvolden"],
         "cpr_vejnavn": ["Holbækmotorvejen", "Holbækmotorvejen", "Holbækmotorvejen"],
         "hast_generel_hast": ["130 - Motorvej", "130 - Motorvej", "130 - Motorvej"],
         "kode_hast_generel_hast": ["130", "130", "130"],

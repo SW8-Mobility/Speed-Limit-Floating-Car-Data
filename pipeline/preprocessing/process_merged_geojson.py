@@ -22,6 +22,7 @@ def create_df_from_merged_osm_vejman(filename: str) -> pd.DataFrame:
     # Unnest some nested values
     property_list = [
         "osm_id",
+        "osm_name",
         "CPR_VEJNAVN",
         "HAST_GENEREL_HAST",
         "KODE_HAST_GENEREL_HAST",
