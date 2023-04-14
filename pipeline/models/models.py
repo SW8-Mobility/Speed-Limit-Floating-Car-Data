@@ -11,8 +11,6 @@ from pipeline.models.statistical_model import StatisticalModel
 
 CORE_NUM = 16  # how many cores to use in grid_search
 RANDOM_STATE = 42
-
-
 def create_mlp_grid_search(
     x_train: pd.DataFrame, y_train: pd.Series, k: int = 5
 ) -> tuple[MLPClassifier, dict]:
@@ -53,15 +51,15 @@ def create_mlp_grid_search(
     grid_search = GridSearchCV(pipeline, parameters, cv=kfold, n_jobs=CORE_NUM)
     grid_search.fit(x_train, y_train)
 
-    # return the best random forest model and the best hyperparameters found by the grid search
+    # return the best mlp model and the best hyperparameters found by the grid search
     return grid_search.best_estimator_, grid_search.best_params_  # type: ignore
 
 
 def random_forest_regressor_gridsearch(
-    X_train: pd.DataFrame, y_train: pd.DataFrame, k: int = 5
+    x_train: pd.DataFrame, y_train: pd.DataFrame, k: int = 5
 ) -> tuple[RandomForestRegressor, dict]:
     """
-    Create and tune the hyperparameters of a RandomForest regression modelusing GridSearchCV with k-fold cross-validation.
+    Create and tune the hyperparameters of a RandomForest regression model using GridSearchCV with k-fold cross-validation.
     Remember to use quantize_results when predicting.
 
     Args:
@@ -91,7 +89,7 @@ def random_forest_regressor_gridsearch(
     )
 
     # Fit the grid search object to the training data
-    grid_search.fit(X_train, y_train)
+    grid_search.fit(x_train, y_train)
 
     return grid_search.best_estimator_, grid_search.best_params_  # type: ignore
 
@@ -134,7 +132,7 @@ def xgboost_classifier_gridsearch(
 
 
 def logistic_regression_gridsearch(
-    X_train: pd.DataFrame, y_train: pd.DataFrame, k: int = 5
+    x_train: pd.DataFrame, y_train: pd.DataFrame, k: int = 5
 ) -> tuple[RandomForestRegressor, dict]:
     """
     Create and tune the hyperparameters of a Logistic regression classifier using GridSearchCV with k-fold cross-validation.
@@ -163,7 +161,7 @@ def logistic_regression_gridsearch(
     )
 
     # Fit the grid search object to the training data
-    grid_search.fit(X_train, y_train)
+    grid_search.fit(x_train, y_train)
 
     return grid_search.best_estimator_, grid_search.best_params_  # type: ignore
 

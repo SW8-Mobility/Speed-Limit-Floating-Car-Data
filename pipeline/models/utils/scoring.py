@@ -9,15 +9,15 @@ SPEED_LIMITS = [15, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130]
 def find_closest_speed_limit(speed: float) -> float:
     """
     Returns closest value in speed_limits.
-    If two numbers are equally close, return the smallest number.
+    If two numbers are equally close, return the smallest number - this could potentially be changed in the future.
     """
-    pos = bisect_left(SPEED_LIMITS, speed)
-    if pos == 0:
+    index = bisect_left(SPEED_LIMITS, speed)
+    if index == 0:
         return SPEED_LIMITS[0]
-    if pos == len(SPEED_LIMITS):
+    if index == len(SPEED_LIMITS):
         return SPEED_LIMITS[-1]
-    before = SPEED_LIMITS[pos - 1]
-    after = SPEED_LIMITS[pos]
+    before = SPEED_LIMITS[index - 1]
+    after = SPEED_LIMITS[index]
     if after - speed < speed - before:
         return after
     else:
