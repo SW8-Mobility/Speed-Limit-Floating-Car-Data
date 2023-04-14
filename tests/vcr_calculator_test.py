@@ -22,6 +22,7 @@ from pipeline.preprocessing.compute_features.vcr_calculator import (
             ],
         ),
         ([3, 2], [-0.5]),
+        ([20, 20, 0, 20, 20], [0, 1.0, 0]),
     ],
 )
 def test_map_vcr(test_input, expected_vcrs: list[float]) -> None:

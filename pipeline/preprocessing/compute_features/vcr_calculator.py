@@ -34,7 +34,9 @@ def map_vcr(velocities: list[float]) -> list[float]:
 
     # list[:-1] all elements except the last one
     # list[1:] all elements except the first one
-    return list(map(lambda v1, v2: vcr(v1, v2), velocities[:-1], velocities[1:]))
+    return [
+        vcr(v1, v2) for v1, v2 in zip(velocities[:-1], velocities[1:]) if v2 is not 0
+    ]
 
 
 def vcr(v1: float, v2: float) -> float:
