@@ -78,11 +78,12 @@ def get_osmid_to_linestring_dictionary(
 
     return geometryHandler.geometryDictionary
 
+def annotate_line_string_to_df() -> None
 
 def main() -> None:
     filename_latest = "wkd/denmark-latest.osm.pbf"
     geoDict = get_osmid_to_linestring_dictionary(filename_latest)
-
+    geoDict.
     with open("denmark-latest-geometry.json", "w") as f:
         f.write(geometry_dictionary_to_geojson(geoDict))
 
