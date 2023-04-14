@@ -4,6 +4,7 @@ from pipeline.models.utils.scoring import (
     mean_absolute_percentage_error,
 )
 
+
 @pytest.mark.parametrize(
     "input, expected",
     [
