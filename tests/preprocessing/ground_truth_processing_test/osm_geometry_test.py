@@ -56,7 +56,8 @@ def test_df_to_geo_json(input_dic, expected):
 
     test1 = expected.encode("utf-8")
     test2 = actual.encode("utf-8")
-    assert (test1 == test2)
+    assert test1 == test2
+
 
 @pytest.mark.parametrize(
     "input_data, input_dict, expected_data",
@@ -66,22 +67,31 @@ def test_df_to_geo_json(input_dic, expected):
                 "osm_id": [2080, 2081],
                 "cpr_vejnavn": ["Holbækmotorvejen", "Holbækmotorvejen"],
                 "hast_gaeldende_hast": [110, 110],
-                "predicted_speed": [42, 42]
+                "predicted_speed": [42, 42],
             },
             {
-                2080: ("[[12.072963, 55.6345298],[12.0722614, 55.634588]", "some_osm_name"),
-                2081: ("[[12.072963, 55.6345298],[12.0722614, 55.634588]", "some_osm_name2")
+                2080: (
+                    "[[12.072963, 55.6345298],[12.0722614, 55.634588]",
+                    "some_osm_name",
+                ),
+                2081: (
+                    "[[12.072963, 55.6345298],[12.0722614, 55.634588]",
+                    "some_osm_name2",
+                ),
             },
             {
                 "osm_id": [2080, 2081],
                 "cpr_vejnavn": ["Holbækmotorvejen", "Holbækmotorvejen"],
                 "hast_gaeldende_hast": [110, 110],
                 "predicted_speed": [42, 42],
-                "osm_line_string": ["[[12.072963, 55.6345298],[12.0722614, 55.634588]", "[[12.072963, 55.6345298],[12.0722614, 55.634588]"],
-                "osm_name": ["some_osm_name", "some_osm_name2"]
-            }
+                "osm_line_string": [
+                    "[[12.072963, 55.6345298],[12.0722614, 55.634588]",
+                    "[[12.072963, 55.6345298],[12.0722614, 55.634588]",
+                ],
+                "osm_name": ["some_osm_name", "some_osm_name2"],
+            },
         )
-    ]
+    ],
 )
 def test_annotate_df_with_osm_data(input_data, input_dict, expected_data):
     # Arrange

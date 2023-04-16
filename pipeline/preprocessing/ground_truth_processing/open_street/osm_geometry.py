@@ -2,7 +2,7 @@ import osmium
 from osmium.geom import GeoJSONFactory
 from typing import Any
 import json
-import pandas as pd #type: ignore
+import pandas as pd  # type: ignore
 
 
 class GeometryRoadHandler(osmium.SimpleHandler):
@@ -25,13 +25,18 @@ class GeometryRoadHandler(osmium.SimpleHandler):
         ):  # The highway tag annotates the type of road, e.g. 'path' or 'motorway'
             try:
                 geo = GeoJSONFactory().create_linestring(w)  # Get the road linestring
-                self.geometryDictionary[w.id] = (geo, w.tags.get("name")) # geo is also a string since the format is json, w.id is an int
+                self.geometryDictionary[w.id] = (
+                    geo,
+                    w.tags.get("name"),
+                )  # geo is also a string since the format is json, w.id is an int
             except Exception as e:
                 print("error", e)
                 return
 
 
-def geometry_dictionary_to_geojson(geoDict: "dict[str, tuple[str, str]]") -> str: #TODO: is the type of dict correct?
+def geometry_dictionary_to_geojson(
+    geoDict: "dict[str, tuple[str, str]]",
+) -> str:  # TODO: is the type of dict correct?
     """outputs geoJson formatted string from at osm_id -> linestring dictionary
 
     Args:
@@ -79,9 +84,16 @@ def get_osmid_to_linestring_dictionary(
 
     return geometryHandler.geometryDictionary
 
+
 def df_to_geo_json(df: pd.DataFrame) -> str:
     # Columns to add to JSON, excluding osm_line_string
-    columns = ["osm_id", "cpr_vejnavn", "hast_gaeldende_hast", "predicted_speed", "osm_name"]
+    columns = [
+        "osm_id",
+        "cpr_vejnavn",
+        "hast_gaeldende_hast",
+        "predicted_speed",
+        "osm_name",
+    ]
 
     # Start geoJson string
     featureCollecton: str = '{"type":"FeatureCollection","features":['
@@ -92,11 +104,11 @@ def df_to_geo_json(df: pd.DataFrame) -> str:
         # Add properties
         featureCollecton += ',"properties":{'
         for header in columns:
-            featureCollecton += f'"{header}":{row[header]},' # TODO: fix that roadnames are incased in "" (but not ints)
+            featureCollecton += f'"{header}":{row[header]},'  # TODO: fix that roadnames are incased in "" (but not ints)
 
         # Remove last comma since we are finished with the array
         featureCollecton = featureCollecton.rstrip(featureCollecton[-1])
-        featureCollecton += "}}," # Ready for adding next feature
+        featureCollecton += "}},"  # Ready for adding next feature
 
     # Remove last comma since we are finished with the array
     featureCollecton = featureCollecton.rstrip(featureCollecton[-1])
@@ -106,9 +118,17 @@ def df_to_geo_json(df: pd.DataFrame) -> str:
 
     return featureCollecton
 
-def annotate_df_with_osm_data(df: pd.DataFrame, geo_dict: dict[str, tuple[str, str]]) -> None:
-    df["osm_line_string"] = df["osm_id"].apply(lambda id: geo_dict[id][0]) # index 0: geometry (str)
-    df["osm_name"] = df["osm_id"].apply(lambda id: geo_dict[id][1]) # index 1: osm_name (str)
+
+def annotate_df_with_osm_data(
+    df: pd.DataFrame, geo_dict: dict[str, tuple[str, str]]
+) -> None:
+    df["osm_line_string"] = df["osm_id"].apply(
+        lambda id: geo_dict[id][0]
+    )  # index 0: geometry (str)
+    df["osm_name"] = df["osm_id"].apply(
+        lambda id: geo_dict[id][1]
+    )  # index 1: osm_name (str)
+
 
 def main() -> None:
     filename_latest = "C:/Users/freja/Desktop/Speed-Limit-Floating-Car-Data/open_street/denmark-latest.osm.pbf"
