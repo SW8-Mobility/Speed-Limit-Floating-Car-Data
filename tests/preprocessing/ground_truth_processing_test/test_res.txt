@@ -1,0 +1,7 @@
+
+
+actual:
+{"type":"FeatureCollection","features":[{"type":"Feature","geometry":{"type":"LineString","coordinates":[[12.072963,55.6345298],[12.0722614,55.634588],[12.0711266,55.6347107],[12.0705787,55.6346358]]},"properties":{"osm_id":2080,"cpr_vejnavn":Holbækmotorvejen,"hast_gaeldende_hast":110,"predicted_speed":100,"osm_name":Møllehusene}},{"type":"Feature","geometry":{"type":"LineString","coordinates":[[12.072963,55.6345298],[12.0722614,55.634588],[12.0711266,55.6347107],[12.0705787,55.6346358]]},"properties":{"osm_id":2081,"cpr_vejnavn":Holbækmotorvejen,"hast_gaeldende_hast":110,"predicted_speed":110,"osm_name":Møllehusvej}}]}
+
+expected:
+{"type":"FeatureCollection","features":[{"type":"Feature","geometry":{"type":"LineString","coordinates":[[12.072963,55.6345298],[12.0722614,55.634588],[12.0711266,55.6347107],[12.0705787,55.6346358]]},"properties":{"osm_id":2080,"cpr_vejnavn":"Holbækmotorvejen","hast_gaeldende_hast":110,"predicted_speed":100,"osm_name":"Møllehusene"}},{"type":"Feature","geometry":{"type":"LineString","coordinates":[[12.072963,55.6345298],[12.0722614,55.634588],[12.0711266,55.6347107],[12.0705787,55.6346358]]},"properties":{"osm_id":2080,"cpr_vejnavn":"Holbækmotorvejen","hast_gaeldende_hast":110,"predicted_speed":110,"osm_name":"Møllehusvej"}}]}
