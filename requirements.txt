@@ -1,8 +1,8 @@
-requests
-pytest
-tqdm
-osmium
-pandas 
-numpy
-scikit-learn
-setuptools
+requests~=2.28.2
+pytest~=7.3.1
+tqdm~=4.65.0
+osmium~=3.6.0
+pandas~=2.0.0
+numpy~=1.24.2
+scikit-learn~=1.2.2
+setuptools~=57.0.0
