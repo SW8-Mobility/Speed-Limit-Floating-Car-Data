@@ -21,8 +21,8 @@ def annotate_geojson_with_speedlimit(
     for segment in geojson["features"]:
         osm_id = segment["properties"]["osm_id"]
         try:
-            segment["properties"][attribute_name] = df_with_speedlimit.loc[
-                osm_id
-            ][Feature.SPEED_LIMIT_PREDICTED.value]
+            segment["properties"][attribute_name] = df_with_speedlimit.loc[osm_id][
+                Feature.SPEED_LIMIT_PREDICTED.value
+            ]
         except:  # no predicted value for osm_id
             segment["properties"][attribute_name] = "na"
