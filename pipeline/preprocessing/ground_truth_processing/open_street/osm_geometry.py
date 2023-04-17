@@ -4,6 +4,8 @@ from typing import Any
 import json
 import pandas as pd  # type: ignore
 
+from pipeline.preprocessing.compute_features.feature import Feature
+
 
 class GeometryRoadHandler(osmium.SimpleHandler):
     """This class is responsible for generating a dictionary between OSM ids and their respective LineString through .apply_file"""
@@ -35,7 +37,7 @@ class GeometryRoadHandler(osmium.SimpleHandler):
 
 
 def geometry_dictionary_to_geojson(
-    geoDict: "dict[str, tuple[str, str]]",
+    geoDict: dict[str, tuple[str, str]],
 ) -> str:  # TODO: is the type of dict correct?
     """outputs geoJson formatted string from at osm_id -> linestring dictionary
 
@@ -70,7 +72,7 @@ def geometry_dictionary_to_geojson(
 
 def get_osmid_to_linestring_dictionary(
     OSMFilePath: str,
-) -> "dict[str, tuple[str, str]]":
+) -> dict[str, tuple[str, str]]:
     """Get the dictionary that maps osm_id to a geojson linestring
 
     Args:
@@ -85,56 +87,73 @@ def get_osmid_to_linestring_dictionary(
     return geometryHandler.geometryDictionary
 
 
-def df_to_geo_json(df: pd.DataFrame) -> str:
-    # Columns to add to JSON, excluding osm_line_string
-    columns = [
-        "osm_id",
-        "cpr_vejnavn",
-        "hast_gaeldende_hast",
-        "predicted_speed",
-        "osm_name",
-    ]
+# def df_to_geo_json(df: pd.DataFrame) -> str:
+#     # Columns to add to JSON, excluding osm_line_string
+#     columns = [
+#         "osm_id",
+#         "cpr_vejnavn",
+#         "hast_gaeldende_hast",
+#         "predicted_speed",
+#         "osm_name",
+#     ]
 
-    # Start geoJson string
-    featureCollecton: str = '{"type":"FeatureCollection","features":['
+#     # Start geoJson string
+#     featureCollecton: str = '{"type":"FeatureCollection","features":['
 
-    for index, row in df.iterrows():
-        featureCollecton += '{"type":"Feature","geometry":' + row["osm_line_string"]
+#     for index, row in df.iterrows():
+#         featureCollecton += '{"type":"Feature","geometry":' + row["osm_line_string"]
 
-        # Add properties
-        featureCollecton += ',"properties":{'
-        for header in columns:
-            featureCollecton += f'"{header}":{row[header]},'  # TODO: fix that roadnames are incased in "" (but not ints)
+#         # Add properties
+#         featureCollecton += ',"properties":{'
+#         for header in columns:
+#             featureCollecton += f'"{header}":{row[header]},'  # TODO: fix that roadnames are incased in "" (but not ints)
 
-        # Remove last comma since we are finished with the array
-        featureCollecton = featureCollecton.rstrip(featureCollecton[-1])
-        featureCollecton += "}},"  # Ready for adding next feature
+#         # Remove last comma since we are finished with the array
+#         featureCollecton = featureCollecton.rstrip(featureCollecton[-1])
+#         featureCollecton += "}},"  # Ready for adding next feature
 
-    # Remove last comma since we are finished with the array
-    featureCollecton = featureCollecton.rstrip(featureCollecton[-1])
+#     # Remove last comma since we are finished with the array
+#     featureCollecton = featureCollecton.rstrip(featureCollecton[-1])
 
-    # End the geoJson string
-    featureCollecton += "]}"
+#     # End the geoJson string
+#     featureCollecton += "]}"
 
-    return featureCollecton
+#     return featureCollecton
 
 
-def annotate_df_with_osm_data(
-    df: pd.DataFrame, geo_dict: dict[str, tuple[str, str]]
+# def annotate_df_with_osm_data(
+#     df: pd.DataFrame, geo_dict: dict[str, tuple[str, str]]
+# ) -> None:
+#     df["osm_line_string"] = df["osm_id"].apply(
+#         lambda id: geo_dict[id][0]
+#     )  # index 0: geometry (str)
+#     df["osm_name"] = df["osm_id"].apply(
+#         lambda id: geo_dict[id][1]
+#     )  # index 1: osm_name (str)
+
+
+def annotate_geojson_with_speedlimit(
+    geojson: dict, df_with_speedlimit: pd.DataFrame
 ) -> None:
-    df["osm_line_string"] = df["osm_id"].apply(
-        lambda id: geo_dict[id][0]
-    )  # index 0: geometry (str)
-    df["osm_name"] = df["osm_id"].apply(
-        lambda id: geo_dict[id][1]
-    )  # index 1: osm_name (str)
+    """Annotates a geojson dict with predicted speedlimits from a dataframe.
+
+    Args:
+        geojson (dict): geojson as a dictionary
+        df_with_speedlimit (pd.DataFrame): dataframe with speedlimits
+    """
+    df_with_speedlimit["index"] = df_with_speedlimit[Feature.OSM_ID.value]
+    df_with_speedlimit = df_with_speedlimit.set_index("index")
+
+    for entry in geojson["features"]:
+        osm_id = entry["properties"]["osm_id"]
+        entry["properties"][Feature.SPEED_LIMIT.value] = df_with_speedlimit.loc[osm_id][
+            Feature.SPEED_LIMIT.value
+        ]
 
 
 def main() -> None:
-    filename_latest = "C:/Users/freja/Desktop/Speed-Limit-Floating-Car-Data/open_street/denmark-latest.osm.pbf"
+    filename_latest = "C:/Users/ax111/Documents/Personal documents/SW8/speed_limit_floating_car_data/pipeline/preprocessing/ground_truth_processing/denmark-latest-geometry.json"
     geoDict = get_osmid_to_linestring_dictionary(filename_latest)
-    geo_df = pd.DataFrame(data=geoDict)
-    geo_df.to_pickle("geoDict.pkl")
 
     with open("denmark-latest-geometry.json", "w") as f:
         f.write(geometry_dictionary_to_geojson(geoDict))
