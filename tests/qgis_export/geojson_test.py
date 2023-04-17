@@ -22,8 +22,8 @@ from pipeline.qgis_export.geojson import (
             },
             {
                 "features": [
-                    {"properties": {"osm_id": 2080, 'speed limit': 110}},
-                    {"properties": {"osm_id": 2081, 'speed limit': 130}},
+                    {"properties": {"osm_id": 2080, "speed limit": 110}},
+                    {"properties": {"osm_id": 2081, "speed limit": 130}},
                 ]
             },
         )
