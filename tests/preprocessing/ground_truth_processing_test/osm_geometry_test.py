@@ -5,6 +5,7 @@ from pipeline.preprocessing.ground_truth_processing.open_street.osm_geometry imp
     annotate_geojson_with_speedlimit,
 )
 
+
 @pytest.mark.parametrize(
     "df_data, geojson_dict, expected_dict",
     [
