@@ -115,24 +115,16 @@ from pipeline.preprocessing.ground_truth_processing.open_street.osm_geometry imp
             },
             {
                 "features": [
-                    {
-                        'properties': {'osm_id': 2080}
-                    },
-                    {
-                        'properties': {'osm_id': 2081}
-                    },
+                    {"properties": {"osm_id": 2080}},
+                    {"properties": {"osm_id": 2081}},
                 ]
             },
             {
                 "features": [
-                    {
-                        'properties': {'osm_id': 2080, Feature.SPEED_LIMIT.value: 110}
-                    },
-                    {
-                        'properties': {'osm_id': 2081, Feature.SPEED_LIMIT.value: 130}
-                    },
+                    {"properties": {"osm_id": 2080, Feature.SPEED_LIMIT.value: 110}},
+                    {"properties": {"osm_id": 2081, Feature.SPEED_LIMIT.value: 130}},
                 ]
-            }
+            },
         )
     ],
 )
