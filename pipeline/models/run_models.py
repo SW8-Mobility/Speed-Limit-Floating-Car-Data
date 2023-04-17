@@ -1,5 +1,9 @@
-from pipeline.models.models import create_mlp_grid_search, random_forest_regressor_gridsearch, \
-    xgboost_classifier_gridsearch, logistic_regression_gridsearch
+from pipeline.models.models import (
+    create_mlp_grid_search,
+    random_forest_regressor_gridsearch,
+    xgboost_classifier_gridsearch,
+    logistic_regression_gridsearch,
+)
 from pipeline.models.utils.scoring import score_model
 from pipeline.models.models import (
     create_mlp_grid_search,
@@ -211,10 +215,12 @@ def train_models():
     )
 
     # define a list of models and their corresponding grid search functions (from models.py)
-    models = [("mlp", create_mlp_grid_search),
-              ("random forest", random_forest_regressor_gridsearch),
-              ("xgboost", xgboost_classifier_gridsearch),
-              ("logistic regression", logistic_regression_gridsearch)]  # Missing statistical model atm.
+    models = [
+        ("mlp", create_mlp_grid_search),
+        ("random forest", random_forest_regressor_gridsearch),
+        ("xgboost", xgboost_classifier_gridsearch),
+        ("logistic regression", logistic_regression_gridsearch),
+    ]  # Missing statistical model atm.
 
     results = {}
 
@@ -229,8 +235,9 @@ def train_models():
     test_models(results, X_test, y_test)
 
 
-
-def test_models(models, X_test: pd.DataFrame, y_test: pd.Series):  # Dunno how to type this????
+def test_models(
+    models, X_test: pd.DataFrame, y_test: pd.Series
+):  # Dunno how to type this????
     """
     Tests all the models based on obtained best models.
     Args:
@@ -242,7 +249,9 @@ def test_models(models, X_test: pd.DataFrame, y_test: pd.Series):  # Dunno how t
         model = model_info["model"]
         y_pred = model.predict(X_test)
         scores = score_model(y_test, y_pred)
-        print(f"{model_name} test set performance: MAE={scores['mae']:.4f}, MAPE={scores['mape']:.4f}, MSE={scores['mse']:.4f}, RMSE={scores['rmse']:.4f}, R^2={scores['r2']:.4f}, EV={scores['ev']:.4f}, ")
+        print(
+            f"{model_name} test set performance: MAE={scores['mae']:.4f}, MAPE={scores['mape']:.4f}, MSE={scores['mse']:.4f}, RMSE={scores['rmse']:.4f}, R^2={scores['r2']:.4f}, EV={scores['ev']:.4f}, "
+        )
 
 
 def main():
