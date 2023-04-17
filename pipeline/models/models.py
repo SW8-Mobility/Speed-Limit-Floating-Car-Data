@@ -73,7 +73,7 @@ def random_forest_regressor_gridsearch(
     """
 
     # Create a random forest regressor
-    rfr = RandomForestRegressor(random_state=42)
+    rfr = RandomForestRegressor(random_state=RANDOM_STATE)
 
     # Set up the parameter grid to search over
     param_grid = {
