@@ -30,7 +30,7 @@ def create_mlp_grid_search(
     pipeline = Pipeline(
         [
             ("scaler", StandardScaler()),
-            ("mlp", MLPClassifier(max_iter=1000, random_state=42)),
+            ("mlp", MLPClassifier(max_iter=1000, random_state=RANDOM_STATE)),
         ]
     )
 
@@ -98,7 +98,7 @@ def random_forest_regressor_gridsearch(
 
 def xgboost_classifier_gridsearch(
     x_train: pd.DataFrame, y_train: pd.DataFrame, k: int = 5
-) -> tuple[RandomForestRegressor, dict]:
+) -> tuple[XGBClassifier, dict]:
     """
     Create and tune the hyperparameters of an xgboost classifier using GridSearchCV with k-fold cross-validation.
 
@@ -135,7 +135,7 @@ def xgboost_classifier_gridsearch(
 
 def logistic_regression_gridsearch(
     x_train: pd.DataFrame, y_train: pd.DataFrame, k: int = 5
-) -> tuple[RandomForestRegressor, dict]:
+) -> tuple[LogisticRegression, dict]:
     """
     Create and tune the hyperparameters of a Logistic regression classifier using GridSearchCV with k-fold cross-validation.
 
