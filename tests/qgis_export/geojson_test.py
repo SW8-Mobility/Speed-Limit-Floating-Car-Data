@@ -1,7 +1,7 @@
 import pandas as pd  # type: ignore
 import pytest
 from pipeline.preprocessing.compute_features.feature import Feature
-from pipeline.preprocessing.ground_truth_processing.open_street.osm_geometry import (
+from pipeline.qgis_export.geojson import (
     annotate_geojson_with_speedlimit,
 )
 
@@ -12,7 +12,7 @@ from pipeline.preprocessing.ground_truth_processing.open_street.osm_geometry imp
         (
             {
                 "osm_id": [2080, 2081],
-                Feature.SPEED_LIMIT.value: [110, 130],
+                Feature.SPEED_LIMIT_PREDICTED.value: [110, 130],
             },
             {
                 "features": [
@@ -22,8 +22,8 @@ from pipeline.preprocessing.ground_truth_processing.open_street.osm_geometry imp
             },
             {
                 "features": [
-                    {"properties": {"osm_id": 2080, Feature.SPEED_LIMIT.value: 110}},
-                    {"properties": {"osm_id": 2081, Feature.SPEED_LIMIT.value: 130}},
+                    {"properties": {"osm_id": 2080, 'speed limit': 110}},
+                    {"properties": {"osm_id": 2081, 'speed limit': 130}},
                 ]
             },
         )
@@ -46,7 +46,7 @@ def test_annotate_geojson_with_speedlimit(df_data, geojson_dict, expected_dict):
         (
             {
                 "osm_id": [2080],
-                Feature.SPEED_LIMIT.value: [110],
+                Feature.SPEED_LIMIT_PREDICTED.value: [110],
             },
             {
                 "features": [
@@ -56,8 +56,8 @@ def test_annotate_geojson_with_speedlimit(df_data, geojson_dict, expected_dict):
             },
             {
                 "features": [
-                    {"properties": {"osm_id": 2080, Feature.SPEED_LIMIT.value: 110}},
-                    {"properties": {"osm_id": 2081, Feature.SPEED_LIMIT.value: "na"}},
+                    {"properties": {"osm_id": 2080, "speed limit": 110}},
+                    {"properties": {"osm_id": 2081, "speed limit": "na"}},
                 ]
             },
         )
