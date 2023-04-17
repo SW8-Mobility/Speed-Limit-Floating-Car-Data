@@ -149,28 +149,22 @@ def test_annotate_geojson_with_speedlimit(df_data, geojson_dict, expected_dict):
             },
             {
                 "features": [
-                    {
-                        'properties': {'osm_id': 2080}
-                    },
-                    {
-                        'properties': {'osm_id': 2081}
-                    },
+                    {"properties": {"osm_id": 2080}},
+                    {"properties": {"osm_id": 2081}},
                 ]
             },
             {
                 "features": [
-                    {
-                        'properties': {'osm_id': 2080, Feature.SPEED_LIMIT.value: 110}
-                    },
-                    {
-                        'properties': {'osm_id': 2081, Feature.SPEED_LIMIT.value: 'na'}
-                    },
+                    {"properties": {"osm_id": 2080, Feature.SPEED_LIMIT.value: 110}},
+                    {"properties": {"osm_id": 2081, Feature.SPEED_LIMIT.value: "na"}},
                 ]
-            }
+            },
         )
     ],
 )
-def test_annotate_geojson_with_speedlimit_missing_entry(df_data, geojson_dict, expected_dict):
+def test_annotate_geojson_with_speedlimit_missing_entry(
+    df_data, geojson_dict, expected_dict
+):
     # Arrange
     df = pd.DataFrame(data=df_data)
 
@@ -179,4 +173,3 @@ def test_annotate_geojson_with_speedlimit_missing_entry(df_data, geojson_dict, e
 
     # Assert
     assert geojson_dict == expected_dict
-

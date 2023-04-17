@@ -144,16 +144,16 @@ def annotate_geojson_with_speedlimit(
     """
     # index using osm_id
     df_with_speedlimit["index"] = df_with_speedlimit[Feature.OSM_ID.value]
-    df_with_speedlimit = df_with_speedlimit.set_index("index") 
+    df_with_speedlimit = df_with_speedlimit.set_index("index")
 
     for segment in geojson["features"]:
         osm_id = segment["properties"]["osm_id"]
         try:
-            segment["properties"][Feature.SPEED_LIMIT.value] = df_with_speedlimit.loc[osm_id][
-                Feature.SPEED_LIMIT.value
-            ]
-        except: # no predicted value for osm_id
-            segment["properties"][Feature.SPEED_LIMIT.value] = 'na'
+            segment["properties"][Feature.SPEED_LIMIT.value] = df_with_speedlimit.loc[
+                osm_id
+            ][Feature.SPEED_LIMIT.value]
+        except:  # no predicted value for osm_id
+            segment["properties"][Feature.SPEED_LIMIT.value] = "na"
 
 
 def main() -> None:
@@ -173,12 +173,8 @@ if __name__ == "__main__":
     df = pd.DataFrame(data=data)
     dict = {
         "features": [
-            {
-                'properties': {'osm_id': 2080}
-            },
-            {
-                'properties': {'osm_id': 2081}
-            },
+            {"properties": {"osm_id": 2080}},
+            {"properties": {"osm_id": 2081}},
         ]
     }
     annotate_geojson_with_speedlimit(dict, df)
