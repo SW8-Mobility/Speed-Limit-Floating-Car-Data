@@ -12,7 +12,7 @@ To setup the python container
 2. Insert your API key from https://fcd-share.civil.aau.dk/ into `FCD_API_KEY`
 3. Run `docker compose up -d` in this directory
 
-You can now use the terminal feature within docker desktop or use the command `docker compose exec -ti python python /scripts/api-script.py`
+You can now use the terminal feature within docker desktop or use the command `docker compose exec -it python /bin/bash`
 
 Any changes you make to `./scripts/api-script.py` will be reflected into the container instantly.
 
@@ -44,6 +44,12 @@ The 3 dataframes are very large. For model training, perhaps create a random for
 If errors are not shown in pull request, but mypy fails, run mypy locally with the command:
 ```
 python -m mypy.
+```
+
+## Pytest
+Run all tests:
+```
+python -m pytest
 ```
 
 ## Imports
