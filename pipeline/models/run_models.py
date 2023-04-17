@@ -1,5 +1,9 @@
-from pipeline.models.models import create_mlp_grid_search, random_forest_regressor_gridsearch, \
-    xgboost_classifier_gridsearch, logistic_regression_gridsearch
+from pipeline.models.models import (
+    create_mlp_grid_search,
+    random_forest_regressor_gridsearch,
+    xgboost_classifier_gridsearch,
+    logistic_regression_gridsearch,
+)
 from pipeline.preprocessing.compute_features.feature import Feature
 from sklearn.model_selection import train_test_split
 import pandas as pd
@@ -69,7 +73,8 @@ def get_fake_input():
                 [[20, 35], [35, 45], [46.5, 44.5]],
                 [30, 40, 46],
                 40,
-            ], [
+            ],
+            [
                 50,
                 [[10, 30, 40], [30, 40, 50], [50, 43, 46]],
                 [[150, 2000, 100], [3000, 400, 150], [5000, 430, 4600]],
@@ -82,7 +87,8 @@ def get_fake_input():
                 [[20, 35], [35, 45], [46.5, 44.5]],
                 [30, 40, 46],
                 40,
-            ], [
+            ],
+            [
                 50,
                 [[10, 30, 40], [30, 40, 50], [50, 43, 46]],
                 [[150, 2000, 100], [3000, 400, 150], [5000, 430, 4600]],
@@ -95,7 +101,8 @@ def get_fake_input():
                 [[20, 35], [35, 45], [46.5, 44.5]],
                 [30, 40, 46],
                 40,
-            ], [
+            ],
+            [
                 50,
                 [[10, 30, 40], [30, 40, 50], [50, 43, 46]],
                 [[150, 2000, 100], [3000, 400, 150], [5000, 430, 4600]],
@@ -108,7 +115,8 @@ def get_fake_input():
                 [[20, 35], [35, 45], [46.5, 44.5]],
                 [30, 40, 46],
                 40,
-            ], [
+            ],
+            [
                 50,
                 [[10, 30, 40], [30, 40, 50], [50, 43, 46]],
                 [[150, 2000, 100], [3000, 400, 150], [5000, 430, 4600]],
@@ -121,7 +129,8 @@ def get_fake_input():
                 [[20, 35], [35, 45], [46.5, 44.5]],
                 [30, 40, 46],
                 40,
-            ], [
+            ],
+            [
                 50,
                 [[10, 30, 40], [30, 40, 50], [50, 43, 46]],
                 [[150, 2000, 100], [3000, 400, 150], [5000, 430, 4600]],
@@ -134,7 +143,8 @@ def get_fake_input():
                 [[20, 35], [35, 45], [46.5, 44.5]],
                 [30, 40, 46],
                 40,
-            ], [
+            ],
+            [
                 50,
                 [[10, 30, 40], [30, 40, 50], [50, 43, 46]],
                 [[150, 2000, 100], [3000, 400, 150], [5000, 430, 4600]],
@@ -147,7 +157,8 @@ def get_fake_input():
                 [[20, 35], [35, 45], [46.5, 44.5]],
                 [30, 40, 46],
                 40,
-            ], [
+            ],
+            [
                 50,
                 [[10, 30, 40], [30, 40, 50], [50, 43, 46]],
                 [[150, 2000, 100], [3000, 400, 150], [5000, 430, 4600]],
@@ -160,7 +171,8 @@ def get_fake_input():
                 [[20, 35], [35, 45], [46.5, 44.5]],
                 [30, 40, 46],
                 40,
-            ], [
+            ],
+            [
                 50,
                 [[10, 30, 40], [30, 40, 50], [50, 43, 46]],
                 [[150, 2000, 100], [3000, 400, 150], [5000, 430, 4600]],
@@ -173,7 +185,7 @@ def get_fake_input():
                 [[20, 35], [35, 45], [46.5, 44.5]],
                 [30, 40, 46],
                 40,
-            ]
+            ],
         ],
         columns=columns,
     )
@@ -191,13 +203,17 @@ def run_models():
     X = input_df.drop(columns=["target"])
     y = input_df["target"]
 
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.2, random_state=42
+    )
 
     # define a list of models and their corresponding grid search functions (from models.py)
-    models = [("mlp", create_mlp_grid_search),
-              ("random forest", random_forest_regressor_gridsearch),
-              ("xgboost", xgboost_classifier_gridsearch),
-              ("logistic regression", logistic_regression_gridsearch)]
+    models = [
+        ("mlp", create_mlp_grid_search),
+        ("random forest", random_forest_regressor_gridsearch),
+        ("xgboost", xgboost_classifier_gridsearch),
+        ("logistic regression", logistic_regression_gridsearch),
+    ]
 
     results = {}
 
