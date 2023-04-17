@@ -1,5 +1,6 @@
 from pipeline.models.models import create_mlp_grid_search, random_forest_regressor_gridsearch, \
     xgboost_classifier_gridsearch, logistic_regression_gridsearch
+from pipeline.models.utils.scoring import score_model
 from pipeline.preprocessing.compute_features.feature import Feature
 from sklearn.model_selection import train_test_split
 import pandas as pd
@@ -181,7 +182,7 @@ def get_fake_input():
     return input_df
 
 
-def run_models():
+def train_models():
     """
     Runs all models and records the results in the results dictionary.
     Also prints the best estimators and their parameters.
@@ -197,7 +198,7 @@ def run_models():
     models = [("mlp", create_mlp_grid_search),
               ("random forest", random_forest_regressor_gridsearch),
               ("xgboost", xgboost_classifier_gridsearch),
-              ("logistic regression", logistic_regression_gridsearch)]
+              ("logistic regression", logistic_regression_gridsearch)]  # Missing statistical model atm.
 
     results = {}
 
@@ -209,9 +210,27 @@ def run_models():
         # print the best parameters for each model
         print(f"Best parameters for {model_name}: {best_params}")
 
+    test_models(results, X_test, y_test)
+
+
+
+def test_models(models, X_test: pd.DataFrame, y_test: pd.Series):  # Dunno how to type this????
+    """
+    Tests all the models based on obtained best models.
+    Args:
+        models: The dictionary of the best models after fitting on the train data.
+        X_test (pd.DataFrame): The input test data from the train-test split
+        y_test (pd.Series): The target test data from the train-test split
+    """
+    for model_name, model_info in models.items():
+        model = model_info["model"]
+        y_pred = model.predict(X_test)
+        scores = score_model(y_test, y_pred)
+        print(f"{model_name} test set performance: MAE={scores['mae']:.4f}, MAPE={scores['mape']:.4f}, MSE={scores['mse']:.4f}, RMSE={scores['rmse']:.4f}, R^2={scores['r2']:.4f}, EV={scores['ev']:.4f}, ")
+
 
 def main():
-    run_models()
+    train_models()
 
 
 if __name__ == "__main__":
