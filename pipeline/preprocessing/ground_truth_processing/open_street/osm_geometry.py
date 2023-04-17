@@ -87,51 +87,6 @@ def get_osmid_to_linestring_dictionary(
     return geometryHandler.geometryDictionary
 
 
-# def df_to_geo_json(df: pd.DataFrame) -> str:
-#     # Columns to add to JSON, excluding osm_line_string
-#     columns = [
-#         "osm_id",
-#         "cpr_vejnavn",
-#         "hast_gaeldende_hast",
-#         "predicted_speed",
-#         "osm_name",
-#     ]
-
-#     # Start geoJson string
-#     featureCollecton: str = '{"type":"FeatureCollection","features":['
-
-#     for index, row in df.iterrows():
-#         featureCollecton += '{"type":"Feature","geometry":' + row["osm_line_string"]
-
-#         # Add properties
-#         featureCollecton += ',"properties":{'
-#         for header in columns:
-#             featureCollecton += f'"{header}":{row[header]},'  # TODO: fix that roadnames are incased in "" (but not ints)
-
-#         # Remove last comma since we are finished with the array
-#         featureCollecton = featureCollecton.rstrip(featureCollecton[-1])
-#         featureCollecton += "}},"  # Ready for adding next feature
-
-#     # Remove last comma since we are finished with the array
-#     featureCollecton = featureCollecton.rstrip(featureCollecton[-1])
-
-#     # End the geoJson string
-#     featureCollecton += "]}"
-
-#     return featureCollecton
-
-
-# def annotate_df_with_osm_data(
-#     df: pd.DataFrame, geo_dict: dict[str, tuple[str, str]]
-# ) -> None:
-#     df["osm_line_string"] = df["osm_id"].apply(
-#         lambda id: geo_dict[id][0]
-#     )  # index 0: geometry (str)
-#     df["osm_name"] = df["osm_id"].apply(
-#         lambda id: geo_dict[id][1]
-#     )  # index 1: osm_name (str)
-
-
 def annotate_geojson_with_speedlimit(
     geojson: dict, df_with_speedlimit: pd.DataFrame
 ) -> None:
@@ -165,20 +120,20 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    # main()
-    data = {
-        "osm_id": [2080],
-        Feature.SPEED_LIMIT.value: [110],
-    }
-    df = pd.DataFrame(data=data)
-    dict = {
-        "features": [
-            {
-                'properties': {'osm_id': 2080}
-            },
-            {
-                'properties': {'osm_id': 2081}
-            },
-        ]
-    }
-    annotate_geojson_with_speedlimit(dict, df)
+    main()
+    # data = {
+    #     "osm_id": [2080],
+    #     Feature.SPEED_LIMIT.value: [110],
+    # }
+    # df = pd.DataFrame(data=data)
+    # dict = {
+    #     "features": [
+    #         {
+    #             'properties': {'osm_id': 2080}
+    #         },
+    #         {
+    #             'properties': {'osm_id': 2081}
+    #         },
+    #     ]
+    # }
+    # annotate_geojson_with_speedlimit(dict, df)
