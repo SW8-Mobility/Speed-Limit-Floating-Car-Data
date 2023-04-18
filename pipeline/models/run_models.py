@@ -1,9 +1,12 @@
+from typing import Any, Callable
+
 from pipeline.models.models import (
     create_mlp_grid_search,
     random_forest_regressor_gridsearch,
     xgboost_classifier_gridsearch,
-    logistic_regression_gridsearch,
+    logistic_regression_gridsearch, statistical_model,
 )
+from pipeline.models.utils.model_enum import ModelEnum
 from pipeline.models.utils.scoring import score_model
 from pipeline.models.models import (
     create_mlp_grid_search,
@@ -16,6 +19,11 @@ from sklearn.model_selection import train_test_split
 import pandas as pd
 
 pd.options.display.width = 0
+
+
+Model = dict[str, ModelEnum]
+Params = dict[str, Any]
+Models = dict[tuple[Model, Params]]
 
 
 def get_fake_input():
@@ -207,51 +215,58 @@ def train_models():
     """
     input_df = get_fake_input()
 
-    X = input_df.drop(columns=["target"])
+    x = input_df.drop(columns=["target"])
     y = input_df["target"]
 
-    X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.2, random_state=42
+    x_train, x_test, y_train, y_test = train_test_split(
+        x, y, test_size=0.2, random_state=42
     )
 
     # define a list of models and their corresponding grid search functions (from models.py)
     models = [
-        ("mlp", create_mlp_grid_search),
-        ("random forest", random_forest_regressor_gridsearch),
-        ("xgboost", xgboost_classifier_gridsearch),
-        ("logistic regression", logistic_regression_gridsearch),
-    ]  # Missing statistical model atm.
+        (ModelEnum.MLP, create_mlp_grid_search),
+        (ModelEnum.RF, random_forest_regressor_gridsearch),
+        (ModelEnum.XGB, xgboost_classifier_gridsearch),
+        (ModelEnum.LOGREG, logistic_regression_gridsearch),
+        (ModelEnum.STATMODEL, statistical_model),
+    ]
 
     results = {}
 
     # loop through each model and perform grid search
     for model_name, model_func in models:
-        best_model, best_params = model_func(X_train, y_train)
-        results[model_name] = {"model": best_model, "params": best_params}
+        if model_name == ModelEnum.STATMODEL:  # Handle statistical model separately
+            best_model = model_func()
+            results[model_name] = {"model": best_model, "params": None}
+        else:
+            best_model, best_params = model_func(x_train, y_train)
+            results[model_name] = {"model": best_model, "params": best_params}
 
-        # print the best parameters for each model
-        print(f"Best parameters for {model_name}: {best_params}")
-
-    test_models(results, X_test, y_test)
+    test_models(results, x_test, y_test)
 
 
 def test_models(
-    models, X_test: pd.DataFrame, y_test: pd.Series
-):  # Dunno how to type this????
+    models: Models, x_test: pd.DataFrame, y_test: pd.Series
+):
     """
     Tests all the models based on obtained best models.
     Args:
-        models: The dictionary of the best models after fitting on the train data.
-        X_test (pd.DataFrame): The input test data from the train-test split
+        models (Models): The dictionary of the best models after fitting on the train data.
+        x_test (pd.DataFrame): The input test data from the train-test split
         y_test (pd.Series): The target test data from the train-test split
     """
+    scored_predictions = pd.DataFrame({'y_true': y_test})  # initialize scored_predictions with y_test
     for model_name, model_info in models.items():
         model = model_info["model"]
-        y_pred = model.predict(X_test)
+        y_pred = model.predict(x_test)
         scores = score_model(y_test, y_pred)
-        print(
-            f"{model_name} test set performance: MAE={scores['mae']:.4f}, MAPE={scores['mape']:.4f}, MSE={scores['mse']:.4f}, RMSE={scores['rmse']:.4f}, R^2={scores['r2']:.4f}, EV={scores['ev']:.4f}, "
-        )
+        scored_predictions[f"{model_name}_y_pred"] = y_pred  # add a new column for each model's predictions
+        for score_name, score_value in scores.items():
+            scored_predictions[f"{model_name}_{score_name}"] = score_value  # add a new column for each score
+
+    return scored_predictions
+
+
 
 
 def main():
