@@ -120,15 +120,15 @@ def map_segments_to_coordinates(
 
 
 def main():
-    df: pd.DataFrame = (
-        pd.read_pickle(
-            "C:\\Users\\ax111\\Documents\\Personal documents\\Coding\\SW8\\geo_json_metrics\\geo_json_metrics\\data\\pickle_files\\2012.pkl"
-        )
-        .infer_objects()
-        .head(1000)
-    )
-    mapped_df = create_segment_to_coordinate_df(df)
-    mapped_df.to_pickle("test.pkl")
+    pkl_folder = "/home/kubbe/speed_limit_floating_car_data/pipeline/pkl_files/"
+    for pkl_file, out_file in [
+        ("2012.pkl", "segments_2012.pkl"),
+        ("2013.pkl", "segments_2013.pkl"),
+        ("2014.pkl", "segments_2014.pkl")
+    ]:
+        df = pd.read_pickle(pkl_folder+pkl_file).infer_objects()
+        mapped_df = create_segment_to_coordinate_df(df)
+        mapped_df.to_pickle(pkl_folder+out_file)
 
 
 if __name__ == "__main__":
