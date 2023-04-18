@@ -84,7 +84,7 @@ def get_osmid_to_linestring_dictionary(
     geometryHandler = GeometryRoadHandler()
     geometryHandler.apply_file(OSMFilePath, locations=True)
 
-    return geometryHandler.geometryDictionary   
+    return geometryHandler.geometryDictionary
 
 
 def main() -> None:
