@@ -13,7 +13,7 @@ def annotate_geojson_with_speedlimit(
         geojson (dict): geojson as a dictionary
         df_with_speedlimit (pd.DataFrame): dataframe with speedlimits
     """
-    # index using osm_id
+    # index using osm_id - this makes look ups faster
     attribute_name = "speed limit"
     df_with_speedlimit["index"] = df_with_speedlimit[Feature.OSM_ID.value]
     df_with_speedlimit = df_with_speedlimit.set_index("index")
