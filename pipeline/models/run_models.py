@@ -4,7 +4,8 @@ from pipeline.models.models import (
     create_mlp_grid_search,
     random_forest_regressor_gridsearch,
     xgboost_classifier_gridsearch,
-    logistic_regression_gridsearch, statistical_model,
+    logistic_regression_gridsearch,
+    statistical_model,
 )
 from pipeline.models.utils.model_enum import ModelEnum
 from pipeline.models.utils.scoring import score_model
@@ -245,9 +246,7 @@ def train_models():
     test_models(results, x_test, y_test)
 
 
-def test_models(
-    models: Models, x_test: pd.DataFrame, y_test: pd.Series
-):
+def test_models(models: Models, x_test: pd.DataFrame, y_test: pd.Series):
     """
     Tests all the models based on obtained best models.
     Args:
@@ -255,18 +254,22 @@ def test_models(
         x_test (pd.DataFrame): The input test data from the train-test split
         y_test (pd.Series): The target test data from the train-test split
     """
-    scored_predictions = pd.DataFrame({'y_true': y_test})  # initialize scored_predictions with y_test
+    scored_predictions = pd.DataFrame(
+        {"y_true": y_test}
+    )  # initialize scored_predictions with y_test
     for model_name, model_info in models.items():
         model = model_info["model"]
         y_pred = model.predict(x_test)
         scores = score_model(y_test, y_pred)
-        scored_predictions[f"{model_name}_y_pred"] = y_pred  # add a new column for each model's predictions
+        scored_predictions[
+            f"{model_name}_y_pred"
+        ] = y_pred  # add a new column for each model's predictions
         for score_name, score_value in scores.items():
-            scored_predictions[f"{model_name}_{score_name}"] = score_value  # add a new column for each score
+            scored_predictions[
+                f"{model_name}_{score_name}"
+            ] = score_value  # add a new column for each score
 
     return scored_predictions
-
-
 
 
 def main():
