@@ -4,6 +4,14 @@ import pandas as pd
 
 
 def format_hast_generel_hast(df: pd.DataFrame) -> pd.DataFrame:
+    """Used to format the values in hast_generel_hast colomn to ints.
+
+    Args:
+        df (pd.DataFrame): df with vejman data
+
+    Returns:
+        pd.DataFrame: updated df
+    """
     mapping = {
         "130 - Motorvej": 130,
         "50 - Indenfor byzonetavler": 50,
@@ -14,16 +22,30 @@ def format_hast_generel_hast(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def prepare_vejman_df(df: pd.DataFrame) -> pd.DataFrame:
-    df = df.drop(
-        ["kode_vejstiklasse", "kode_vejtypeskiltet", "kode_hast_generel_hast"], axis=1
+    """Clean and cast types for dataframe with vejman data. 
+
+    Args:
+        df (pd.DataFrame): df with vejman data
+
+    Returns:
+        pd.DataFrame: cleaned df with vejman data
+    """
+    # headers: ['osm_id', 'cpr_vejnavn', 'hast_generel_hast', 'kode_hast_generel_hast',
+    #           'hast_gaeldende_hast', 'vejstiklasse', 'kode_vejstiklasse',
+    #           'vejtypeskiltet', 'kode_vejtypeskiltet', 'hast_senest_rettet',
+    #           'coordinates']
+    
+    df = df.drop( # remove unused colomns
+        ["kode_vejstiklasse", "kode_vejtypeskiltet", "kode_hast_generel_hast", "coordinates"], axis=1
     )
-    df = df[df["hast_generel_hast"].notna()]
-    df = df[df["hast_gaeldende_hast"].notna()]
-    df = df.fillna(value="None")  # make None values strings
+    df = df[df["hast_generel_hast"].notna()]   # drop rows where hast_generel_hast is None
+    df = df[df["hast_gaeldende_hast"].notna()] # drop rows where hast_gaeldende_hast is None
+    
+    df = df.fillna(value="None")  # make remaining None values strings
 
     df = format_hast_generel_hast(df)
 
-    df = df.astype(
+    df = df.astype( # type casting 
         {"cpr_vejnavn": str, "vejtypeskiltet": str, "hast_gaeldende_hast": int}
     )
     df["hast_senest_rettet"] = pd.to_datetime(
@@ -36,10 +58,21 @@ def prepare_vejman_df(df: pd.DataFrame) -> pd.DataFrame:
 def add_vejman_features(
     df: pd.DataFrame, dataframe_year: int, ground_truth_path: str
 ) -> pd.DataFrame:
-    # headers: ['osm_id', 'cpr_vejnavn', 'hast_generel_hast', 'kode_hast_generel_hast',
-    #           'hast_gaeldende_hast', 'vejstiklasse', 'kode_vejstiklasse',
-    #           'vejtypeskiltet', 'kode_vejtypeskiltet', 'hast_senest_rettet',
-    #           'coordinates']
+    """Adds features from vejman data to dataframe with features. This includes 
+    ground truth along with 
+    #    ['cpr_vejnavn', 'hast_generel_hast',
+    #     'hast_gaeldende_hast', 'vejstiklasse',
+    #     'vejtypeskiltet', 'hast_senest_rettet',
+    #     'coordinates']
+
+    Args:
+        df (pd.DataFrame): _description_
+        dataframe_year (int): _description_
+        ground_truth_path (str): _description_
+
+    Returns:
+        pd.DataFrame: _description_
+    """
     ground_truth_df = pd.read_pickle(ground_truth_path)
     vejman_features = prepare_vejman_df(ground_truth_df)
 
