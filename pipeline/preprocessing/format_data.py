@@ -124,11 +124,11 @@ def main():
     for pkl_file, out_file in [
         ("2012.pkl", "segments_2012.pkl"),
         ("2013.pkl", "segments_2013.pkl"),
-        ("2014.pkl", "segments_2014.pkl")
+        ("2014.pkl", "segments_2014.pkl"),
     ]:
-        df = pd.read_pickle(pkl_folder+pkl_file).infer_objects()
+        df = pd.read_pickle(pkl_folder + pkl_file).infer_objects()
         mapped_df = create_segment_to_coordinate_df(df)
-        mapped_df.to_pickle(pkl_folder+out_file)
+        mapped_df.to_pickle(pkl_folder + out_file)
 
 
 if __name__ == "__main__":
