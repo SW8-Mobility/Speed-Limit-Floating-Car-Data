@@ -146,11 +146,16 @@ def add_features_to_df(df: pd.DataFrame) -> None:
 
 
 def main():
-    path = "C:/Users/ax111/Documents/Personal documents/Coding/SW8/speed_limit_floating_car_data/pipeline/preprocessing/compute_features/test.pkl"
-    df: pd.DataFrame = pd.read_pickle(path).head(1000)
-    add_features_to_df(df)
-    df.drop([Feature.COORDINATES.value], inplace=True, axis=1)
-    df.to_csv("test_features.csv")
+    pkl_folder = "/home/kubbe/speed_limit_floating_car_data/pipeline/pkl_files/"
+    for pkl_file, out_file in [
+        ("segments_2012.pkl", "features_2012.pkl"),
+        ("segments_2013.pkl", "features_2013.pkl"),
+        ("segments_2014.pkl", "features_2014.pkl"),
+    ]:
+        df = pd.read_pickle(pkl_folder + pkl_file).infer_objects()
+        add_features_to_df(df)
+        # df.drop([Feature.COORDINATES.value], inplace=True, axis=1)
+        df.to_pickle(pkl_folder + out_file)
 
 
 if __name__ == "__main__":
