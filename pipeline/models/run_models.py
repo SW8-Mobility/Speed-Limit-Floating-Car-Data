@@ -27,6 +27,7 @@ Models = dict[Model, Params]
 
 import joblib
 
+
 def get_fake_input():
     """
     Simple placeholder function for returning dummy input.
@@ -208,7 +209,10 @@ def get_fake_input():
 
     return input_df
 
-def prepare_df_for_training(df_feature_path: str) -> tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.DataFrame, pd.Series]:
+
+def prepare_df_for_training(
+    df_feature_path: str,
+) -> tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.DataFrame, pd.Series]:
     input_df: pd.DataFrame = pd.read_pickle(df_feature_path)
 
     x = input_df.drop(columns=["hast_gaeldende_hast"])
@@ -222,7 +226,10 @@ def prepare_df_for_training(df_feature_path: str) -> tuple[pd.DataFrame, pd.Data
 
     return df, x_train, x_test, y_train, y_test
 
-def train_models_save_results(x_train, y_train) -> dict[str, Any]: #TODO: update docstring
+
+def train_models_save_results(
+    x_train, y_train
+) -> dict[str, Any]:  # TODO: update docstring
     """
 
     Args:
@@ -248,11 +255,16 @@ def train_models_save_results(x_train, y_train) -> dict[str, Any]: #TODO: update
         # loop through each model and perform grid search
         for model_name, model_func in model_jobs:
             best_model, best_params = model_func(x_train, y_train)
-            best_model_params_f.write(f"model: {model_name.value}, params: {best_params}")
-            joblib.dump(best_model, f'{model_name.value}_best_model.joblib') # https://scikit-learn.org/stable/model_persistence.html
+            best_model_params_f.write(
+                f"model: {model_name.value}, params: {best_params}"
+            )
+            joblib.dump(
+                best_model, f"{model_name.value}_best_model.joblib"
+            )  # https://scikit-learn.org/stable/model_persistence.html
             models[model_name.value] = best_model
 
     return models
+
 
 def test_models(models: Models, x_test: pd.DataFrame, y_test: pd.Series):
     """
@@ -262,9 +274,7 @@ def test_models(models: Models, x_test: pd.DataFrame, y_test: pd.Series):
         x_test (pd.DataFrame): The input test data from the train-test split
         y_test (pd.Series): The target test data from the train-test split
     """
-    scored_predictions = pd.DataFrame(
-        {"y_true": y_test}
-    )
+    scored_predictions = pd.DataFrame({"y_true": y_test})
     # initialize scored_predictions with y_test
     for model_name, model_info in models.items():
         model = model_info["model"]
@@ -282,7 +292,9 @@ def test_models(models: Models, x_test: pd.DataFrame, y_test: pd.Series):
 
 
 def main():
-    df, x_train, x_test, y_train, y_test = prepare_df_for_training("/share-files/2012_with_ground.pkl")
+    df, x_train, x_test, y_train, y_test = prepare_df_for_training(
+        "/share-files/2012_with_ground.pkl"
+    )
     train_models_save_results(x_train, y_train)
 
 
