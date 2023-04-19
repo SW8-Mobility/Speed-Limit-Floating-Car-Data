@@ -67,7 +67,7 @@ def geometry_dictionary_to_geojson(
 
 
 def get_osmid_to_linestring_dictionary(
-    osm_file_ath: str,
+    osm_file_path: str,
 ) -> dict[str, tuple[str, str]]:
     """Get the dictionary that maps osm_id to a geojson linestring
 
@@ -78,7 +78,7 @@ def get_osmid_to_linestring_dictionary(
         'dict[str, tuple[str, str]]': osm_id -> geojson LineString
     """
     geometry_handler = GeometryRoadHandler()
-    geometry_handler.apply_file(osm_file_ath, locations=True)
+    geometry_handler.apply_file(osm_file_path, locations=True)
 
     return geometry_handler.geometry_dictionary
 
