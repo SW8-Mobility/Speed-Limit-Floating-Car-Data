@@ -3,7 +3,7 @@ from enum import Enum
 
 # enum to represent our features
 class Feature(Enum):
-    ID = "id"
+    OSM_ID = "osm_id"
     COORDINATES = "coordinates"
     SPEEDS = "speeds"
     DISTANCES = "distances"
@@ -21,6 +21,8 @@ class Feature(Enum):
     VCR = "vcr"
     DAY_OF_WEEK = "day_of_week"
     TIME_GROUP = "time_group"
+    SPEED_LIMIT_TARGET = "speed_limit_target"
+    SPEED_LIMIT_PREDICTED = "speed_limit_predicted"
     # more to come
 
     def __str__(self) -> str:
