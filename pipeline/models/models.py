@@ -150,17 +150,27 @@ def logistic_regression_gridsearch(
     logreg = LogisticRegression(random_state=RANDOM_STATE)
 
     # Set up the parameter grid to search over
-    param_grid = {
-        "C": [0.1, 1, 10],
-        "penalty": ["l1", "l2", "elasticnet"],
-        "solver": ["saga", "liblinear"],
+    parameters = {
+        "penalty": ['l2'],
+        "tol": [1e-4, 1e-5, 1e-6],
+        "C": range(1, 11, 3),
+        "solver": ['sag', 'newton-cg', 'lbfgs'],
+        "max_iter": [100, 200],
     }
 
     # Create the grid search object
     kfold = KFold(n_splits=k, shuffle=True, random_state=RANDOM_STATE)
     grid_search = GridSearchCV(
-        estimator=logreg, param_grid=param_grid, cv=kfold, n_jobs=CORE_NUM
+        estimator=logreg,
+        param_grid=parameters,
+        scoring="accuracy",
+        cv=kfold,
+        verbose=0,
+        error_score='raise'
     )
+    # grid_search = GridSearchCV(
+    #     estimator=logreg, param_grid=param_grid, cv=kfold, n_jobs=CORE_NUM
+    # )
 
     # Fit the grid search object to the training data
     grid_search.fit(x_train, y_train)

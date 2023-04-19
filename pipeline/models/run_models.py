@@ -17,7 +17,7 @@ from pipeline.models.models import (
 )
 from pipeline.preprocessing.compute_features.feature import Feature
 from sklearn.model_selection import train_test_split
-import pandas as pd
+import pandas as pd # type: ignore
 
 pd.options.display.width = 0
 
@@ -29,6 +29,7 @@ def prepare_df_for_training(
     df_feature_path: str,
 ) -> tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.DataFrame, pd.Series]:
     df: pd.DataFrame = pd.read_pickle(df_feature_path).head(200)
+    df = df.drop(columns=[Feature.COORDINATES.value])
 
     x = df.drop(columns=["hast_gaeldende_hast"])
     y = df["hast_gaeldende_hast"]
@@ -44,7 +45,7 @@ def prepare_df_for_training(
 
 def train_models_save_results(
     x_train, y_train
-) -> dict[str, Any]:  # TODO: update docstring
+) -> dict[Model, Any]:  # TODO: update docstring
     """
     Creates every model from models.py, fits them, saves
     them to pickle, saves best params and returns dict
@@ -81,24 +82,27 @@ def train_models_save_results(
             joblib.dump( # save the model as joblib file
                 best_model, f"{model_name.value}_best_model.joblib"
             )
-            models[model_name.value] = best_model
+            models[model_name] = best_model
 
     return models
 
 
-def test_models(models: dict[str, Any], x_test: pd.DataFrame, y_test: pd.Series) -> pd.DataFrame:
+def test_models(models: dict[Model, Any], x_test: pd.DataFrame, y_test: pd.Series) -> pd.DataFrame:
     """
     Tests all the models. Will return scoring metrics for each models predictions.
 
     Args:
-        models (dict[str, Any]): The dictionary of the best models after fitting on the train data.
+        models (dict[Model, Any]): The dictionary of the best models after fitting on the train data.
         x_test (pd.DataFrame): The input test data from the train-test split
         y_test (pd.Series): The target test data from the train-test split
     """
     scored_predictions = pd.DataFrame({"y_true": y_test})
     # initialize scored_predictions with y_test
     for model_name, model in models.items():
-        y_pred = model.predict(x_test)
+        if model_name.value in Model.regression_models_names():
+            y_pred = scoring.classify_with_regressor(model, x_test)
+        else:
+            y_pred = model.predict(x_test)
         scores = scoring.score_model(y_test, y_pred)
         scored_predictions[
             f"{model_name}_y_pred"
