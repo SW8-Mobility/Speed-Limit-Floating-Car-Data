@@ -1,7 +1,4 @@
-import pandas as pd
-
-# from pipeline.preprocessing.ground_truth_processing.process_merged_geojson import create_df_from_merged_osm_vejman
-
+import pandas as pd # type: ignore
 
 def format_hast_generel_hast(df: pd.DataFrame) -> pd.DataFrame:
     """Used to format the values in hast_generel_hast colomn to ints.
@@ -62,13 +59,12 @@ def add_vejman_features(
     ground truth along with 
     #    ['cpr_vejnavn', 'hast_generel_hast',
     #     'hast_gaeldende_hast', 'vejstiklasse',
-    #     'vejtypeskiltet', 'hast_senest_rettet',
-    #     'coordinates']
+    #     'vejtypeskiltet', 'hast_senest_rettet']
 
     Args:
-        df (pd.DataFrame): _description_
-        dataframe_year (int): _description_
-        ground_truth_path (str): _description_
+        df (pd.DataFrame): dataframe with features
+        dataframe_year (int): year for the fcd data in the dataframe
+        ground_truth_path (str): vejman pickle file path
 
     Returns:
         pd.DataFrame: _description_
