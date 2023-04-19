@@ -25,6 +25,7 @@ pd.options.display.width = 0
 Params = dict[str, Any]
 Models = dict[Model, Params]
 
+
 def prepare_df_for_training(
     df_feature_path: str,
 ) -> tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.DataFrame, pd.Series]:
@@ -69,16 +70,16 @@ def train_models_save_results(
         (Model.STATMODEL, statistical_model),
     ]
 
-    models: dict[str, Any] = {} # model name to the trained model
+    models: dict[str, Any] = {}  # model name to the trained model
 
     with open("training_results.txt", "a") as best_model_params_f:
         # loop through each model and perform grid search
         for model_name, model_func in model_jobs:
             best_model, best_params = model_func(x_train, y_train)
-            best_model_params_f.write( # save the best params to file
+            best_model_params_f.write(  # save the best params to file
                 f"model: {model_name.value}, params: {best_params}"
             )
-            joblib.dump( # save the model as joblib file
+            joblib.dump(  # save the model as joblib file
                 best_model, f"{model_name.value}_best_model.joblib"
             )
             models[model_name.value] = best_model
@@ -86,7 +87,9 @@ def train_models_save_results(
     return models
 
 
-def test_models(models: dict[str, Any], x_test: pd.DataFrame, y_test: pd.Series) -> pd.DataFrame:
+def test_models(
+    models: dict[str, Any], x_test: pd.DataFrame, y_test: pd.Series
+) -> pd.DataFrame:
     """
     Tests all the models. Will return scoring metrics for each models predictions.
 
@@ -111,6 +114,7 @@ def test_models(models: dict[str, Any], x_test: pd.DataFrame, y_test: pd.Series)
 
     return scored_predictions
 
+
 def main():
     df, x_train, x_test, y_train, y_test = prepare_df_for_training(
         "/share-files/pickle_files_features_and_ground_truth/2012.pkl"
@@ -118,6 +122,7 @@ def main():
     models = train_models_save_results(x_train, y_train)
     scores = test_models(models, x_test, y_test)
     scores.to_csv("/share-files/model_scores/scores.csv", index=False)
+
 
 if __name__ == "__main__":
     main()
