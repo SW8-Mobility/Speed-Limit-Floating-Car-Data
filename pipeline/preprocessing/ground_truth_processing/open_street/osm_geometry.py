@@ -3,6 +3,7 @@ from osmium.geom import GeoJSONFactory
 from typing import Any
 import json
 
+
 class GeometryRoadHandler(osmium.SimpleHandler):
     """This class is responsible for generating a dictionary between OSM ids and their respective LineString through .apply_file"""
 
