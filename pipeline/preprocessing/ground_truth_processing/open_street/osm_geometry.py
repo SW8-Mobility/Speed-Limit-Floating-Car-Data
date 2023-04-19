@@ -2,17 +2,13 @@ import osmium
 from osmium.geom import GeoJSONFactory
 from typing import Any
 import json
-import pandas as pd  # type: ignore
-
-from pipeline.preprocessing.compute_features.feature import Feature
-
 
 class GeometryRoadHandler(osmium.SimpleHandler):
     """This class is responsible for generating a dictionary between OSM ids and their respective LineString through .apply_file"""
 
     def __init__(self) -> None:
         osmium.SimpleHandler.__init__(self)
-        self.geometryDictionary: dict[str, tuple[str, str]] = {}
+        self.geometry_dictionary: dict[str, tuple[str, str]] = {}
 
     def way(self, w: Any) -> None:
         """Looks for all ways with the tag "highway" and adds their osm id and linestring to the self.geometryDictionary.
@@ -27,7 +23,7 @@ class GeometryRoadHandler(osmium.SimpleHandler):
         ):  # The highway tag annotates the type of road, e.g. 'path' or 'motorway'
             try:
                 geo = GeoJSONFactory().create_linestring(w)  # Get the road linestring
-                self.geometryDictionary[w.id] = (
+                self.geometry_dictionary[w.id] = (
                     geo,
                     w.tags.get("name"),
                 )  # geo is also a string since the format is json, w.id is an int
@@ -37,7 +33,7 @@ class GeometryRoadHandler(osmium.SimpleHandler):
 
 
 def geometry_dictionary_to_geojson(
-    geoDict: dict[str, tuple[str, str]],
+    geo_dict: dict[str, tuple[str, str]],
 ) -> str:  # TODO: is the type of dict correct?
     """outputs geoJson formatted string from at osm_id -> linestring dictionary
 
@@ -48,12 +44,12 @@ def geometry_dictionary_to_geojson(
         str: the entire geoJson formatted string.
     """
     # Start geoJson string
-    featureCollecton: str = '{"type":"FeatureCollection","features":['
+    feature_collecton: str = '{"type":"FeatureCollection","features":['
 
     # Loop over geometry to build each LineString and give it an osm_id property
-    for osm_id, (geometry, name) in geoDict.items():
-        featureCollecton += '{"type":"Feature","geometry":' + geometry
-        featureCollecton += (
+    for osm_id, (geometry, name) in geo_dict.items():
+        feature_collecton += '{"type":"Feature","geometry":' + geometry
+        feature_collecton += (
             ',"properties":{"osm_id":'
             + str(osm_id)
             + ',"osm_name":'
@@ -62,16 +58,16 @@ def geometry_dictionary_to_geojson(
         )
 
     # Remove last comma since we are finished with the array
-    featureCollecton = featureCollecton.rstrip(featureCollecton[-1])
+    feature_collecton = feature_collecton.rstrip(feature_collecton[-1])
 
     # End the geoJson string
-    featureCollecton += "]}"
+    feature_collecton += "]}"
 
-    return featureCollecton
+    return feature_collecton
 
 
 def get_osmid_to_linestring_dictionary(
-    OSMFilePath: str,
+    osm_file_ath: str,
 ) -> dict[str, tuple[str, str]]:
     """Get the dictionary that maps osm_id to a geojson linestring
 
@@ -81,35 +77,19 @@ def get_osmid_to_linestring_dictionary(
     Returns:
         'dict[str, tuple[str, str]]': osm_id -> geojson LineString
     """
-    geometryHandler = GeometryRoadHandler()
-    geometryHandler.apply_file(OSMFilePath, locations=True)
+    geometry_handler = GeometryRoadHandler()
+    geometry_handler.apply_file(osm_file_ath, locations=True)
 
-    return geometryHandler.geometryDictionary
+    return geometry_handler.geometry_dictionary
 
 
 def main() -> None:
-    filename_latest = "C:/Users/ax111/Documents/Personal documents/SW8/speed_limit_floating_car_data/pipeline/preprocessing/ground_truth_processing/denmark-latest-geometry.json"
-    geoDict = get_osmid_to_linestring_dictionary(filename_latest)
+    filename_latest = "wkd/denmark-latest.osm.pbf"
+    geo_dict = get_osmid_to_linestring_dictionary(filename_latest)
 
     with open("denmark-latest-geometry.json", "w") as f:
-        f.write(geometry_dictionary_to_geojson(geoDict))
+        f.write(geometry_dictionary_to_geojson(geo_dict))
 
 
 if __name__ == "__main__":
     main()
-    # data = {
-    #     "osm_id": [2080],
-    #     Feature.SPEED_LIMIT.value: [110],
-    # }
-    # df = pd.DataFrame(data=data)
-    # dict = {
-    #     "features": [
-    #         {
-    #             'properties': {'osm_id': 2080}
-    #         },
-    #         {
-    #             'properties': {'osm_id': 2081}
-    #         },
-    #     ]
-    # }
-    # annotate_geojson_with_speedlimit(dict, df)
