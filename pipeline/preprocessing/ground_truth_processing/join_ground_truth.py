@@ -13,7 +13,7 @@ def format_hast_generel_hast(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def prepare_ground_truth(df: pd.DataFrame) -> pd.DataFrame:
+def prepare_vejman_df(df: pd.DataFrame) -> pd.DataFrame:
     df = df.drop(
         ["kode_vejstiklasse", "kode_vejtypeskiltet", "kode_hast_generel_hast"], axis=1
     )
@@ -30,11 +30,10 @@ def prepare_ground_truth(df: pd.DataFrame) -> pd.DataFrame:
         df["hast_senest_rettet"], format="%Y/%m/%d %H:%M:%S"
     )
 
-
     return df
 
 
-def join_ground_truth(
+def add_vejman_features(
     df: pd.DataFrame, dataframe_year: int, ground_truth_path: str
 ) -> pd.DataFrame:
     # headers: ['osm_id', 'cpr_vejnavn', 'hast_generel_hast', 'kode_hast_generel_hast',
@@ -42,7 +41,7 @@ def join_ground_truth(
     #           'vejtypeskiltet', 'kode_vejtypeskiltet', 'hast_senest_rettet',
     #           'coordinates']
     ground_truth_df = pd.read_pickle(ground_truth_path)
-    vejman_features = prepare_ground_truth(ground_truth_df)
+    vejman_features = prepare_vejman_df(ground_truth_df)
 
     # only use speed limit, that have not been changed after the year for the fcd data
     vejman_features = vejman_features.loc[vejman_features["hast_senest_rettet"] < f"{dataframe_year+1}/01/01 00:00:00"]
@@ -51,13 +50,22 @@ def join_ground_truth(
 
     return df
 
-
+def main():
+    files = "/home/kubbe/speed_limit_floating_car_data/pipeline/data/pkl_files/"
+    vejman_pkl = files+"ground_truth.pkl"
+    inputs = [
+        (files + "features_2012.pkl", 2012, "final_2012.pkl"),
+        (files + "features_2013.pkl", 2013, "final_2013.pkl"),
+        (files + "features_2014.pkl", 2014, "final_2014.pkl"),
+    ]
+    for pkl_file, year, outfile in inputs:
+        df = pd.read_pickle(pkl_file)
+        df = add_vejman_features(
+            df,
+            year,
+            vejman_pkl
+        )
+        df.to_pickle(files+outfile)
 
 if __name__ == "__main__":
-    df = join_ground_truth(
-        None,
-        2012,
-        "C:/Users/ax111/Documents/Personal documents/SW8/speed_limit_floating_car_data/pipeline/preprocessing/ground_truth_processing/ground_truth.pkl",
-    )
-    print(df["hast_generel_hast"].head())
-    print(df.dtypes)
+    main()
