@@ -168,7 +168,9 @@ def logistic_regression_gridsearch(
     return grid_search.best_estimator_, grid_search.best_params_  # type: ignore
 
 
-def statistical_model(x_train: pd.DataFrame, y_train: pd.DataFrame) -> tuple[StatisticalModel, dict]:
+def statistical_model(
+    x_train: pd.DataFrame, y_train: pd.DataFrame
+) -> tuple[StatisticalModel, dict]:
     """Create a basic statistical model
 
     Returns:
