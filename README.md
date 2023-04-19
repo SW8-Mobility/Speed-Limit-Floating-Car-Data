@@ -43,7 +43,7 @@ The 3 dataframes are very large. For model training, perhaps create a random for
 ## Mypy
 If errors are not shown in pull request, but mypy fails, run mypy locally with the command:
 ```
-python -m mypy.
+python -m mypy .
 ```
 
 ## Pytest
@@ -73,3 +73,5 @@ pip install -e .
 ```
 
 
+
+test

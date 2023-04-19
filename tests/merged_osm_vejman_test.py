@@ -1,7 +1,6 @@
-import pytest
 import os
 import pandas as pd  # type: ignore
-from pipeline.preprocessing.process_merged_geojson import (
+from pipeline.preprocessing.ground_truth_processing.process_merged_geojson import (
     create_df_from_merged_osm_vejman,
 )
 
