@@ -1,6 +1,7 @@
 from __future__ import annotations
 from enum import Enum
 
+
 class Model(Enum):
     MLP = "mlp"
     RF = "random forest"
@@ -14,5 +15,3 @@ class Model(Enum):
 
     def __str__(self) -> str:
         return self.value
-
-

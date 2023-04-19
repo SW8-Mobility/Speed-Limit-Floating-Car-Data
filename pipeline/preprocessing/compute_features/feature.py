@@ -1,6 +1,5 @@
 from enum import Enum
 
-
 # enum to represent our features
 class Feature(Enum):
     OSM_ID = "osm_id"
@@ -23,7 +22,14 @@ class Feature(Enum):
     TIME_GROUP = "time_group"
     SPEED_LIMIT_TARGET = "speed_limit_target"
     SPEED_LIMIT_PREDICTED = "speed_limit_predicted"
-    # more to come
+
+    # vejman features
+    CPR_VEJNAVN = 'cpr_vejnavn'
+    HAST_GENEREL_HAST = 'hast_generel_hast'
+    HAST_GAELDENDE_HAST = 'hast_gaeldende_hast'
+    VEJSTIKLASSE = 'vejstiklasse'
+    VEJTYPESKILTET = 'vejtypeskiltet'
+    HAST_SENEST_RETTET = "hast_senest_rettet"
 
     def __str__(self) -> str:
         return self.value

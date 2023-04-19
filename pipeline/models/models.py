@@ -151,10 +151,10 @@ def logistic_regression_gridsearch(
 
     # Set up the parameter grid to search over
     parameters = {
-        "penalty": ['l2'],
+        "penalty": ["l2"],
         "tol": [1e-4, 1e-5, 1e-6],
         "C": range(1, 11, 3),
-        "solver": ['sag', 'newton-cg', 'lbfgs'],
+        "solver": ["sag", "newton-cg", "lbfgs"],
         "max_iter": [100, 200],
     }
 
@@ -166,7 +166,7 @@ def logistic_regression_gridsearch(
         scoring="accuracy",
         cv=kfold,
         verbose=0,
-        error_score='raise'
+        error_score="raise",
     )
     # grid_search = GridSearchCV(
     #     estimator=logreg, param_grid=param_grid, cv=kfold, n_jobs=CORE_NUM

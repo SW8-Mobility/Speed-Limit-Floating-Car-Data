@@ -17,7 +17,7 @@ from pipeline.models.models import (
 )
 from pipeline.preprocessing.compute_features.feature import Feature
 from sklearn.model_selection import train_test_split
-import pandas as pd # type: ignore
+import pandas as pd  # type: ignore
 
 pd.options.display.width = 0
 
@@ -25,12 +25,36 @@ pd.options.display.width = 0
 Params = dict[str, Any]
 Models = dict[Model, Params]
 
+def encode_2d_features(df: pd.DataFrame) -> pd.DataFrame:
+    features_2d = [
+        Feature.DISTANCES.value,
+        Feature.SPEEDS.value,
+        Feature.ROLLING_AVERAGES.value,
+        Feature.VCR.value
+    ]
+
+    for feature in features_2d:
+        df[feature] = df[feature].apply(lambda row: sum(row, []))
+
+    return df
 
 def prepare_df_for_training(
     df_feature_path: str,
 ) -> tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.DataFrame, pd.Series]:
     df: pd.DataFrame = pd.read_pickle(df_feature_path).head(200)
-    df = df.drop(columns=[Feature.COORDINATES.value])
+
+    df = df.drop( # some of these should be one hot encoded instead of dropped
+        columns=[
+            Feature.COORDINATES.value,
+            Feature.CPR_VEJNAVN.value,
+            Feature.HAST_SENEST_RETTET.value,
+            Feature.VEJSTIKLASSE.value,
+            Feature.VEJTYPESKILTET.value,
+        ]
+    )
+
+    df = encode_2d_features(df)
+    df.head().to_csv("test.csv")
 
     x = df.drop(columns=["hast_gaeldende_hast"])
     y = df["hast_gaeldende_hast"]
@@ -40,6 +64,8 @@ def prepare_df_for_training(
     )
 
     df = df.rename(columns={"hast_gaeldende_hast": "target"})
+
+    print(df.dtypes)
 
     return df, x_train, x_test, y_train, y_test
 
@@ -88,7 +114,9 @@ def train_models_save_results(
     return models
 
 
-def test_models(models: dict[Model, Any], x_test: pd.DataFrame, y_test: pd.Series) -> pd.DataFrame:
+def test_models(
+    models: dict[Model, Any], x_test: pd.DataFrame, y_test: pd.Series
+) -> pd.DataFrame:
     """
     Tests all the models. Will return scoring metrics for each models predictions.
 
