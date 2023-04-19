@@ -1,7 +1,7 @@
 from enum import Enum
 
 
-class ModelEnum(Enum):
+class Model(Enum):
     MLP = "mlp"
     RF = "random forest"
     XGB = "xgboost"

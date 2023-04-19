@@ -168,13 +168,13 @@ def logistic_regression_gridsearch(
     return grid_search.best_estimator_, grid_search.best_params_  # type: ignore
 
 
-def statistical_model() -> StatisticalModel:
+def statistical_model(x_train: pd.DataFrame, y_train: pd.DataFrame) -> tuple[StatisticalModel, dict]:
     """Create a basic statistical model
 
     Returns:
         StatisticalModel: a statistical model with a predict function
     """
-    return StatisticalModel()
+    return StatisticalModel(), None
 
 
 if __name__ == "__main__":

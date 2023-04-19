@@ -7,7 +7,7 @@ from pipeline.models.models import (
     logistic_regression_gridsearch,
     statistical_model,
 )
-from pipeline.models.utils.model_enum import ModelEnum
+from pipeline.models.utils.model_enum import Model
 from pipeline.models.utils.scoring import score_model
 from pipeline.models.models import (
     create_mlp_grid_search,
@@ -21,11 +21,11 @@ import pandas as pd
 
 pd.options.display.width = 0
 
-
-Model = dict[str, ModelEnum]
+Model = dict[str, Model]
 Params = dict[str, Any]
-Models = dict[tuple[Model, Params]]
+Models = dict[Model, Params]
 
+import joblib
 
 def get_fake_input():
     """
@@ -208,43 +208,51 @@ def get_fake_input():
 
     return input_df
 
+def prepare_df_for_training(df_feature_path: str) -> tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.DataFrame, pd.Series]:
+    input_df: pd.DataFrame = pd.read_pickle(df_feature_path)
 
-def train_models():
-    """
-    Runs all models and records the results in the results dictionary.
-    Also prints the best estimators and their parameters.
-    """
-    input_df = get_fake_input()
-
-    x = input_df.drop(columns=["target"])
-    y = input_df["target"]
+    x = input_df.drop(columns=["hast_gaeldende_hast"])
+    y = input_df["hast_gaeldende_hast"]
 
     x_train, x_test, y_train, y_test = train_test_split(
         x, y, test_size=0.2, random_state=42
     )
 
+    df = df.rename(columns={"hast_gaeldende_hast": "target"})
+
+    return df, x_train, x_test, y_train, y_test
+
+def train_models_save_results(x_train, y_train) -> dict[str, Any]: #TODO: update docstring
+    """
+
+    Args:
+        x_train:
+        y_train:
+
+    Returns: dictionary with key being the model name and value being a model (object)
+
+    """
+
     # define a list of models and their corresponding grid search functions (from models.py)
-    models = [
-        (ModelEnum.MLP, create_mlp_grid_search),
-        (ModelEnum.RF, random_forest_regressor_gridsearch),
-        (ModelEnum.XGB, xgboost_classifier_gridsearch),
-        (ModelEnum.LOGREG, logistic_regression_gridsearch),
-        (ModelEnum.STATMODEL, statistical_model),
+    model_jobs = [
+        (Model.MLP, create_mlp_grid_search),
+        (Model.RF, random_forest_regressor_gridsearch),
+        (Model.XGB, xgboost_classifier_gridsearch),
+        (Model.LOGREG, logistic_regression_gridsearch),
+        (Model.STATMODEL, statistical_model),
     ]
 
-    results = {}
+    models = {}
 
-    # loop through each model and perform grid search
-    for model_name, model_func in models:
-        if model_name == ModelEnum.STATMODEL:  # Handle statistical model separately
-            best_model = model_func()
-            results[model_name] = {"model": best_model, "params": None}
-        else:
+    with open("training_results.txt", "a") as best_model_params_f:
+        # loop through each model and perform grid search
+        for model_name, model_func in model_jobs:
             best_model, best_params = model_func(x_train, y_train)
-            results[model_name] = {"model": best_model, "params": best_params}
+            best_model_params_f.write(f"model: {model_name.value}, params: {best_params}")
+            joblib.dump(best_model, f'{model_name.value}_best_model.joblib') # https://scikit-learn.org/stable/model_persistence.html
+            models[model_name.value] = best_model
 
-    test_models(results, x_test, y_test)
-
+    return models
 
 def test_models(models: Models, x_test: pd.DataFrame, y_test: pd.Series):
     """
@@ -256,7 +264,8 @@ def test_models(models: Models, x_test: pd.DataFrame, y_test: pd.Series):
     """
     scored_predictions = pd.DataFrame(
         {"y_true": y_test}
-    )  # initialize scored_predictions with y_test
+    )
+    # initialize scored_predictions with y_test
     for model_name, model_info in models.items():
         model = model_info["model"]
         y_pred = model.predict(x_test)
@@ -273,7 +282,8 @@ def test_models(models: Models, x_test: pd.DataFrame, y_test: pd.Series):
 
 
 def main():
-    train_models()
+    df, x_train, x_test, y_train, y_test = prepare_df_for_training("/share-files/2012_with_ground.pkl")
+    train_models_save_results(x_train, y_train)
 
 
 if __name__ == "__main__":
