@@ -5,14 +5,13 @@ archive/analysis_metrics.py
 archive/convert_json_to_df.py
 archive/fetch_fcd_data.py
 pipeline/__init__.py
+pipeline/run_models.py
 pipeline/models/__init__.py
 pipeline/models/models.py
-pipeline/models/run_models.py
 pipeline/models/statistical_model.py
 pipeline/preprocessing/__init__.py
 pipeline/preprocessing/df_processing.py
 pipeline/preprocessing/format_data.py
-pipeline/preprocessing/process_merged_geojson.py
 pipeline/preprocessing/compute_features/__init__.py
 pipeline/preprocessing/compute_features/calculate_speeds_distances.py
 pipeline/preprocessing/compute_features/compute_features.py

@@ -18,6 +18,7 @@ from pipeline.models.models import (
 from pipeline.preprocessing.compute_features.feature import Feature
 from sklearn.model_selection import train_test_split
 import pandas as pd  # type: ignore
+from keras_preprocessing.sequence import pad_sequences
 
 pd.options.display.width = 0
 
@@ -25,7 +26,7 @@ pd.options.display.width = 0
 Params = dict[str, Any]
 Models = dict[Model, Params]
 
-def encode_2d_features(df: pd.DataFrame) -> pd.DataFrame:
+def encode_2d_arrays(df: pd.DataFrame) -> pd.DataFrame:
     features_2d = [
         Feature.DISTANCES.value,
         Feature.SPEEDS.value,
@@ -35,6 +36,23 @@ def encode_2d_features(df: pd.DataFrame) -> pd.DataFrame:
 
     for feature in features_2d:
         df[feature] = df[feature].apply(lambda row: sum(row, []))
+        # df[feature] = pad_sequences(df[feature], padding='post').tolist()
+        df[feature] = pad_sequences(df[feature], maxlen=10).tolist()
+
+    return df
+
+def encode_1d_arrays(df: pd.DataFrame) -> pd.DataFrame:
+    features_1d = [
+        Feature.MEANS.value,
+        Feature.MINS.value,
+        Feature.MAXS.value,
+        Feature.MEDIANS.value
+    ]
+
+    for feature in features_1d:
+        #df[feature] = pad_sequences(df[feature], padding='post').tolist()
+        df[feature] = pad_sequences(df[feature], maxlen=10).tolist()
+
 
     return df
 
@@ -53,7 +71,9 @@ def prepare_df_for_training(
         ]
     )
 
-    df = encode_2d_features(df)
+    df = encode_2d_arrays(df)
+    df = encode_1d_arrays(df)
+
     df.head().to_csv("test.csv")
 
     x = df.drop(columns=["hast_gaeldende_hast"])
@@ -99,7 +119,7 @@ def train_models_save_results(
 
     models: dict[str, Any] = {}  # model name to the trained model
 
-    with open("training_results.txt", "a") as best_model_params_f:
+    with open("models/training_results.txt", "a") as best_model_params_f:
         # loop through each model and perform grid search
         for model_name, model_func in model_jobs:
             best_model, best_params = model_func(x_train, y_train)
@@ -155,4 +175,6 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    df, x_train, x_test, y_train, y_test = prepare_df_for_training(
+        "/share-files/pickle_files_features_and_ground_truth/2012.pkl"
+    )
