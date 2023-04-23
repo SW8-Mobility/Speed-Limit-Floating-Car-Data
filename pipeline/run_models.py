@@ -119,7 +119,7 @@ def train_models_save_results(
         for model_name, model_func in model_jobs:
             best_model, best_params = model_func(x_train, y_train)
             best_model_params_f.write(  # save the best params to file
-                f"model: {model_name.value}, params: {best_params}"
+                f"\nmodel: {model_name.value}, params: {best_params}"
             )
             joblib.dump(  # save the model as joblib file
                 best_model, f"{model_name.value}_best_model.joblib"
