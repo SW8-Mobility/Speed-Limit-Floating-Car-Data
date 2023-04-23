@@ -155,7 +155,7 @@ def logistic_regression_gridsearch(
         "tol": [1e-4, 1e-5, 1e-6],
         "C": range(1, 11, 3),
         "solver": ["sag", "newton-cg", "lbfgs"],
-        "max_iter": [100, 200],
+        "max_iter": [1000],
     }
 
     # Create the grid search object

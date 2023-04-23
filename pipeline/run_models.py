@@ -36,8 +36,8 @@ def encode_2d_arrays(df: pd.DataFrame) -> pd.DataFrame:
 
     for feature in features_2d:
         df[feature] = df[feature].apply(lambda row: sum(row, []))
-        # df[feature] = pad_sequences(df[feature], padding='post').tolist()
-        df[feature] = pad_sequences(df[feature], maxlen=10).tolist()
+        df[feature] = pad_sequences(df[feature], padding='post')
+        # df[feature] = pad_sequences(df[feature], maxlen=10)
 
     return df
 
@@ -50,8 +50,8 @@ def encode_1d_arrays(df: pd.DataFrame) -> pd.DataFrame:
     ]
 
     for feature in features_1d:
-        #df[feature] = pad_sequences(df[feature], padding='post').tolist()
-        df[feature] = pad_sequences(df[feature], maxlen=10).tolist()
+        df[feature] = pad_sequences(df[feature], padding='post')
+        # df[feature] = pad_sequences(df[feature], maxlen=10)
 
 
     return df
@@ -59,7 +59,7 @@ def encode_1d_arrays(df: pd.DataFrame) -> pd.DataFrame:
 def prepare_df_for_training(
     df_feature_path: str,
 ) -> tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.DataFrame, pd.Series]:
-    df: pd.DataFrame = pd.read_pickle(df_feature_path).head(200)
+    df: pd.DataFrame = pd.read_pickle(df_feature_path).head(1000)
 
     df = df.drop( # some of these should be one hot encoded instead of dropped
         columns=[
@@ -70,22 +70,17 @@ def prepare_df_for_training(
             Feature.VEJTYPESKILTET.value,
         ]
     )
+    df = df.rename(columns={"hast_gaeldende_hast": "target"})
 
     df = encode_2d_arrays(df)
     df = encode_1d_arrays(df)
 
-    df.head().to_csv("test.csv")
-
-    x = df.drop(columns=["hast_gaeldende_hast"])
-    y = df["hast_gaeldende_hast"]
+    x = df.drop(columns=["target"]).values
+    y = df["target"].values
 
     x_train, x_test, y_train, y_test = train_test_split(
         x, y, test_size=0.2, random_state=42
     )
-
-    df = df.rename(columns={"hast_gaeldende_hast": "target"})
-
-    print(df.dtypes)
 
     return df, x_train, x_test, y_train, y_test
 
@@ -114,7 +109,7 @@ def train_models_save_results(
         # (Model.RF, random_forest_regressor_gridsearch),
         # (Model.XGB, xgboost_classifier_gridsearch),
         (Model.LOGREG, logistic_regression_gridsearch),
-        (Model.STATMODEL, statistical_model),
+        # (Model.STATMODEL, statistical_model),
     ]
 
     models: dict[str, Any] = {}  # model name to the trained model
@@ -175,6 +170,4 @@ def main():
 
 
 if __name__ == "__main__":
-    df, x_train, x_test, y_train, y_test = prepare_df_for_training(
-        "/share-files/pickle_files_features_and_ground_truth/2012.pkl"
-    )
+    main()
