@@ -1,3 +1,4 @@
+import numpy as np
 from typing import Any, Callable
 import joblib
 from pipeline.models.models import (
@@ -26,40 +27,43 @@ pd.options.display.width = 0
 Params = dict[str, Any]
 Models = dict[Model, Params]
 
+features_1d = [
+    Feature.MEANS.value,
+    Feature.MINS.value,
+    Feature.MAXS.value,
+    Feature.MEDIANS.value
+]
+
+features_2d = [
+    Feature.DISTANCES.value,
+    Feature.SPEEDS.value,
+    Feature.ROLLING_AVERAGES.value,
+    Feature.VCR.value
+]
+
 def encode_2d_arrays(df: pd.DataFrame) -> pd.DataFrame:
-    features_2d = [
-        Feature.DISTANCES.value,
-        Feature.SPEEDS.value,
-        Feature.ROLLING_AVERAGES.value,
-        Feature.VCR.value
-    ]
 
     for feature in features_2d:
+        # df[feature] = df[feature].apply(lambda arr: [elem for elem in arr if arr is not None])
         df[feature] = df[feature].apply(lambda row: sum(row, []))
-        df[feature] = pad_sequences(df[feature], padding='post')
-        # df[feature] = pad_sequences(df[feature], maxlen=10)
+        df[feature] = pad_sequences(df[feature], padding='post').tolist()
+        df[feature] = df[feature].apply(lambda arr: np.array(arr))
 
     return df
 
 def encode_1d_arrays(df: pd.DataFrame) -> pd.DataFrame:
-    features_1d = [
-        Feature.MEANS.value,
-        Feature.MINS.value,
-        Feature.MAXS.value,
-        Feature.MEDIANS.value
-    ]
 
     for feature in features_1d:
-        df[feature] = pad_sequences(df[feature], padding='post')
-        # df[feature] = pad_sequences(df[feature], maxlen=10)
-
+        # df[feature] = df[feature].apply(lambda arr: [elem for elem in arr if arr is not None])
+        df[feature] = pad_sequences(df[feature], padding='post').tolist()
+        df[feature] = df[feature].apply(lambda arr: np.array(arr))
 
     return df
 
 def prepare_df_for_training(
     df_feature_path: str,
 ) -> tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.DataFrame, pd.Series]:
-    df: pd.DataFrame = pd.read_pickle(df_feature_path).head(1000)
+    df: pd.DataFrame = pd.read_pickle(df_feature_path).head(200)
 
     df = df.drop( # some of these should be one hot encoded instead of dropped
         columns=[
@@ -75,8 +79,8 @@ def prepare_df_for_training(
     df = encode_2d_arrays(df)
     df = encode_1d_arrays(df)
 
-    x = df.drop(columns=["target"]).values
-    y = df["target"].values
+    x = df.drop(columns=["target"])
+    y = df["target"]
 
     x_train, x_test, y_train, y_test = train_test_split(
         x, y, test_size=0.2, random_state=42
