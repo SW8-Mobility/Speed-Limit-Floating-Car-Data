@@ -27,43 +27,25 @@ pd.options.display.width = 0
 Params = dict[str, Any]
 Models = dict[Model, Params]
 
-features_1d = [
-    Feature.MEANS.value,
-    Feature.MINS.value,
-    Feature.MAXS.value,
-    Feature.MEDIANS.value
-]
-
-features_2d = [
-    Feature.DISTANCES.value,
-    Feature.SPEEDS.value,
-    Feature.ROLLING_AVERAGES.value,
-    Feature.VCR.value
-]
-
-def encode_2d_arrays(df: pd.DataFrame) -> pd.DataFrame:
-
-    for feature in features_2d:
-        # df[feature] = df[feature].apply(lambda arr: [elem for elem in arr if arr is not None])
+def generate_x(df: pd.DataFrame) -> tuple[np.ndarray, np.ndarray]:
+    df = df.drop([Feature.OSM_ID.value], axis=1)
+    for feature in Feature.array_2d_features():
         df[feature] = df[feature].apply(lambda row: sum(row, []))
+
+    for feature in Feature.array_1d_features() + Feature.array_2d_features():
+        df[feature] = df[feature].apply(lambda arr: [elem for elem in arr if arr is not None])
         df[feature] = pad_sequences(df[feature], padding='post').tolist()
         df[feature] = df[feature].apply(lambda arr: np.array(arr))
 
-    return df
+    xs = [df[f].values.tolist() for f in df.columns]
+    x = np.concatenate(xs, axis=1)
 
-def encode_1d_arrays(df: pd.DataFrame) -> pd.DataFrame:
-
-    for feature in features_1d:
-        # df[feature] = df[feature].apply(lambda arr: [elem for elem in arr if arr is not None])
-        df[feature] = pad_sequences(df[feature], padding='post').tolist()
-        df[feature] = df[feature].apply(lambda arr: np.array(arr))
-
-    return df
+    return x
 
 def prepare_df_for_training(
     df_feature_path: str,
 ) -> tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.DataFrame, pd.Series]:
-    df: pd.DataFrame = pd.read_pickle(df_feature_path).head(200)
+    df: pd.DataFrame = pd.read_pickle(df_feature_path).head(150)
 
     df = df.drop( # some of these should be one hot encoded instead of dropped
         columns=[
@@ -74,19 +56,26 @@ def prepare_df_for_training(
             Feature.VEJTYPESKILTET.value,
         ]
     )
+
     df = df.rename(columns={"hast_gaeldende_hast": "target"})
 
-    df = encode_2d_arrays(df)
-    df = encode_1d_arrays(df)
+    encode_single_value_features(df)
 
-    x = df.drop(columns=["target"])
-    y = df["target"]
+    y = df["target"].values
+    df = df.drop(["target"], axis=1)
+
+    x = generate_x(df)
 
     x_train, x_test, y_train, y_test = train_test_split(
         x, y, test_size=0.2, random_state=42
     )
 
     return df, x_train, x_test, y_train, y_test
+
+
+def encode_single_value_features(df):
+    for f in Feature.numeric_features():
+        df[f] = df[f].apply(lambda val: np.array([val]))
 
 
 def train_models_save_results(
@@ -172,6 +161,8 @@ def main():
     scores = test_models(models, x_test, y_test)
     scores.to_csv("/share-files/model_scores/scores.csv", index=False)
 
-
 if __name__ == "__main__":
-    main()
+    df, x_train, x_test, y_train, y_test = prepare_df_for_training(
+        "/share-files/pickle_files_features_and_ground_truth/2012.pkl"
+    )
+    train_models_save_results(x_train, y_train)

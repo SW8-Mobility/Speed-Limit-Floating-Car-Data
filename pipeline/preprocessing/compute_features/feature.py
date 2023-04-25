@@ -30,6 +30,57 @@ class Feature(Enum):
     VEJSTIKLASSE = 'vejstiklasse'
     VEJTYPESKILTET = 'vejtypeskiltet'
     HAST_SENEST_RETTET = "hast_senest_rettet"
+    TARGET = "target"
+
+    @staticmethod
+    def array_1d_features():
+        """
+        returns a list of the names of features where the type is 1d-arrays.
+        """
+        return [
+            Feature.MEANS.value,
+            Feature.MINS.value,
+            Feature.MAXS.value,
+            Feature.MEDIANS.value
+        ]
+
+    @staticmethod
+    def array_2d_features() -> list[str]:
+        """
+        returns a list of the names of features where the type is 2d arrays.
+        """
+        return [
+            Feature.DISTANCES.value,
+            Feature.SPEEDS.value,
+            Feature.ROLLING_AVERAGES.value,
+            Feature.VCR.value
+        ]
+
+    @staticmethod
+    def numeric_features() -> list[str]:
+        """
+        returns a list of the names of features where the type is a int/float.
+        """
+        return [
+            Feature.AGGREGATE_MEAN.value,
+            Feature.AGGREGATE_MAX.value,
+            Feature.AGGREGATE_MEDIAN.value,
+            Feature.AGGREGATE_MIN.value,
+            Feature.HAST_GENEREL_HAST.value,
+        ]
+
+    @staticmethod
+    def categorical_features() -> list[str]:
+        """
+        returns a list of the names of features where the feature is categorical.
+        """
+        return [
+            Feature.COORDINATES.value,
+            Feature.CPR_VEJNAVN.value,
+            Feature.HAST_SENEST_RETTET.value,
+            Feature.VEJSTIKLASSE.value,
+            Feature.VEJTYPESKILTET.value,
+        ]
 
     def __str__(self) -> str:
         return self.value
