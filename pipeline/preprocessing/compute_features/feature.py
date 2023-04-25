@@ -24,11 +24,11 @@ class Feature(Enum):
     SPEED_LIMIT_PREDICTED = "speed_limit_predicted"
 
     # vejman features
-    CPR_VEJNAVN = 'cpr_vejnavn'
-    HAST_GENEREL_HAST = 'hast_generel_hast'
-    HAST_GAELDENDE_HAST = 'hast_gaeldende_hast'
-    VEJSTIKLASSE = 'vejstiklasse'
-    VEJTYPESKILTET = 'vejtypeskiltet'
+    CPR_VEJNAVN = "cpr_vejnavn"
+    HAST_GENEREL_HAST = "hast_generel_hast"
+    HAST_GAELDENDE_HAST = "hast_gaeldende_hast"
+    VEJSTIKLASSE = "vejstiklasse"
+    VEJTYPESKILTET = "vejtypeskiltet"
     HAST_SENEST_RETTET = "hast_senest_rettet"
     TARGET = "target"
 
@@ -41,7 +41,7 @@ class Feature(Enum):
             Feature.MEANS.value,
             Feature.MINS.value,
             Feature.MAXS.value,
-            Feature.MEDIANS.value
+            Feature.MEDIANS.value,
         ]
 
     @staticmethod
@@ -53,7 +53,7 @@ class Feature(Enum):
             Feature.DISTANCES.value,
             Feature.SPEEDS.value,
             Feature.ROLLING_AVERAGES.value,
-            Feature.VCR.value
+            Feature.VCR.value,
         ]
 
     @staticmethod

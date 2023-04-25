@@ -1,3 +1,4 @@
+from datetime import datetime
 import numpy as np
 from typing import Any, Callable
 import joblib
@@ -27,14 +28,17 @@ pd.options.display.width = 0
 Params = dict[str, Any]
 Models = dict[Model, Params]
 
+
 def generate_x(df: pd.DataFrame) -> tuple[np.ndarray, np.ndarray]:
     df = df.drop([Feature.OSM_ID.value], axis=1)
     for feature in Feature.array_2d_features():
         df[feature] = df[feature].apply(lambda row: sum(row, []))
 
     for feature in Feature.array_1d_features() + Feature.array_2d_features():
-        df[feature] = df[feature].apply(lambda arr: [elem for elem in arr if arr is not None])
-        df[feature] = pad_sequences(df[feature], padding='post').tolist()
+        df[feature] = df[feature].apply(
+            lambda arr: [elem for elem in arr if arr is not None]
+        )
+        df[feature] = pad_sequences(df[feature], padding="post").tolist()
         df[feature] = df[feature].apply(lambda arr: np.array(arr))
 
     xs = [df[f].values.tolist() for f in df.columns]
@@ -42,12 +46,13 @@ def generate_x(df: pd.DataFrame) -> tuple[np.ndarray, np.ndarray]:
 
     return x
 
+
 def prepare_df_for_training(
     df_feature_path: str,
 ) -> tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.DataFrame, pd.Series]:
     df: pd.DataFrame = pd.read_pickle(df_feature_path).head(150)
 
-    df = df.drop( # some of these should be one hot encoded instead of dropped
+    df = df.drop(  # some of these should be one hot encoded instead of dropped
         columns=[
             Feature.COORDINATES.value,
             Feature.CPR_VEJNAVN.value,
@@ -123,7 +128,7 @@ def train_models_save_results(
 
 
 def test_models(
-    models: dict[Model, Any], x_test: np.ndarray, y_test: np.ndarray
+    models: dict[Model, Any], x_test: np.ndarray, y_test: np.ndarray, df: pd.DataFrame
 ) -> pd.DataFrame:
     """
     Tests all the models. Will return scoring metrics for each models predictions.
@@ -133,33 +138,45 @@ def test_models(
         x_test (pd.DataFrame): The input test data from the train-test split
         y_test (pd.Series): The target test data from the train-test split
     """
-    scored_predictions = pd.DataFrame({"y_true": y_test})
+    per_model_metrics: dict[str, float] = {}
+
     # initialize scored_predictions with y_test
     for model_name, model in models.items():
+
+        # predict
         if model_name.value in Model.regression_models_names():
             y_pred = scoring.classify_with_regressor(model, x_test)
         else:
             y_pred = model.predict(x_test)
-        scores = scoring.score_model(y_test, y_pred)
-        scored_predictions[
-            f"{model_name}_y_pred"
-        ] = y_pred  # add a new column for each model's predictions
 
-        for score_name, score_value in scores.items():
-            scored_predictions[
+        # add predictions to dataframe
+        # TODO: y_pred is shuffled, so they won't match the correct OSM_ID
+        df[f"{model_name}_predictions"] = y_pred
+
+        # add scores to dict
+        for score_name, score_value in scoring.score_model(y_test, y_pred).items():
+            per_model_metrics[ # add a new column for each score
                 f"{model_name}_{score_name}"
-            ] = score_value  # add a new column for each score
+            ] = score_value  
 
-    return scored_predictions
+    return per_model_metrics
 
+def save_metrics(metrics, save_to: str) -> None:
+    date = datetime.today().strftime('%d%m%y-%H%S')
+    filename = f"{save_to}/{date}_metrics.txt"
+    with open(filename, "w+"):
+        for name, value in metrics:
+            f"{name}, {value}\n"
 
 def main():
     df, x_train, x_test, y_train, y_test = prepare_df_for_training(
         "/share-files/pickle_files_features_and_ground_truth/2012.pkl"
     )
     models = train_models_save_results(x_train, y_train)
-    scores = test_models(models, x_test, y_test)
-    scores.to_csv("/share-files/model_scores/scores.csv", index=False)
+    metrics = test_models(models, x_test, y_test, df)
+    save_metrics(metrics, "/share-files/model_scores")
+    # scores.to_csv("/share-files/model_scores/scores.csv", index=False)
+
 
 if __name__ == "__main__":
     df, x_train, x_test, y_train, y_test = prepare_df_for_training(
