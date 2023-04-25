@@ -123,7 +123,7 @@ def train_models_save_results(
 
 
 def test_models(
-    models: dict[Model, Any], x_test: pd.DataFrame, y_test: pd.Series
+    models: dict[Model, Any], x_test: np.ndarray, y_test: np.ndarray
 ) -> pd.DataFrame:
     """
     Tests all the models. Will return scoring metrics for each models predictions.

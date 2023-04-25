@@ -9,29 +9,27 @@ from sklearn.preprocessing import OneHotEncoder
 
 class SKFormatter:
 
-    def __init__(self, dataset_path: str, target_feature: Feature):
+    def __init__(self, dataset_path: str, target_feature: Feature, test_size: float = 0.2):
         self.df = pd.read_pickle(dataset_path)
         self.target = target_feature.value
-
-        # features we don't want to train with
         self.discard_features = [Feature.OSM_ID.value]
+        self.test_size = test_size
 
     def generate_train_test_split(self) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
-        self.df = self.__encode_categorical_features()
-        self.__encode_single_value_features(self.df)
+        # encode features
+        self.__encode_categorical_features()
+        self.__encode_single_value_features()
 
+        # extract target
         self.df = self.df.rename(columns={Feature.HAST_GAELDENDE_HAST.value: Feature.TARGET.value})
         y = self.df[Feature.TARGET.value].values
         self.df = self.df.drop([Feature.TARGET.value], axis=1)
 
+        # generate features np array
         x = self.__generate_x()
 
-        x_train, x_test, y_train, y_test = train_test_split(
-            x, y, test_size=0.2, random_state=42
-        )
-
-        return x_train, x_test, y_train, y_test
-
+        # x_train, x_test, y_train, y_test
+        return self.test_train_split(x, y)
 
     def __generate_x(self) -> tuple[np.ndarray, np.ndarray]:
         # don't train with the following features
@@ -74,5 +72,7 @@ class SKFormatter:
         transformed = transformer.fit_transform(self.df)
         self.df = pd.DataFrame(transformed, columns=transformer.get_feature_names())
 
-    def test_train_split(self):
-        return
+    def test_train_split(self, x: np.ndarray, y: np.ndarray) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+        return train_test_split(
+            x, y, test_size=self.test_size, random_state=42
+        ) # x_train, x_test, y_train, y_test
