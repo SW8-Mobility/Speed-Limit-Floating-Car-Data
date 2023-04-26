@@ -1,4 +1,5 @@
 from datetime import datetime
+from functools import reduce
 import numpy as np
 from typing import Any, Callable
 import joblib
@@ -129,7 +130,7 @@ def train_models_save_results(
 
 def test_models(
     models: dict[Model, Any], x_test: np.ndarray, y_test: np.ndarray, df: pd.DataFrame
-) -> pd.DataFrame:
+) -> dict[str, dict]:
     """
     Tests all the models. Will return scoring metrics for each models predictions.
 
@@ -138,7 +139,7 @@ def test_models(
         x_test (pd.DataFrame): The input test data from the train-test split
         y_test (pd.Series): The target test data from the train-test split
     """
-    per_model_metrics: dict[str, float] = {}
+    per_model_metrics: dict[str, dict] = {}
 
     # initialize scored_predictions with y_test
     for model_name, model in models.items():
@@ -153,20 +154,20 @@ def test_models(
         # TODO: y_pred is shuffled, so they won't match the correct OSM_ID
         df[f"{model_name}_predictions"] = y_pred
 
-        # add scores to dict
-        for score_name, score_value in scoring.score_model(y_test, y_pred).items():
-            per_model_metrics[ # add a new column for each score
-                f"{model_name}_{score_name}"
-            ] = score_value  
+        per_model_metrics[model_name.value] = scoring.score_model(y_test, y_pred)
 
     return per_model_metrics
 
-def save_metrics(metrics, save_to: str) -> None:
-    date = datetime.today().strftime('%d%m%y-%H%S')
+def save_metrics(metrics_dict: dict[str, dict], save_to: str) -> None:
+    date = datetime.today().strftime('%d%m%y_%H%M')
     filename = f"{save_to}/{date}_metrics.txt"
-    with open(filename, "w+"):
-        for name, value in metrics:
-            f"{name}, {value}\n"
+    with open(filename, "w+") as f:
+        f.write("model, mae, mape, mse, rmse, r2, ev") # header
+        for model, metrics in metrics_dict:
+            f.write(f"{model}")
+            for name, val in metrics.items():
+                f.write(f", {val}")
+            f.write("\n")
 
 def main():
     df, x_train, x_test, y_train, y_test = prepare_df_for_training(
@@ -179,6 +180,7 @@ def main():
 
 
 if __name__ == "__main__":
+    pass
     df, x_train, x_test, y_train, y_test = prepare_df_for_training(
         "/share-files/pickle_files_features_and_ground_truth/2012.pkl"
     )
