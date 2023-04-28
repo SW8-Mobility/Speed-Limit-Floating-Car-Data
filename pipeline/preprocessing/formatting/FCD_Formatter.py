@@ -18,13 +18,21 @@ class FCD_Formatter:
             file_path (str): Path to a json file
 
         Returns:
-            DataFrame: _description_
+            DataFrame: A dataframe with osm_id and segments
         """
         with open(file_path, "r") as data_from_fcd:
             return self.from_json_string(data_from_fcd.read())
 
     @staticmethod
     def from_json_string(json_string: str) -> DataFrame:
+        """Converts a FCD data geojson string into a Pandas Dataframe that correlates osm_id to their trips
+
+        Args:
+            json_string (str): FCD data geojson formatted string
+
+        Returns:
+            DataFrame: A dataframe with osm_id and segments
+        """
         data = json.loads(json_string)  # Load from string
         data = _remove_fcd_request_wrapper(
             data
