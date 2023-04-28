@@ -53,7 +53,7 @@ def run_requests(start_url: str) -> None:
 
 
 def main():
-    API_KEY = os.getenv('FCD_API_KEY')
+    API_KEY = os.getenv("FCD_API_KEY")
     url = f"https://fcd-share.civil.aau.dk/api/linestrings/?year=2014&format=json&apikey={API_KEY}"
     run_requests(url)
 

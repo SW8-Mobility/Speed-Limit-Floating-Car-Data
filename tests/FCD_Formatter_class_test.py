@@ -2,12 +2,11 @@ import pandas as pd  # type: ignore
 import pytest
 
 from pipeline.preprocessing.formatting.FCD_Formatter import (
-        FCD_Formatter,
-        _create_segment_to_coordinate_df,
-        _map_segments_to_coordinates,
-        _clean_df,
+    FCD_Formatter,
+    _create_segment_to_coordinate_df,
+    _map_segments_to_coordinates,
+    _clean_df,
 )
-
 
 
 @pytest.mark.parametrize(
@@ -52,7 +51,7 @@ def test_create_segment_to_coordinate_df_one_segment():
         ],
     }
     df = pd.DataFrame(data=actual_data)
-    
+
     actual_df = _create_segment_to_coordinate_df(df)
 
     assert expected_df.equals(actual_df)

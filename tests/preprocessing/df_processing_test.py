@@ -22,7 +22,7 @@ def test_create_df_from_json():
     }
     expected_df = pd.DataFrame(data=expected_data)
     testfile_path = os.getcwd() + "/tests/test_files/geo_json_trip_data.json"
-    with open(testfile_path, 'r') as testfile:
+    with open(testfile_path, "r") as testfile:
         data = json.load(testfile)
         actual_df = _remove_fcd_request_wrapper(data)
         assert expected_df.equals(actual_df)

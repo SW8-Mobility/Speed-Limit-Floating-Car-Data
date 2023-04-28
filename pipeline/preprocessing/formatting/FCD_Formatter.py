@@ -7,8 +7,8 @@ from pipeline.preprocessing.compute_features.type_alias import Trip
 SegmentToCoordinateDict = dict[int, list[Trip]]
 SegmentToCoordinatesList = list[tuple[int, list]]
 
-class FCD_Formatter:
 
+class FCD_Formatter:
     @classmethod
     def from_json_file(self, file_path: str) -> DataFrame:
         """Loads a file and calls from_json_string on it
@@ -20,14 +20,18 @@ class FCD_Formatter:
         Returns:
             DataFrame: _description_
         """
-        with open(file_path, 'r') as data_from_fcd:
+        with open(file_path, "r") as data_from_fcd:
             return self.from_json_string(data_from_fcd.read())
 
     @staticmethod
     def from_json_string(json_string: str) -> DataFrame:
-        data = json.loads(json_string) # Load from string
-        data = _remove_fcd_request_wrapper(data) # Remove the outer layer of json object
-        data = _create_segment_to_coordinate_df(data) # Convert from geojson format to osm_id -> trips
+        data = json.loads(json_string)  # Load from string
+        data = _remove_fcd_request_wrapper(
+            data
+        )  # Remove the outer layer of json object
+        data = _create_segment_to_coordinate_df(
+            data
+        )  # Convert from geojson format to osm_id -> trips
 
         return data
 
@@ -59,6 +63,7 @@ def _remove_fcd_request_wrapper(wrapdata: Any) -> DataFrame:
     )  # drop unused columns
 
     return df.infer_objects()  # infer types in dataframes
+
 
 def _create_segment_to_coordinate_df(df: DataFrame) -> DataFrame:
     """Main method for converting our dataframe of a trip per row to a dataframe
@@ -102,7 +107,10 @@ def _create_segment_to_coordinate_df(df: DataFrame) -> DataFrame:
     mapped_df = DataFrame(l, columns=["osm_id", "coordinates"])
     return mapped_df
 
-def _map_segments_to_coordinates(segments: list, coordinates: list) -> SegmentToCoordinatesList:
+
+def _map_segments_to_coordinates(
+    segments: list, coordinates: list
+) -> SegmentToCoordinatesList:
     """Aggregate lists of segments (osm_id) and coordinates for a trip, such that coordinates are
     associated with its corresponding segment id. The reason why this works is that there is an
     equal amount of osm id's and coordinates, e.g [osm_1, osm_1, osm_2] and [coor1, coor2, coor3]
@@ -130,7 +138,10 @@ def _map_segments_to_coordinates(segments: list, coordinates: list) -> SegmentTo
 
     return result
 
-def _append_coordinates(osm_and_coordinates: list[tuple[int, list]], segment_dict: SegmentToCoordinateDict) -> None:
+
+def _append_coordinates(
+    osm_and_coordinates: list[tuple[int, list]], segment_dict: SegmentToCoordinateDict
+) -> None:
     """Appends coordinates from a trip to the correct segment in segment_dict
 
     Args:
@@ -142,6 +153,7 @@ def _append_coordinates(osm_and_coordinates: list[tuple[int, list]], segment_dic
             segment_dict[osm] = [coordinates]
         else:
             segment_dict[osm].extend([coordinates])
+
 
 def _clean_df(df: DataFrame) -> None:
     """Remove None values from trips. Some trips have None values
@@ -166,11 +178,9 @@ def _clean_df(df: DataFrame) -> None:
 
 
 def main():
-    check = FCD_Formatter.from_json_file('data/2014_1.json')
-    
+    check = FCD_Formatter.from_json_file("data/2014_1.json")
 
     print(check)
-
 
 
 if __name__ == "__main__":
