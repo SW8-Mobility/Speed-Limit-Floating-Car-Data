@@ -1,4 +1,4 @@
-from pandas import DataFrame, Series # type: ignore
+from pandas import DataFrame, Series  # type: ignore
 from typing import Any
 from io import open
 import json
