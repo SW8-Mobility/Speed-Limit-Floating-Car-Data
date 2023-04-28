@@ -4,7 +4,8 @@ import pytest
 from pipeline.preprocessing.formatting.FCD_Formatter import (
         FCD_Formatter,
         _create_segment_to_coordinate_df,
-        _map_segments_to_coordinates
+        _map_segments_to_coordinates,
+        _clean_df,
 )
 
 
@@ -87,6 +88,9 @@ def test_create_segment_to_coordinate_df_one_segment_with_none():
     df = pd.DataFrame(data=actual_data)
     actual_df = _create_segment_to_coordinate_df(df)
 
+    print(df)
+    print(actual_df)
+
     assert expected_df.equals(actual_df)
 
 
@@ -143,6 +147,7 @@ def test_create_segment_to_coordinate_df_multiple_segments():
             ],
         ],
     }
+
     df = pd.DataFrame(data=actual_data)
     actual_df = _create_segment_to_coordinate_df(df)
 
@@ -202,6 +207,6 @@ def test_clean_df(osm_id, expected_osm, expected_coordinates):
         ],
     }
     actual_df = pd.DataFrame(data=actual_data)
-    actual_df.dropna()
+    _clean_df(actual_df)
 
     assert expected_df.equals(actual_df)

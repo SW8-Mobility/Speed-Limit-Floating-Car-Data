@@ -28,7 +28,6 @@ class FCD_Formatter:
         data = json.loads(json_string) # Load from string
         data = _remove_fcd_request_wrapper(data) # Remove the outer layer of json object
         data = _create_segment_to_coordinate_df(data) # Convert from geojson format to osm_id -> trips
-        data = data.dropna() # Remove None values in dataframe.
 
         return data
 
@@ -74,6 +73,10 @@ def _create_segment_to_coordinate_df(df: DataFrame) -> DataFrame:
 
     segment_to_coordinates: SegmentToCoordinateDict = dict()
 
+    # step 0:
+    # remove None values
+    _clean_df(df)
+
     # step 1:
     # for each trip, seggregate the coordinates, according to the segment (osm_id)
     # so for each trip, something like [(segment1, coordinates), (segment2, coordinates)]
@@ -98,7 +101,6 @@ def _create_segment_to_coordinate_df(df: DataFrame) -> DataFrame:
 
     mapped_df = DataFrame(l, columns=["osm_id", "coordinates"])
     return mapped_df
-                
 
 def _map_segments_to_coordinates(segments: list, coordinates: list) -> SegmentToCoordinatesList:
     """Aggregate lists of segments (osm_id) and coordinates for a trip, such that coordinates are
@@ -127,6 +129,7 @@ def _map_segments_to_coordinates(segments: list, coordinates: list) -> SegmentTo
     result.append(current_seg)
 
     return result
+
 def _append_coordinates(osm_and_coordinates: list[tuple[int, list]], segment_dict: SegmentToCoordinateDict) -> None:
     """Appends coordinates from a trip to the correct segment in segment_dict
 
@@ -140,7 +143,26 @@ def _append_coordinates(osm_and_coordinates: list[tuple[int, list]], segment_dic
         else:
             segment_dict[osm].extend([coordinates])
 
+def _clean_df(df: DataFrame) -> None:
+    """Remove None values from trips. Some trips have None values
+    in the osm_id list. Remove these, and the corresponding coordinate
+    values.
 
+    Args:
+        df (pd.DataFrame): dataframe with trips
+    """
+    combined_col = df.apply(  # combine osm_id's and coordinates for each trip
+        lambda d: list(zip(d["osm_id"], d["coordinates"])), axis=1
+    )
+    combined_col = combined_col.apply(  # filter the None values
+        lambda sc: list(filter(lambda elem: elem[0] is not None, sc))
+    )
+    df["osm_id"] = combined_col.apply(  # get osm_id from tuple list
+        lambda d: [elem[0] for elem in d]
+    )
+    df["coordinates"] = combined_col.apply(  # get coordinates from tuple list
+        lambda d: [elem[1] for elem in d]
+    )
 
 
 def main():
