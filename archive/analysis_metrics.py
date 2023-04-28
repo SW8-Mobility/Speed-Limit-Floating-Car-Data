@@ -8,7 +8,7 @@ from statistics import median, mean
 import sys
 from typing import Iterator
 import pandas as pd  # type: ignore
-from pipeline.preprocessing.df_processing import (
+from .format_data import (
     create_df_from_json,
 )
 
