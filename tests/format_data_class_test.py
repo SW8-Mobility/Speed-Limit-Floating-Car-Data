@@ -1,9 +1,12 @@
 import pandas as pd  # type: ignore
 import pytest
+
 from pipeline.preprocessing.formatting.FCD_Formatter import (
-    _create_segment_to_coordinate_df,
-    _map_segments_to_coordinates,
+        FCD_Formatter,
+        _create_segment_to_coordinate_df,
+        _map_segments_to_coordinates
 )
+
 
 
 @pytest.mark.parametrize(
@@ -48,6 +51,7 @@ def test_create_segment_to_coordinate_df_one_segment():
         ],
     }
     df = pd.DataFrame(data=actual_data)
+    
     actual_df = _create_segment_to_coordinate_df(df)
 
     assert expected_df.equals(actual_df)
@@ -197,6 +201,7 @@ def test_clean_df(osm_id, expected_osm, expected_coordinates):
             ]
         ],
     }
-    actual_df = pd.DataFrame(data=actual_data).dropna()
+    actual_df = pd.DataFrame(data=actual_data)
+    actual_df.dropna()
 
     assert expected_df.equals(actual_df)

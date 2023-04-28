@@ -45,7 +45,6 @@ def append_coordinates(
         else:
             segment_dict[osm].extend([coordinates])
 
-
 def create_segment_to_coordinate_df(df: pd.DataFrame) -> pd.DataFrame:
     """Main method for converting our dataframe of a trip per row to a dataframe
     of a segment per row.

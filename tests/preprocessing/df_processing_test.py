@@ -1,7 +1,7 @@
 import pytest
 import os
 import pandas as pd  # type: ignore
-from pipeline.preprocessing.df_processing import create_df_from_json
+from pipeline.preprocessing.formatting.FCD_Formatter import FCD_Formatter
 
 
 def test_create_df_from_json():
@@ -21,5 +21,11 @@ def test_create_df_from_json():
     }
     expected_df = pd.DataFrame(data=expected_data)
     testfile_path = os.getcwd() + "/tests/test_files/geo_json_trip_data.json"
-    actual_df = create_df_from_json(testfile_path)
+    actual_df = FCD_Formatter.from_json_file(testfile_path)
+
+
+    
+    print(actual_df)
+    print(expected_data)
+
     assert expected_df.equals(actual_df)
