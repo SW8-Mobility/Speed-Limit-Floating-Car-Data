@@ -95,7 +95,7 @@ def _create_segment_to_coordinate_df(df: DataFrame) -> DataFrame:
     # For each trip, add to coordinates to the correct segment in the segment_to_coordinates dict
 
     mapped_coordinates.apply(
-        lambda seg_and_cor: _append_coordinates(seg_and_cor, segment_to_coordinates) # type: ignore
+        lambda seg_and_cor: _append_coordinates(seg_and_cor, segment_to_coordinates)  # type: ignore
     )
 
     # step 3:
