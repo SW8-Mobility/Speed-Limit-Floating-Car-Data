@@ -1,5 +1,6 @@
 from __future__ import annotations
 from enum import Enum
+from typing import Iterator
 
 
 # enum to represent our features
@@ -96,36 +97,44 @@ class FeatureList(list):
         self.features = features
         self.features_names = [f.value for f in features]
 
+    def not_in(self, feature_list: list[str]) -> list[str]:
+        """Use self as filter. Only return the elements not self. 
+
+        Args:
+            feature_list (list[str]): list of features as strings to filter. 
+
+        Returns:
+            list[str]: list of names of features, that are not in self. 
+        """
+        return [f for f in feature_list if f not in self.features_names]
+
     # operator overloading:
 
     def __sub__(self, other: FeatureList) -> FeatureList:
-        """
-        Subtract using two lists, to remove the features from other in
-        self.
-        @param other:
-        @return:
-        """
-        if isinstance(other, FeatureList):
-            return FeatureList([x for x in self.features if x not in other.features])
-        else:
-            raise NotImplemented()
+        """Subtract using two lists, to remove the features from other in
+        self. ex. [SPEEDS, DISTANCES] - [DISTANCES] -> [SPEEDS]
 
-    def __add__(self, other):
-        """
+        Args:
+            other (FeatureList): FeatureList with features to remove
 
-        @param other:
-        @return:
+        Returns:
+            FeatureList: New FeatureList that does not include the features from other
         """
-        if isinstance(other, FeatureList):
-            return FeatureList(self.features + other.features)
-        else:
-            raise NotImplemented()
+        return FeatureList([x for x in self.features if x not in other.features])
 
-    def __iter__(self):
+    def __add__(self, other: FeatureList) -> FeatureList:
+        """Add two FeatureLists together.
+
+        Args:
+            other (FeatureList): FeatureList to add
+
+        Returns:
+            FeatureList: a new FeatureList with features combined
+        """
+        return FeatureList(self.features + other.features)
+
+    def __iter__(self) -> Iterator:
         return self.features_names.__iter__()
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return self.features_names.__repr__()
-
-    def not_in(self, feature_list: list[str]) -> list[str]:
-        return [f for f in feature_list if f not in self.features_names]
