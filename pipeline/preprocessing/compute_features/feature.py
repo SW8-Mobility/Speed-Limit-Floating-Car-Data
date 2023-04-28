@@ -1,4 +1,6 @@
+from __future__ import annotations
 from enum import Enum
+
 
 # enum to represent our features
 class Feature(Enum):
@@ -33,54 +35,80 @@ class Feature(Enum):
     TARGET = "target"
 
     @staticmethod
-    def array_1d_features():
+    def array_features() -> FeatureList:
         """
-        returns a list of the names of features where the type is 1d-arrays.
+        returns a list of the of the array features.
         """
-        return [
-            Feature.MEANS.value,
-            Feature.MINS.value,
-            Feature.MAXS.value,
-            Feature.MEDIANS.value,
-        ]
+        return Feature.array_1d_features() + Feature.array_2d_features()
 
     @staticmethod
-    def array_2d_features() -> list[str]:
+    def array_1d_features() -> FeatureList:
         """
-        returns a list of the names of features where the type is 2d arrays.
+        returns a list of the features where the type is 1d-arrays.
         """
-        return [
-            Feature.DISTANCES.value,
-            Feature.SPEEDS.value,
-            Feature.ROLLING_AVERAGES.value,
-            Feature.VCR.value,
-        ]
+        return FeatureList(
+            [
+                Feature.MEANS,
+                Feature.MINS,
+                Feature.MAXS,
+                Feature.MEDIANS,
+            ]
+        )
 
     @staticmethod
-    def numeric_features() -> list[str]:
+    def array_2d_features() -> FeatureList:
         """
-        returns a list of the names of features where the type is a int/float.
+        returns a list of features where the type is 2d arrays.
         """
-        return [
-            Feature.AGGREGATE_MEAN.value,
-            Feature.AGGREGATE_MAX.value,
-            Feature.AGGREGATE_MEDIAN.value,
-            Feature.AGGREGATE_MIN.value,
-            Feature.HAST_GENEREL_HAST.value,
-        ]
+        return FeatureList(
+            [
+                Feature.COORDINATES,
+                Feature.DISTANCES,
+                Feature.SPEEDS,
+                Feature.ROLLING_AVERAGES,
+                Feature.VCR,
+            ]
+        )
 
     @staticmethod
-    def categorical_features() -> list[str]:
+    def categorical_features() -> FeatureList:
         """
-        returns a list of the names of features where the feature is categorical.
+        returns a list of features where the feature is categorical.
         """
-        return [
-            Feature.COORDINATES.value,
-            Feature.CPR_VEJNAVN.value,
-            Feature.HAST_SENEST_RETTET.value,
-            Feature.VEJSTIKLASSE.value,
-            Feature.VEJTYPESKILTET.value,
-        ]
+        return FeatureList(
+            [
+                Feature.HAST_SENEST_RETTET,
+                Feature.VEJSTIKLASSE,
+                Feature.VEJTYPESKILTET,
+            ]
+        )
 
     def __str__(self) -> str:
         return self.value
+
+
+class FeatureList(list):
+    def __init__(self, features: list[Feature]):
+        self.features = features
+        self.features_names = [f.value for f in features]
+
+    def __sub__(self, other):
+        if isinstance(other, FeatureList):
+            return FeatureList([x for x in self.features if x not in other.features])
+        else:
+            raise NotImplemented()
+
+    def __add__(self, other):
+        if isinstance(other, FeatureList):
+            return FeatureList(self.features + other.features)
+        else:
+            raise NotImplemented()
+
+    def __iter__(self):
+        return self.features_names.__iter__()
+
+    def __repr__(self):
+        return self.features_names.__repr__()
+
+    def not_in(self, feature_list: list[str]) -> list[str]:
+        return [f for f in feature_list if f not in self.features_names]

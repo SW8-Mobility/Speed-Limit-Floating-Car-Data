@@ -6,6 +6,6 @@ pandas~=2.0.0
 numpy
 scikit-learn~=1.2.2
 setuptools~=57.0.0
-xgboost
+xgboost~==0.90
 keras
 Keras-Preprocessing

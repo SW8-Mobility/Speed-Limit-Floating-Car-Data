@@ -6,10 +6,11 @@ from sklearn.pipeline import Pipeline  # type: ignore
 from sklearn.preprocessing import StandardScaler  # type: ignore
 from xgboost import XGBClassifier  # type: ignore
 import pandas as pd  # type: ignore
+from sklearn.pipeline import make_pipeline
 
 from pipeline.models.statistical_model import StatisticalModel
 
-CORE_NUM = 16  # how many cores to use in grid_search
+CORE_NUM = 15  # how many cores to use in grid_search
 RANDOM_STATE = 42
 
 
@@ -26,31 +27,23 @@ def create_mlp_grid_search(
     Returns:
         tuple[MLPClassifier, dict]: A tuple of the best MLP classifier and the best hyperparameters.
     """
-    # create pipeline with mlp and scaler
-    pipeline = Pipeline(
-        [
-            ("scaler", StandardScaler()),
-            ("mlp", MLPClassifier(max_iter=1000, random_state=42)),
-        ]
-    )
-
-    # define the hyperparameters to search over
-    parameters = {
-        "hidden_layer_sizes": [(50,), (100,), (50, 50), (100, 50)],
-        "alpha": [0.0001, 0.001, 0.01],
-        "activation": ["relu", "logistic"],
-        "solver": ["adam", "lbfgs"],
-        "learning_rate": ["constant", "adaptive"],
-        "early_stopping": [True, False],
-        "tol": [1e-3, 1e-4, 1e-5],
-        "beta_1": [0.9, 0.8, 0.7],
-        "beta_2": [0.999, 0.9, 0.8],
-        "validation_fraction": [0.1, 0.2, 0.3],
+    param_grid = {
+        'mlpclassifier__hidden_layer_sizes': [(100,), (50, 50), (20, 20, 20)],
+        'mlpclassifier__activation': ['relu', 'tanh', 'logistic'],
+        'mlpclassifier__solver': ['sgd', 'adam'],
+        'mlpclassifier__alpha': [0.0001, 0.001, 0.01],
+        'mlpclassifier__learning_rate': ['constant', 'adaptive']
     }
+
+    # Create pipeline with StandardScaler and MLPClassifier
+    pipeline = make_pipeline(
+        StandardScaler(),
+        MLPClassifier(max_iter=1000, random_state=RANDOM_STATE)
+    )
 
     # perform grid search with k-fold cross-validation
     kfold = KFold(n_splits=k, shuffle=True, random_state=RANDOM_STATE)
-    grid_search = GridSearchCV(pipeline, parameters, cv=kfold, n_jobs=CORE_NUM)
+    grid_search = GridSearchCV(pipeline, param_grid=param_grid, cv=kfold, n_jobs=CORE_NUM)
     grid_search.fit(x_train, y_train)
 
     # return the best mlp model and the best hyperparameters found by the grid search

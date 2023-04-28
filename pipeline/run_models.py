@@ -23,65 +23,11 @@ from sklearn.model_selection import train_test_split
 import pandas as pd  # type: ignore
 from keras_preprocessing.sequence import pad_sequences
 
-pd.options.display.width = 0
+from pipeline.preprocessing.sk_formatter import SKFormatter
 
 # Model = dict[str, Model]
 Params = dict[str, Any]
 Models = dict[Model, Params]
-
-
-def generate_x(df: pd.DataFrame) -> tuple[np.ndarray, np.ndarray]:
-    df = df.drop([Feature.OSM_ID.value], axis=1)
-    for feature in Feature.array_2d_features():
-        df[feature] = df[feature].apply(lambda row: sum(row, []))
-
-    for feature in Feature.array_1d_features() + Feature.array_2d_features():
-        df[feature] = df[feature].apply(
-            lambda arr: [elem for elem in arr if arr is not None]
-        )
-        df[feature] = pad_sequences(df[feature], padding="post").tolist()
-        df[feature] = df[feature].apply(lambda arr: np.array(arr))
-
-    xs = [df[f].values.tolist() for f in df.columns]
-    x = np.concatenate(xs, axis=1)
-
-    return x
-
-
-def prepare_df_for_training(
-    df_feature_path: str,
-) -> tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.DataFrame, pd.Series]:
-    df: pd.DataFrame = pd.read_pickle(df_feature_path).head(150)
-
-    df = df.drop(  # some of these should be one hot encoded instead of dropped
-        columns=[
-            Feature.COORDINATES.value,
-            Feature.CPR_VEJNAVN.value,
-            Feature.HAST_SENEST_RETTET.value,
-            Feature.VEJSTIKLASSE.value,
-            Feature.VEJTYPESKILTET.value,
-        ]
-    )
-
-    df = df.rename(columns={"hast_gaeldende_hast": "target"})
-
-    encode_single_value_features(df)
-
-    y = df["target"].values
-    df = df.drop(["target"], axis=1)
-
-    x = generate_x(df)
-
-    x_train, x_test, y_train, y_test = train_test_split(
-        x, y, test_size=0.2, random_state=42
-    )
-
-    return df, x_train, x_test, y_train, y_test
-
-
-def encode_single_value_features(df):
-    for f in Feature.numeric_features():
-        df[f] = df[f].apply(lambda val: np.array([val]))
 
 
 def train_models_save_results(
@@ -104,11 +50,11 @@ def train_models_save_results(
 
     # define a list of models and their corresponding grid search functions (from models.py)
     model_jobs = [
-        # (Model.MLP, create_mlp_grid_search),
-        # (Model.RF, random_forest_regressor_gridsearch),
-        # (Model.XGB, xgboost_classifier_gridsearch),
+        (Model.MLP, create_mlp_grid_search),
+        (Model.RF, random_forest_regressor_gridsearch),
+        (Model.XGB, xgboost_classifier_gridsearch),
         (Model.LOGREG, logistic_regression_gridsearch),
-        # (Model.STATMODEL, statistical_model),
+        # (Model.STATMODEL, statistical_model), # TODO: Does not work currently...
     ]
 
     models: dict[str, Any] = {}  # model name to the trained model
@@ -128,6 +74,33 @@ def train_models_save_results(
     return models
 
 
+def append_predictions_to_df(
+    df: pd.DataFrame, predictions: np.ndarray, model: Model
+) -> pd.DataFrame:
+    """
+    Save predictions made to dataframe.
+    @param df: Dataframe to append predictions to.
+    @param predictions: Predictions made by a model
+    @param model: Which model made the predictions
+    @return: Annoted dataframe
+    """
+
+    # The first test_size number of rows are used for testing
+    # ex. 1000 row dataframe might have a test_size of 200 rows
+    # to append the 200 rows of predictions, padding is needed
+    # so that it is the same length.
+    # so, pad to same length and append.
+    predictions_padded = np.pad(
+        predictions,
+        (0, len(df) - len(predictions)),
+        mode="constant",
+        constant_values=None,
+    )
+    col_name = f"{model.value}_preds"
+    df[col_name] = pd.Series(predictions_padded)
+    return df
+
+
 def test_models(
     models: dict[Model, Any], x_test: np.ndarray, y_test: np.ndarray, df: pd.DataFrame
 ) -> dict[str, dict]:
@@ -136,52 +109,56 @@ def test_models(
 
     Args:
         models (dict[Model, Any]): The dictionary of the best models after fitting on the train data.
-        x_test (pd.DataFrame): The input test data from the train-test split
-        y_test (pd.Series): The target test data from the train-test split
+        x_test (np.ndarray): The input test data from the train-test split
+        y_test (np.ndarray): The target test data from the train-test split
     """
     per_model_metrics: dict[str, dict] = {}
 
     # initialize scored_predictions with y_test
     for model_name, model in models.items():
-
         # predict
         if model_name.value in Model.regression_models_names():
             y_pred = scoring.classify_with_regressor(model, x_test)
         else:
             y_pred = model.predict(x_test)
 
-        # add predictions to dataframe
-        # TODO: y_pred is shuffled, so they won't match the correct OSM_ID
-        df[f"{model_name}_predictions"] = y_pred
+        append_predictions_to_df(df, y_pred)
 
         per_model_metrics[model_name.value] = scoring.score_model(y_test, y_pred)
 
     return per_model_metrics
 
-def save_metrics(metrics_dict: dict[str, dict], save_to: str) -> None:
-    date = datetime.today().strftime('%d%m%y_%H%M')
-    filename = f"{save_to}/{date}_metrics.txt"
+
+def save_metrics(metrics_dict: dict[str, dict], save_to_folder: str) -> None:
+    """
+    Save the metrics from model predictions to a file.
+    Will name file based on time created.
+
+    @param metrics_dict: dict from model name to metrics
+    @param save_to_folder: Folder to save file
+    @return: None
+    """
+    date = datetime.today().strftime("%d%m%y_%H%M")
+    filename = f"{save_to_folder}/{date}_metrics.txt"
     with open(filename, "w+") as f:
-        f.write("model, mae, mape, mse, rmse, r2, ev") # header
-        for model, metrics in metrics_dict:
+        f.write("model, mae, mape, mse, rmse, r2, ev\n")  # header
+        for model, metrics in metrics_dict.items():
             f.write(f"{model}")
             for name, val in metrics.items():
                 f.write(f", {val}")
             f.write("\n")
 
+
 def main():
-    df, x_train, x_test, y_train, y_test = prepare_df_for_training(
+    formatter = SKFormatter(
         "/share-files/pickle_files_features_and_ground_truth/2012.pkl"
     )
+    df = formatter.df
+    x_train, x_test, y_train, y_test = formatter.generate_train_test_split()
+    print("formatted. Training...")
     models = train_models_save_results(x_train, y_train)
     metrics = test_models(models, x_test, y_test, df)
     save_metrics(metrics, "/share-files/model_scores")
-    # scores.to_csv("/share-files/model_scores/scores.csv", index=False)
-
 
 if __name__ == "__main__":
-    pass
-    df, x_train, x_test, y_train, y_test = prepare_df_for_training(
-        "/share-files/pickle_files_features_and_ground_truth/2012.pkl"
-    )
-    train_models_save_results(x_train, y_train)
+    main()
