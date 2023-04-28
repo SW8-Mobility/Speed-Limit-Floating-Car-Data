@@ -2,7 +2,7 @@ from datetime import datetime
 from functools import reduce
 import numpy as np
 from typing import Any, Callable
-import joblib
+import joblib # type: ignore
 from pipeline.models.models import (
     create_mlp_grid_search,
     random_forest_regressor_gridsearch,
@@ -19,9 +19,9 @@ from pipeline.models.models import (
     logistic_regression_gridsearch,
 )
 from pipeline.preprocessing.compute_features.feature import Feature
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split # type: ignore
 import pandas as pd  # type: ignore
-from keras_preprocessing.sequence import pad_sequences
+from keras_preprocessing.sequence import pad_sequences # type: ignore
 
 from pipeline.preprocessing.sk_formatter import SKFormatter
 
@@ -32,7 +32,7 @@ Models = dict[Model, Params]
 
 def train_models_save_results(
     x_train, y_train
-) -> dict[Model, Any]:  # TODO: update docstring
+) -> dict[Model, Any]:
     """
     Creates every model from models.py, fits them, saves
     them to pickle, saves best params and returns dict
@@ -57,7 +57,7 @@ def train_models_save_results(
         # (Model.STATMODEL, statistical_model), # TODO: Does not work currently...
     ]
 
-    models: dict[str, Any] = {}  # model name to the trained model
+    models: dict[Model, Any] = {}  # model name to the trained model
 
     with open("models/training_results.txt", "a") as best_model_params_f:
         # loop through each model and perform grid search
@@ -93,7 +93,7 @@ def append_predictions_to_df(
     predictions_padded = np.pad(
         predictions,
         (0, len(df) - len(predictions)),
-        mode="constant",
+        mode="constant", # type: ignore
         constant_values=None,
     )
     col_name = f"{model.value}_preds"
@@ -118,12 +118,12 @@ def test_models(
     for model_name, model in models.items():
         # predict
         if model_name.value in Model.regression_models_names():
-            y_pred = scoring.classify_with_regressor(model, x_test)
+            y_pred = scoring.classify_with_regressor(model, x_test) # type: ignore
         else:
             y_pred = model.predict(x_test)
 
-        append_predictions_to_df(df, y_pred)
-
+        append_predictions_to_df(df, y_pred, model_name) # type: ignore
+ 
         per_model_metrics[model_name.value] = scoring.score_model(y_test, y_pred)
 
     return per_model_metrics

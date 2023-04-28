@@ -1,12 +1,12 @@
 import numpy as np
-from sklearn.compose import make_column_transformer
+from sklearn.compose import make_column_transformer # type: ignore
 
 from pipeline.models.utils.scoring import SPEED_LIMITS
 from pipeline.preprocessing.compute_features.feature import Feature, FeatureList
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split # type: ignore
 import pandas as pd  # type: ignore
-from keras_preprocessing.sequence import pad_sequences
-from sklearn.preprocessing import OneHotEncoder
+from keras_preprocessing.sequence import pad_sequences # type: ignore
+from sklearn.preprocessing import OneHotEncoder # type: ignore
 
 
 class SKFormatter:
@@ -16,36 +16,39 @@ class SKFormatter:
         self,
         dataset_path: str,
         test_size: float = 0.2,
-        discard_features: FeatureList = None,
-        target: Feature = None
+        discard_features: FeatureList = None, # type: ignore
+        target: Feature = None, # type: ignore
+        dataset_size: int = 1000,
+        full_dataset: bool = False
     ):
-        """Init
+        """init
 
         Args:
             dataset_path (str): path to pickle dataset
-            target_feature (Feature): The future to be used as target. Defaults to Feature.HAST_GAELDENDE_HAST.
             test_size (float, optional): amount of the dataset to be used to testing. Defaults to 0.2.
+            discard_features (FeatureList, optional): _description_. Defaults to None.
+            target (Feature, optional): The future to be used as target. Defaults to None.
+            dataset_size (int, optional): only use n number of rows. Defaults to 1000.
+            full_dataset (bool, optional): Use full dataset or not. Defaults to False.
         """
-        self.df = pd.read_pickle(dataset_path).head(1000)
+
+        self.df = pd.read_pickle(dataset_path)
+        if not full_dataset:
+            self.df = self.df.head(dataset_size)
+
         self.test_size = test_size
 
-        if discard_features is None:  # bad practice to use objects as default params
-            self.discard_features = FeatureList(
-                [
-                    Feature.OSM_ID,
-                    Feature.COORDINATES,
-                    Feature.CPR_VEJNAVN,
-                    Feature.HAST_SENEST_RETTET,
-                    Feature.DISTANCES,
-                ]
-            )
-        else:
-            self.discard_features = discard_features
+        self.discard_features: FeatureList = FeatureList(
+            [
+                Feature.OSM_ID,
+                Feature.COORDINATES,
+                Feature.CPR_VEJNAVN,
+                Feature.HAST_SENEST_RETTET,
+                Feature.DISTANCES,
+            ]
+        ) if discard_features is None else discard_features
 
-        if target is None:
-            self.target_feature = Feature.HAST_GAELDENDE_HAST.value
-        else:
-            self.target_feature = target.value
+        self.target_feature: str = Feature.HAST_GAELDENDE_HAST.value if target is None else target.value
 
     def generate_train_test_split(
         self,
@@ -98,11 +101,11 @@ class SKFormatter:
             self.df[feature] = self.df[feature].apply(lambda arr: np.array(arr))
 
         # Combine all the features into a numpy array
-        xs = [self.df[f].values.tolist() for f in self.df.columns]
+        xs = [self.df[f].values.tolist() for f in self.df.columns] # type: ignore
         x = np.concatenate(xs, axis=1)
 
         # replace all nan values with 0
-        np.nan_to_num(x, 0)
+        np.nan_to_num(x, nan=0) 
 
         return x
 

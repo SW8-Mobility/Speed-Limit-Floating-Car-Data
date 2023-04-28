@@ -110,7 +110,7 @@ class FeatureList(list):
 
     # operator overloading:
 
-    def __sub__(self, other: FeatureList) -> FeatureList:
+    def __sub__(self, other):
         """Subtract using two lists, to remove the features from other in
         self. ex. [SPEEDS, DISTANCES] - [DISTANCES] -> [SPEEDS]
 
@@ -122,7 +122,7 @@ class FeatureList(list):
         """
         return FeatureList([x for x in self.features if x not in other.features])
 
-    def __add__(self, other: FeatureList) -> FeatureList:
+    def __add__(self, other):
         """Add two FeatureLists together.
 
         Args:

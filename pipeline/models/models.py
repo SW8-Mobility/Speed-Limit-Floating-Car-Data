@@ -179,7 +179,7 @@ def statistical_model(
     Returns:
         StatisticalModel: a statistical model with a predict function
     """
-    return StatisticalModel(), None
+    return StatisticalModel(), None # type: ignore
 
 
 if __name__ == "__main__":
