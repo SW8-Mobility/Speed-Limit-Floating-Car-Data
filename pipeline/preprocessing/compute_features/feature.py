@@ -88,17 +88,34 @@ class Feature(Enum):
 
 
 class FeatureList(list):
+    """
+    Basicly wraps a list of features.
+    """
+
     def __init__(self, features: list[Feature]):
         self.features = features
         self.features_names = [f.value for f in features]
 
-    def __sub__(self, other):
+    # operator overloading:
+
+    def __sub__(self, other: FeatureList) -> FeatureList:
+        """
+        Subtract using two lists, to remove the features from other in
+        self.
+        @param other:
+        @return:
+        """
         if isinstance(other, FeatureList):
             return FeatureList([x for x in self.features if x not in other.features])
         else:
             raise NotImplemented()
 
     def __add__(self, other):
+        """
+
+        @param other:
+        @return:
+        """
         if isinstance(other, FeatureList):
             return FeatureList(self.features + other.features)
         else:
