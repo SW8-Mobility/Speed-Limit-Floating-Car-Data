@@ -26,7 +26,7 @@ class SKFormatter:
         Args:
             dataset_path (str): path to pickle dataset
             test_size (float, optional): amount of the dataset to be used to testing. Defaults to 0.2.
-            discard_features (FeatureList, optional): _description_. Defaults to None.
+            discard_features (FeatureList, optional): Optional list of features to discard. Defaults to None.
             target (Feature, optional): The feature to be used as target. Defaults to None.
             dataset_size (int, optional): only use n number of rows. Defaults to 1000.
             full_dataset (bool, optional): Use full dataset or not. Defaults to False.
