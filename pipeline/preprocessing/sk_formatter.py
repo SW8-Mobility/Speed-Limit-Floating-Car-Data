@@ -1,3 +1,4 @@
+from typing import Union
 import numpy as np
 from pipeline.preprocessing.compute_features.feature import Feature, FeatureList
 import pandas as pd  # type: ignore
@@ -9,7 +10,7 @@ class SKFormatter:
 
     def __init__(
         self,
-        dataset_path: str,
+        dataset: Union[str,pd.DataFrame],
         test_size: float = 0.2,
         discard_features: FeatureList = None,  # type: ignore
         target: Feature = None,  # type: ignore
@@ -19,15 +20,15 @@ class SKFormatter:
         """init
 
         Args:
-            dataset_path (str): path to pickle dataset
+            dataset_path (str or pd.DataFrame): path to pickle dataset or dataset as dataframe. 
             test_size (float, optional): amount of the dataset to be used to testing. Defaults to 0.2.
             discard_features (FeatureList, optional): Optional list of features to discard. Defaults to None.
             target (Feature, optional): The feature to be used as target. Defaults to None.
             dataset_size (int, optional): only use n number of rows. Defaults to 1000.
             full_dataset (bool, optional): Use full dataset or not. Defaults to False.
         """
-
-        self.df = pd.read_pickle(dataset_path)
+        self.df = pd.read_pickle(dataset) if isinstance(dataset, str) else dataset
+            
         if not full_dataset:
             self.df = self.df.head(dataset_size)
 
