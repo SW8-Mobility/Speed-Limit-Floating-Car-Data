@@ -104,7 +104,7 @@ class SKFormatter:
         x = np.concatenate(xs, axis=1)
 
         # replace all nan values with 0
-        np.nan_to_num(x, nan=0)
+        x = np.nan_to_num(x, nan=0)
 
         return x
 
