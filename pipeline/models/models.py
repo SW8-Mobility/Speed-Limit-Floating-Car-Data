@@ -81,7 +81,7 @@ def random_forest_regressor_gridsearch(
     # Create the grid search object
     kfold = KFold(n_splits=k, shuffle=True, random_state=RANDOM_STATE)
     grid_search = GridSearchCV(
-        estimator=rfr, param_grid=param_grid, cv=kfold, n_jobs=CORE_NUM
+        estimator=rfr, param_grid=param_grid, cv=kfold, n_jobs=CORE_NUM, verbose=3
     )
 
     # Fit the grid search object to the training data
