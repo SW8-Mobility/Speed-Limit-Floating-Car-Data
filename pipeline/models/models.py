@@ -37,13 +37,13 @@ def create_mlp_grid_search(
 
     # Create pipeline with StandardScaler and MLPClassifier
     pipeline = make_pipeline(
-        StandardScaler(), MLPClassifier(max_iter=1000, random_state=RANDOM_STATE)
+        StandardScaler(), MLPClassifier(max_iter=1000, random_state=RANDOM_STATE, verbose=3)
     )
 
     # perform grid search with k-fold cross-validation
     kfold = KFold(n_splits=k, shuffle=True, random_state=RANDOM_STATE)
     grid_search = GridSearchCV(
-        pipeline, param_grid=param_grid, cv=kfold, n_jobs=CORE_NUM
+        pipeline, param_grid=param_grid, cv=kfold, n_jobs=CORE_NUM, verbose=3
     )
     grid_search.fit(x_train, y_train)
 
@@ -67,7 +67,7 @@ def random_forest_regressor_gridsearch(
     """
 
     # Create a random forest regressor
-    rfr = RandomForestRegressor(random_state=42)
+    rfr = RandomForestRegressor(random_state=42, verbose=3)
 
     # Set up the parameter grid to search over
     param_grid = {
@@ -104,7 +104,7 @@ def xgboost_classifier_gridsearch(
         tuple[MLPClassifier, dict]: A tuple of the best xgboost classifier and the best hyperparameters.
     """
     # Create an XGBoost classifier
-    xgb = XGBClassifier(random_state=RANDOM_STATE)
+    xgb = XGBClassifier(random_state=RANDOM_STATE, verbosity=2)
 
     # Set up the parameter grid to search over
     param_grid = {
@@ -118,7 +118,7 @@ def xgboost_classifier_gridsearch(
     # Create the grid search object
     kfold = KFold(n_splits=k, shuffle=True, random_state=RANDOM_STATE)
     grid_search = GridSearchCV(
-        estimator=xgb, param_grid=param_grid, cv=kfold, n_jobs=CORE_NUM
+        estimator=xgb, param_grid=param_grid, cv=kfold, n_jobs=CORE_NUM, verbose=3
     )
 
     # Fit the grid search object to the training data
@@ -141,7 +141,7 @@ def logistic_regression_gridsearch(
         tuple[MLPClassifier, dict]: A tuple of the best Logistic Regression Classifier and the best hyperparameters.
     """
     # Create a Logistic Regression model
-    logreg = LogisticRegression(random_state=RANDOM_STATE)
+    logreg = LogisticRegression(random_state=RANDOM_STATE, verbose=3)
 
     # Set up the parameter grid to search over
     parameters = {
@@ -160,6 +160,7 @@ def logistic_regression_gridsearch(
         cv=kfold,
         n_jobs=CORE_NUM,
         error_score="raise",
+        verbose=3
     )
 
     # Fit the grid search object to the training data
