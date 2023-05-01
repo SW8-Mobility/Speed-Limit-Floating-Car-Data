@@ -96,6 +96,9 @@ class Feature(Enum):
     def __str__(self) -> str:
         return self.value
 
+    def __eq__(self, other: Feature) -> bool: # type: ignore
+        return self.value == other.value 
+
 
 class FeatureList(list):
     """
@@ -147,3 +150,6 @@ class FeatureList(list):
 
     def __repr__(self) -> str:
         return self.features_names.__repr__()
+
+    def __eq__(self, other: FeatureList) -> bool: # type: ignore
+        return self.features == other.features
