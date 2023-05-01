@@ -1,6 +1,5 @@
 from pipeline.preprocessing.compute_features.feature import Feature
 
-
 import pandas as pd  # type: ignore
 
 
