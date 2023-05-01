@@ -25,7 +25,7 @@ Useful options can be
 - --rm
     - Removes the container after run. Should be used unless you need the container after runtime
 - -d
-    - Detached mode
+    - Detached mode, aka. you can still use the terminal when running a process. Should be used if you want a process to continue running after closing your terminal
 
 ### Saving data to file
 
