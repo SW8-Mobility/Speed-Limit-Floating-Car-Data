@@ -59,7 +59,7 @@ def _remove_fcd_request_wrapper(wrapdata: Any) -> DataFrame:
     )
 
     # unnest some of the nested values
-    unnest_df(df, "properties", ["length","end_date","start_date","osm_id"])
+    unnest_df(df, "properties", ["length", "end_date", "start_date", "osm_id"])
     unnest_df(df, "geometry", ["coordinates"])
 
     df.drop(  # drop unused columns
