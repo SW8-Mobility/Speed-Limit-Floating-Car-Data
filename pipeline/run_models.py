@@ -13,6 +13,7 @@ from pipeline.models.utils.model_enum import Model
 import pipeline.models.utils.scoring as scoring
 import pandas as pd  # type: ignore
 from pipeline.preprocessing.sk_formatter import SKFormatter
+import os
 
 Params = dict[str, Any]
 Models = dict[Model, Params]
@@ -48,7 +49,7 @@ def train_models_save_results(
 
     models: dict[Model, Any] = {}  # model name to the trained model
 
-    with open("models/training_results.txt", "a") as best_model_params_f:
+    with open(f"{os.path.dirname(__file__)}/training_results.txt", "a") as best_model_params_f:
         # loop through each model and perform grid search
         for model_name, model_func in model_jobs:
             best_model, best_params = model_func(x_train, y_train)
