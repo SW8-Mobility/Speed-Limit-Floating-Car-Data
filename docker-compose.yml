@@ -4,4 +4,4 @@ services:
     env_file: .env
     volumes:
       - .:/Speed-Limit-Floating-Car-Data
-    working_dir: /scripts
+    working_dir: /Speed-Limit-Floating-Car-Data
