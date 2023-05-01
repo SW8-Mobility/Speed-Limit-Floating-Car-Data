@@ -4,6 +4,7 @@ RUN apt-get update && apt-get install libgomp1
 
 COPY requirements.txt .
 RUN pip3 install -r requirements.txt
-RUN python -m pip install -e .
 
-ENTRYPOINT ["tail", "-f", "/dev/null"]
+COPY . /Speed-Limit-Floating-Car-Data
+WORKDIR /Speed-Limit-Floating-Car-Data
+RUN python -m pip install -e .
