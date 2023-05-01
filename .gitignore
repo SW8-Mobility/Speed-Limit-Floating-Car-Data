@@ -8,3 +8,4 @@
 *.pyc
 *.csv
 !tests/test_files/*.json
+*.egg-info
