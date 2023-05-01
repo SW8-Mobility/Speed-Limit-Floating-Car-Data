@@ -37,7 +37,8 @@ def create_mlp_grid_search(
 
     # Create pipeline with StandardScaler and MLPClassifier
     pipeline = make_pipeline(
-        StandardScaler(), MLPClassifier(max_iter=1000, random_state=RANDOM_STATE, verbose=3)
+        StandardScaler(),
+        MLPClassifier(max_iter=1000, random_state=RANDOM_STATE, verbose=3),
     )
 
     # perform grid search with k-fold cross-validation
@@ -160,7 +161,7 @@ def logistic_regression_gridsearch(
         cv=kfold,
         n_jobs=CORE_NUM,
         error_score="raise",
-        verbose=3
+        verbose=3,
     )
 
     # Fit the grid search object to the training data
