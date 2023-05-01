@@ -3,7 +3,7 @@ from typing import Any
 from io import open
 import json
 from pipeline.preprocessing.compute_features.type_alias import Trip
-from utils.unnest_df import unnest_df
+from pipeline.utils.unnest_df import unnest_df
 
 SegmentToCoordinateDict = dict[int, list[Trip]]
 SegmentToCoordinatesList = list[tuple[int, list]]
@@ -35,17 +35,17 @@ class FCD_Formatter:
             DataFrame: A dataframe with osm_id and segments
         """
         data = json.loads(json_string)  # Load from string
-        data = __remove_fcd_request_wrapper(
+        data = _remove_fcd_request_wrapper(
             data
         )  # Remove the outer layer of json object
-        data = __create_segment_to_coordinate_df(
+        data = _create_segment_to_coordinate_df(
             data
         )  # Convert from geojson format to osm_id -> trips
 
         return data
 
 
-def __remove_fcd_request_wrapper(wrapdata: Any) -> DataFrame:
+def _remove_fcd_request_wrapper(wrapdata: Any) -> DataFrame:
     """This function removes the FCD Wrapper that AAU FCD data comes in when it is requested.
 
     Args:
@@ -59,14 +59,8 @@ def __remove_fcd_request_wrapper(wrapdata: Any) -> DataFrame:
     )
 
     # unnest some of the nested values
-    unnest_df(df, "properties", ["length"])
-
-    df["end_date"] = df["properties"].apply(lambda prop_dict: prop_dict["end_date"])
-    df["start_date"] = df["properties"].apply(lambda prop_dict: prop_dict["start_date"])
-    df["osm_id"] = df["properties"].apply(lambda prop_dict: prop_dict["osm_id"])
-    df["coordinates"] = df["geometry"].apply(
-        lambda geometry_dict: geometry_dict["coordinates"]
-    )
+    unnest_df(df, "properties", ["length","end_date","start_date","osm_id"])
+    unnest_df(df, "geometry", ["coordinates"])
 
     df.drop(  # drop unused columns
         ["geometry", "properties", "type"], inplace=True, axis=1
@@ -75,7 +69,7 @@ def __remove_fcd_request_wrapper(wrapdata: Any) -> DataFrame:
     return df.infer_objects()  # infer types in dataframes
 
 
-def __create_segment_to_coordinate_df(df: DataFrame) -> DataFrame:
+def _create_segment_to_coordinate_df(df: DataFrame) -> DataFrame:
     """Main method for converting our dataframe of a trip per row to a dataframe
     of a segment per row.
 
@@ -118,7 +112,7 @@ def __create_segment_to_coordinate_df(df: DataFrame) -> DataFrame:
     return mapped_df
 
 
-def __map_segments_to_coordinates(
+def _map_segments_to_coordinates(
     segments: list, coordinates: list
 ) -> SegmentToCoordinatesList:
     """Aggregate lists of segments (osm_id) and coordinates for a trip, such that coordinates are
@@ -149,7 +143,7 @@ def __map_segments_to_coordinates(
     return result
 
 
-def __append_coordinates(
+def _append_coordinates(
     osm_and_coordinates: list[tuple[int, list]], segment_dict: SegmentToCoordinateDict
 ) -> None:
     """Appends coordinates from a trip to the correct segment in segment_dict
@@ -165,7 +159,7 @@ def __append_coordinates(
             segment_dict[osm].extend([coordinates])
 
 
-def __clean_df(df: DataFrame) -> None:
+def _clean_df(df: DataFrame) -> None:
     """Remove None values from trips. Some trips have None values
     in the osm_id list. Remove these, and the corresponding coordinate
     values.
