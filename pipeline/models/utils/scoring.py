@@ -29,10 +29,10 @@ def classify_with_regressor(model, x: np.ndarray) -> np.ndarray:
 
     Args:
         model (Model): Model with a predict method
-        x (pd.DataFrame): the features to predict with
+        x (np.ndarray): the features to predict with
 
     Returns:
-        list[float]: list of predictions quantized
+        np.ndarray: list of predictions quantized
     """
     predictions = model.predict(x)
     return quantize_results(predictions)
@@ -42,10 +42,10 @@ def quantize_results(predictions: np.ndarray) -> np.ndarray:
     """Snaps each prediction to the closest speed limit.
 
     Args:
-        predictions (list[float]): list of predictions made by regression model.
+        predictions (np.ndarray): list of predictions made by regression model.
 
     Returns:
-        list[float]: each prediction in the list quantized
+        np.ndarray: each prediction in the list quantized
     """
     return np.array([find_closest_speed_limit(pred) for pred in predictions])
 

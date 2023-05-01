@@ -37,16 +37,21 @@ class Feature(Enum):
 
     @staticmethod
     def array_features() -> FeatureList:
-        """
-        returns a list of the of the array features.
+        """returns a list of the of the array features.
+
+        Returns:
+            FeatureList: list
         """
         return Feature.array_1d_features() + Feature.array_2d_features()
 
     @staticmethod
     def array_1d_features() -> FeatureList:
+        """returns a list of the features where the type is 1d-arrays.
+
+        Returns:
+            FeatureList: list
         """
-        returns a list of the features where the type is 1d-arrays.
-        """
+        
         return FeatureList(
             [
                 Feature.MEANS,
@@ -58,8 +63,10 @@ class Feature(Enum):
 
     @staticmethod
     def array_2d_features() -> FeatureList:
-        """
-        returns a list of features where the type is 2d arrays.
+        """returns a list of features where the type is 2d arrays.
+
+        Returns:
+            FeatureList: list
         """
         return FeatureList(
             [
@@ -73,8 +80,10 @@ class Feature(Enum):
 
     @staticmethod
     def categorical_features() -> FeatureList:
-        """
-        returns a list of features where the feature is categorical.
+        """returns a list of features where the feature is categorical.
+
+        Returns:
+            FeatureList: list 
         """
         return FeatureList(
             [
@@ -90,7 +99,7 @@ class Feature(Enum):
 
 class FeatureList(list):
     """
-    Basicly wraps a list of features.
+    Wraps a list of features.
     """
 
     def __init__(self, features: list[Feature]):

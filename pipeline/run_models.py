@@ -1,7 +1,6 @@
 from datetime import datetime
-from functools import reduce
 import numpy as np
-from typing import Any, Callable
+from typing import Any
 import joblib # type: ignore
 from pipeline.models.models import (
     create_mlp_grid_search,
@@ -12,20 +11,9 @@ from pipeline.models.models import (
 )
 from pipeline.models.utils.model_enum import Model
 import pipeline.models.utils.scoring as scoring
-from pipeline.models.models import (
-    create_mlp_grid_search,
-    random_forest_regressor_gridsearch,
-    xgboost_classifier_gridsearch,
-    logistic_regression_gridsearch,
-)
-from pipeline.preprocessing.compute_features.feature import Feature
-from sklearn.model_selection import train_test_split # type: ignore
 import pandas as pd  # type: ignore
-from keras_preprocessing.sequence import pad_sequences # type: ignore
-
 from pipeline.preprocessing.sk_formatter import SKFormatter
 
-# Model = dict[str, Model]
 Params = dict[str, Any]
 Models = dict[Model, Params]
 
@@ -77,12 +65,15 @@ def train_models_save_results(
 def append_predictions_to_df(
     df: pd.DataFrame, predictions: np.ndarray, model: Model
 ) -> pd.DataFrame:
-    """
-    Save predictions made to dataframe.
-    @param df: Dataframe to append predictions to.
-    @param predictions: Predictions made by a model
-    @param model: Which model made the predictions
-    @return: Annoted dataframe
+    """Save predictions made to dataframe.
+
+    Args:
+        df (pd.DataFrame): Dataframe to append predictions to.
+        predictions (np.ndarray): Predictions made by a model
+        model (Model): Which model made the predictions
+
+    Returns:
+        pd.DataFrame: Annoted dataframe
     """
 
     # The first test_size number of rows are used for testing
@@ -111,6 +102,7 @@ def test_models(
         models (dict[Model, Any]): The dictionary of the best models after fitting on the train data.
         x_test (np.ndarray): The input test data from the train-test split
         y_test (np.ndarray): The target test data from the train-test split
+        df (pd.DataFrame): dataframe to which the predictions will be appended to. 
     """
     per_model_metrics: dict[str, dict] = {}
 
@@ -128,15 +120,13 @@ def test_models(
 
     return per_model_metrics
 
-
 def save_metrics(metrics_dict: dict[str, dict], save_to_folder: str) -> None:
-    """
-    Save the metrics from model predictions to a file.
+    """Save the metrics from model predictions to a file.
     Will name file based on time created.
 
-    @param metrics_dict: dict from model name to metrics
-    @param save_to_folder: Folder to save file
-    @return: None
+    Args:
+        metrics_dict (dict[str, dict]): dict from model name to metrics_
+        save_to_folder (str): Folder to save file
     """
     date = datetime.today().strftime("%d%m%y_%H%M")
     filename = f"{save_to_folder}/{date}_metrics.txt"

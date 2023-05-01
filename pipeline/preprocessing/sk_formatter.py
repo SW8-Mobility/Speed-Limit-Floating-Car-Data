@@ -1,12 +1,7 @@
 import numpy as np
-from sklearn.compose import make_column_transformer # type: ignore
-
-from pipeline.models.utils.scoring import SPEED_LIMITS
 from pipeline.preprocessing.compute_features.feature import Feature, FeatureList
-from sklearn.model_selection import train_test_split # type: ignore
 import pandas as pd  # type: ignore
 from keras_preprocessing.sequence import pad_sequences # type: ignore
-from sklearn.preprocessing import OneHotEncoder # type: ignore
 
 
 class SKFormatter:
@@ -61,11 +56,10 @@ class SKFormatter:
         # don't train with the following features
         self.df = self.df.drop(self.discard_features, axis=1)
 
-        # extract and encode target
+        # extract target 
         self.df = self.df.rename(
             columns={self.target_feature: Feature.TARGET.value}
         )
-        # self.__encode_target()
         y = self.df[Feature.TARGET.value].values
         self.df = self.df.drop([Feature.TARGET.value], axis=1)
 
@@ -156,8 +150,6 @@ class SKFormatter:
         Returns:
             tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]: x_train, x_test, y_train, y_test
         """
-
-        # return train_test_split(x, y, test_size=self.test_size, random_state=42)
 
         # Calculate the index for splitting the dataset
         split_idx = int(len(x) * (1 - self.test_size))

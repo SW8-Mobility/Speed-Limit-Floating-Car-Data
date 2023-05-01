@@ -156,14 +156,10 @@ def logistic_regression_gridsearch(
     grid_search = GridSearchCV(
         estimator=logreg,
         param_grid=parameters,
-        scoring="accuracy",
         cv=kfold,
-        verbose=0,
+        n_jobs=CORE_NUM,
         error_score="raise",
     )
-    # grid_search = GridSearchCV(
-    #     estimator=logreg, param_grid=param_grid, cv=kfold, n_jobs=CORE_NUM
-    # )
 
     # Fit the grid search object to the training data
     grid_search.fit(x_train, y_train)
