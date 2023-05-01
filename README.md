@@ -72,6 +72,3 @@ If it does not work, run the following command in the root of the directory, to 
 pip install -e .
 ```
 
-
-
-tested

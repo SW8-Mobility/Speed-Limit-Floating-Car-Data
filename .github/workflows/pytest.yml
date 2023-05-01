@@ -6,6 +6,7 @@ on:
       - main
     types:
       - ready_for_review
+      - synchronize
 
 jobs:
   pytest:
