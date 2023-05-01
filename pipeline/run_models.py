@@ -1,7 +1,7 @@
 from datetime import datetime
 import numpy as np
 from typing import Any
-import joblib # type: ignore
+import joblib  # type: ignore
 from pipeline.models.models import (
     create_mlp_grid_search,
     random_forest_regressor_gridsearch,
@@ -16,6 +16,7 @@ from pipeline.preprocessing.sk_formatter import SKFormatter
 
 Params = dict[str, Any]
 Models = dict[Model, Params]
+
 
 def train_models_save_results(
     x_train: np.ndarray, y_train: np.ndarray
@@ -84,7 +85,7 @@ def append_predictions_to_df(
     predictions_padded = np.pad(
         predictions,
         (0, len(df) - len(predictions)),
-        mode="constant", # type: ignore
+        mode="constant",  # type: ignore
         constant_values=None,
     )
     col_name = f"{model.value}_preds"
@@ -102,11 +103,11 @@ def test_models(
         models (dict[Model, Any]): The dictionary of the best models after fitting on the train data.
         x_test (np.ndarray): The input test data from the train-test split
         y_test (np.ndarray): The target test data from the train-test split
-        df (pd.DataFrame): dataframe to which the predictions will be appended to. 
+        df (pd.DataFrame): dataframe to which the predictions will be appended to.
 
     Returns:
         dict[str, dict]: Returns dictionary of scoring metrics for each model.
-        Also annotates the input df with predictions made by each model. 
+        Also annotates the input df with predictions made by each model.
     """
     per_model_metrics: dict[str, dict] = {}
 
@@ -114,15 +115,16 @@ def test_models(
     for model_name, model in models.items():
         # predict
         if model_name.value in Model.regression_models_names():
-            y_pred = scoring.classify_with_regressor(model, x_test) # type: ignore
+            y_pred = scoring.classify_with_regressor(model, x_test)  # type: ignore
         else:
             y_pred = model.predict(x_test)
 
-        append_predictions_to_df(df, y_pred, model_name) # type: ignore
- 
+        append_predictions_to_df(df, y_pred, model_name)  # type: ignore
+
         per_model_metrics[model_name.value] = scoring.score_model(y_test, y_pred)
 
     return per_model_metrics
+
 
 def save_metrics(metrics_dict: dict[str, dict], save_to_folder: str) -> None:
     """Save the metrics from model predictions to a file.
@@ -153,6 +155,7 @@ def main():
     models = train_models_save_results(x_train, y_train)
     metrics = test_models(models, x_test, y_test, df)
     save_metrics(metrics, "/share-files/model_scores")
+
 
 if __name__ == "__main__":
     main()

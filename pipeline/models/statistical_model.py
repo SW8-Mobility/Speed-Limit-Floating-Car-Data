@@ -3,6 +3,7 @@ import pandas as pd  # type: ignore
 from pipeline.preprocessing.compute_features.feature import Feature
 import numpy as np
 
+
 class StatisticalModel:
     """Basic statistical model for predicting speed limits"""
 
@@ -15,4 +16,4 @@ class StatisticalModel:
         Returns:
             np.ndarray: list of predictions.
         """
-        return quantize_results(x[Feature.AGGREGATE_MEDIAN.value].value) 
+        return quantize_results(x[Feature.AGGREGATE_MEDIAN.value].value)

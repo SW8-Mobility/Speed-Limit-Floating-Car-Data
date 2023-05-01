@@ -28,22 +28,23 @@ def create_mlp_grid_search(
         tuple[MLPClassifier, dict]: A tuple of the best MLP classifier and the best hyperparameters.
     """
     param_grid = {
-        'mlpclassifier__hidden_layer_sizes': [(100,), (50, 50), (20, 20, 20)],
-        'mlpclassifier__activation': ['relu', 'tanh', 'logistic'],
-        'mlpclassifier__solver': ['sgd', 'adam'],
-        'mlpclassifier__alpha': [0.0001, 0.001, 0.01],
-        'mlpclassifier__learning_rate': ['constant', 'adaptive']
+        "mlpclassifier__hidden_layer_sizes": [(100,), (50, 50), (20, 20, 20)],
+        "mlpclassifier__activation": ["relu", "tanh", "logistic"],
+        "mlpclassifier__solver": ["sgd", "adam"],
+        "mlpclassifier__alpha": [0.0001, 0.001, 0.01],
+        "mlpclassifier__learning_rate": ["constant", "adaptive"],
     }
 
     # Create pipeline with StandardScaler and MLPClassifier
     pipeline = make_pipeline(
-        StandardScaler(),
-        MLPClassifier(max_iter=1000, random_state=RANDOM_STATE)
+        StandardScaler(), MLPClassifier(max_iter=1000, random_state=RANDOM_STATE)
     )
 
     # perform grid search with k-fold cross-validation
     kfold = KFold(n_splits=k, shuffle=True, random_state=RANDOM_STATE)
-    grid_search = GridSearchCV(pipeline, param_grid=param_grid, cv=kfold, n_jobs=CORE_NUM)
+    grid_search = GridSearchCV(
+        pipeline, param_grid=param_grid, cv=kfold, n_jobs=CORE_NUM
+    )
     grid_search.fit(x_train, y_train)
 
     # return the best mlp model and the best hyperparameters found by the grid search
@@ -175,7 +176,7 @@ def statistical_model(
     Returns:
         StatisticalModel: a statistical model with a predict function
     """
-    return StatisticalModel(), None # type: ignore
+    return StatisticalModel(), None  # type: ignore
 
 
 if __name__ == "__main__":

@@ -1,7 +1,7 @@
 import numpy as np
 from pipeline.preprocessing.compute_features.feature import Feature, FeatureList
 import pandas as pd  # type: ignore
-from keras_preprocessing.sequence import pad_sequences # type: ignore
+from keras_preprocessing.sequence import pad_sequences  # type: ignore
 
 
 class SKFormatter:
@@ -11,10 +11,10 @@ class SKFormatter:
         self,
         dataset_path: str,
         test_size: float = 0.2,
-        discard_features: FeatureList = None, # type: ignore
-        target: Feature = None, # type: ignore
+        discard_features: FeatureList = None,  # type: ignore
+        target: Feature = None,  # type: ignore
         dataset_size: int = 1000,
-        full_dataset: bool = False
+        full_dataset: bool = False,
     ):
         """init
 
@@ -33,17 +33,23 @@ class SKFormatter:
 
         self.test_size = test_size
 
-        self.discard_features: FeatureList = FeatureList(
-            [
-                Feature.OSM_ID,
-                Feature.COORDINATES,
-                Feature.CPR_VEJNAVN,
-                Feature.HAST_SENEST_RETTET,
-                Feature.DISTANCES,
-            ]
-        ) if discard_features is None else discard_features
+        self.discard_features: FeatureList = (
+            FeatureList(
+                [
+                    Feature.OSM_ID,
+                    Feature.COORDINATES,
+                    Feature.CPR_VEJNAVN,
+                    Feature.HAST_SENEST_RETTET,
+                    Feature.DISTANCES,
+                ]
+            )
+            if discard_features is None
+            else discard_features
+        )
 
-        self.target_feature: str = Feature.HAST_GAELDENDE_HAST.value if target is None else target.value
+        self.target_feature: str = (
+            Feature.HAST_GAELDENDE_HAST.value if target is None else target.value
+        )
 
     def generate_train_test_split(
         self,
@@ -56,10 +62,8 @@ class SKFormatter:
         # don't train with the following features
         self.df = self.df.drop(self.discard_features, axis=1)
 
-        # extract target 
-        self.df = self.df.rename(
-            columns={self.target_feature: Feature.TARGET.value}
-        )
+        # extract target
+        self.df = self.df.rename(columns={self.target_feature: Feature.TARGET.value})
         y = self.df[Feature.TARGET.value].values
         self.df = self.df.drop([Feature.TARGET.value], axis=1)
 
@@ -95,11 +99,11 @@ class SKFormatter:
             self.df[feature] = self.df[feature].apply(lambda arr: np.array(arr))
 
         # Combine all the features into a numpy array
-        xs = [self.df[f].values.tolist() for f in self.df.columns] # type: ignore
+        xs = [self.df[f].values.tolist() for f in self.df.columns]  # type: ignore
         x = np.concatenate(xs, axis=1)
 
         # replace all nan values with 0
-        np.nan_to_num(x, nan=0) 
+        np.nan_to_num(x, nan=0)
 
         return x
 

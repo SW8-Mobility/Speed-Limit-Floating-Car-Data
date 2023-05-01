@@ -51,7 +51,7 @@ class Feature(Enum):
         Returns:
             FeatureList: list
         """
-        
+
         return FeatureList(
             [
                 Feature.MEANS,
@@ -83,7 +83,7 @@ class Feature(Enum):
         """returns a list of features where the feature is categorical.
 
         Returns:
-            FeatureList: list 
+            FeatureList: list
         """
         return FeatureList(
             [
@@ -107,13 +107,13 @@ class FeatureList(list):
         self.features_names = [f.value for f in features]
 
     def not_in(self, feature_list: list[str]) -> list[str]:
-        """Use self as filter. Only return the elements not self. 
+        """Use self as filter. Only return the elements not self.
 
         Args:
-            feature_list (list[str]): list of features as strings to filter. 
+            feature_list (list[str]): list of features as strings to filter.
 
         Returns:
-            list[str]: list of names of features, that are not in self. 
+            list[str]: list of names of features, that are not in self.
         """
         return [f for f in feature_list if f not in self.features_names]
 
