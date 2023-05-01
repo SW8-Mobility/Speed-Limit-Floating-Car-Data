@@ -17,9 +17,8 @@ from pipeline.preprocessing.sk_formatter import SKFormatter
 Params = dict[str, Any]
 Models = dict[Model, Params]
 
-
 def train_models_save_results(
-    x_train, y_train
+    x_train: np.ndarray, y_train: np.ndarray
 ) -> dict[Model, Any]:
     """
     Creates every model from models.py, fits them, saves
@@ -30,10 +29,11 @@ def train_models_save_results(
     # https://scikit-learn.org/stable/model_persistence.html
 
     Args:
-        x_train: Training dataset
-        y_train: Target for training
+        x_train (np.ndarray): Training dataset
+        y_train (np.ndarray): Target for training
 
-    Returns: dictionary of model name to trained model model
+    Returns:
+        dict[Model, Any]: dictionary of model name to trained model
     """
 
     # define a list of models and their corresponding grid search functions (from models.py)
@@ -103,6 +103,10 @@ def test_models(
         x_test (np.ndarray): The input test data from the train-test split
         y_test (np.ndarray): The target test data from the train-test split
         df (pd.DataFrame): dataframe to which the predictions will be appended to. 
+
+    Returns:
+        dict[str, dict]: Returns dictionary of scoring metrics for each model.
+        Also annotates the input df with predictions made by each model. 
     """
     per_model_metrics: dict[str, dict] = {}
 
