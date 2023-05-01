@@ -1,9 +1,11 @@
 import pandas as pd  # type: ignore
 import pytest
-from pipeline.preprocessing.format_data import (
-    clean_df,
-    create_segment_to_coordinate_df,
-    map_segments_to_coordinates,
+
+from pipeline.preprocessing.formatting.FCD_Formatter import (
+    FCD_Formatter,
+    _create_segment_to_coordinate_df,
+    _map_segments_to_coordinates,
+    _clean_df,
 )
 
 
@@ -20,7 +22,7 @@ from pipeline.preprocessing.format_data import (
     ],
 )
 def test_map_segments_to_coordinates(segments, coordinates, expected):
-    assert map_segments_to_coordinates(segments, coordinates) == expected
+    assert _map_segments_to_coordinates(segments, coordinates) == expected
 
 
 def test_create_segment_to_coordinate_df_one_segment():
@@ -49,7 +51,8 @@ def test_create_segment_to_coordinate_df_one_segment():
         ],
     }
     df = pd.DataFrame(data=actual_data)
-    actual_df = create_segment_to_coordinate_df(df)
+
+    actual_df = _create_segment_to_coordinate_df(df)
 
     assert expected_df.equals(actual_df)
 
@@ -82,7 +85,7 @@ def test_create_segment_to_coordinate_df_one_segment_with_none():
     }
 
     df = pd.DataFrame(data=actual_data)
-    actual_df = create_segment_to_coordinate_df(df)
+    actual_df = _create_segment_to_coordinate_df(df)
 
     assert expected_df.equals(actual_df)
 
@@ -140,8 +143,9 @@ def test_create_segment_to_coordinate_df_multiple_segments():
             ],
         ],
     }
+
     df = pd.DataFrame(data=actual_data)
-    actual_df = create_segment_to_coordinate_df(df)
+    actual_df = _create_segment_to_coordinate_df(df)
 
     assert expected_df.equals(actual_df)
 
@@ -199,6 +203,6 @@ def test_clean_df(osm_id, expected_osm, expected_coordinates):
         ],
     }
     actual_df = pd.DataFrame(data=actual_data)
-    clean_df(actual_df)
+    _clean_df(actual_df)
 
     assert expected_df.equals(actual_df)
