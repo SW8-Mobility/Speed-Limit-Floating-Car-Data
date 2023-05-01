@@ -87,9 +87,6 @@ def test_create_segment_to_coordinate_df_one_segment_with_none():
     df = pd.DataFrame(data=actual_data)
     actual_df = _create_segment_to_coordinate_df(df)
 
-    print(df)
-    print(actual_df)
-
     assert expected_df.equals(actual_df)
 
 
