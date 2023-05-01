@@ -4,7 +4,7 @@ and convert them into 3 dataframe. One for each year.
 
 import pandas as pd  # type: ignore
 import glob
-from .df_processing import create_df_from_json
+from pipeline.preprocessing.df_processing import create_df_from_json
 
 # from archive.gps_metrics import create_df_from_json
 import tqdm
