@@ -3,6 +3,7 @@ from pipeline.preprocessing.compute_features.feature import Feature
 from tests.mock_dataset import mock_dataset
 import numpy as np
 
+
 def test_encode_single_value_features():
     df = mock_dataset(10, 3).drop([Feature.OSM_ID.value], axis=1)
     skf = SKFormatter(df)
@@ -35,6 +36,7 @@ def test_encode_categorical_features_columns_exist():
     for e in expected_one_hot_cols:
         assert e in skf.df.columns
 
+
 def test_encode_categorical_features_are_0_or_1():
     row_num = 10
     df = mock_dataset(row_num, 3).drop([Feature.OSM_ID.value], axis=1)
@@ -50,7 +52,8 @@ def test_encode_categorical_features_are_0_or_1():
 
     for c in one_hot_cols:
         actual = list(skf.df[c].unique())  # unique values of a one hot columns
-        assert all(val in [0,1] for val in actual)  # all values must be either 1 or 0
+        assert all(val in [0, 1] for val in actual)  # all values must be either 1 or 0
+
 
 def test_generate_train_test_split_all_numbers():
     df = mock_dataset(10, 3)
