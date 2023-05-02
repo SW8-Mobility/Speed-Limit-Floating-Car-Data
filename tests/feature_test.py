@@ -18,36 +18,21 @@ def test_feature_eq(feature1, feature2, expected):
 @pytest.mark.parametrize(
     "feature_list1, feature_list2, expected",
     [
-        (
-            FeatureList([Feature.SPEEDS]),
-            FeatureList([Feature.SPEEDS]),
-            True
-        ),
-        (
-            FeatureList([Feature.SPEEDS]),
-            FeatureList([Feature.DISTANCES]),
-            False
-        ),
-        (
-            FeatureList([]),
-            FeatureList([]),
-            True
-        ),
+        (FeatureList([Feature.SPEEDS]), FeatureList([Feature.SPEEDS]), True),
+        (FeatureList([Feature.SPEEDS]), FeatureList([Feature.DISTANCES]), False),
+        (FeatureList([]), FeatureList([]), True),
         (
             FeatureList([Feature.DISTANCES, Feature.SPEEDS]),
             FeatureList([Feature.DISTANCES]),
-            False
+            False,
         ),
-        (
-            FeatureList([Feature.DISTANCES, Feature.SPEEDS]),
-            FeatureList([]),
-            False
-        ),
+        (FeatureList([Feature.DISTANCES, Feature.SPEEDS]), FeatureList([]), False),
     ],
 )
 def test_feature_list_eq(feature_list1, feature_list2, expected):
     actual = feature_list1 == feature_list2
     assert actual == expected
+
 
 @pytest.mark.parametrize(
     "input_list1, input_list2, expected",
@@ -89,28 +74,29 @@ def test_feature_list_minus(input_list1, input_list2, expected_list):
         (
             FeatureList([Feature.SPEEDS]),
             FeatureList([Feature.SPEEDS]),
-            FeatureList([Feature.SPEEDS, Feature.SPEEDS])
+            FeatureList([Feature.SPEEDS, Feature.SPEEDS]),
         ),
         (
             FeatureList([Feature.SPEEDS]),
             FeatureList([Feature.DISTANCES]),
-            FeatureList([Feature.SPEEDS, Feature.DISTANCES])
+            FeatureList([Feature.SPEEDS, Feature.DISTANCES]),
         ),
         (
             FeatureList([Feature.SPEEDS, Feature.DISTANCES]),
             FeatureList([]),
-            FeatureList([Feature.SPEEDS, Feature.DISTANCES])
+            FeatureList([Feature.SPEEDS, Feature.DISTANCES]),
         ),
         (
             FeatureList([]),
             FeatureList([Feature.SPEEDS, Feature.DISTANCES]),
-            FeatureList([Feature.SPEEDS, Feature.DISTANCES])
+            FeatureList([Feature.SPEEDS, Feature.DISTANCES]),
         ),
     ],
 )
 def test_feature_list_add(feature_list1, feature_list2, expected):
     actual = feature_list1 + feature_list2
     assert actual == expected
+
 
 @pytest.mark.parametrize(
     "feature_list, expected_list",
@@ -131,3 +117,67 @@ def test_feature_list_iter(feature_list, expected_list):
     fl = FeatureList(feature_list)
     for feature, expected in zip(fl, expected_list):
         assert feature == expected
+
+
+def test_feature_array_1d_features():
+    expected = FeatureList(
+        [
+            Feature.MEANS,
+            Feature.MINS,
+            Feature.MAXS,
+            Feature.MEDIANS,
+        ]
+    )
+
+    actual = Feature.array_1d_features()
+
+    assert actual == expected
+
+
+def test_feature_array_2d_features():
+    expected = FeatureList(
+        [
+            Feature.COORDINATES,
+            Feature.DISTANCES,
+            Feature.SPEEDS,
+            Feature.ROLLING_AVERAGES,
+            Feature.VCR,
+        ]
+    )
+
+    actual = Feature.array_2d_features()
+
+    assert actual == expected
+
+
+def test_feature_categorical_features():
+    expected = FeatureList(
+        [
+            Feature.VEJSTIKLASSE,
+            Feature.VEJTYPESKILTET,
+        ]
+    )
+
+    actual = Feature.categorical_features()
+
+    assert actual == expected
+
+
+def test_feature_array_features():
+    expected = FeatureList(
+        [
+            Feature.MEANS,
+            Feature.MINS,
+            Feature.MAXS,
+            Feature.MEDIANS,
+            Feature.COORDINATES,
+            Feature.DISTANCES,
+            Feature.SPEEDS,
+            Feature.ROLLING_AVERAGES,
+            Feature.VCR,
+        ]
+    )
+
+    actual = Feature.array_features()
+
+    assert actual == expected

@@ -10,7 +10,7 @@ class SKFormatter:
 
     def __init__(
         self,
-        dataset: Union[str,pd.DataFrame],
+        dataset: Union[str, pd.DataFrame],
         test_size: float = 0.2,
         discard_features: FeatureList = None,  # type: ignore
         target: Feature = None,  # type: ignore
@@ -20,7 +20,7 @@ class SKFormatter:
         """init
 
         Args:
-            dataset_path (str or pd.DataFrame): path to pickle dataset or dataset as dataframe. 
+            dataset_path (str or pd.DataFrame): path to pickle dataset or dataset as dataframe.
             test_size (float, optional): amount of the dataset to be used to testing. Defaults to 0.2.
             discard_features (FeatureList, optional): Optional list of features to discard. Defaults to None.
             target (Feature, optional): The feature to be used as target. Defaults to None.
@@ -28,7 +28,7 @@ class SKFormatter:
             full_dataset (bool, optional): Use full dataset or not. Defaults to False.
         """
         self.df = pd.read_pickle(dataset) if isinstance(dataset, str) else dataset
-            
+
         if not full_dataset:
             self.df = self.df.head(dataset_size)
 
@@ -92,7 +92,7 @@ class SKFormatter:
         for feature in Feature.array_features() - self.discard_features:
             # remove nones that might occur in the arrays
             self.df[feature] = self.df[feature].apply(
-                lambda arr: [elem for elem in arr if arr is not None]
+                lambda arr: [elem for elem in arr if elem is not None]
             )
             # pad the arrays, so they are all the same length, necessary for sklearn
             self.df[feature] = pad_sequences(self.df[feature], padding="post").tolist()

@@ -87,7 +87,6 @@ class Feature(Enum):
         """
         return FeatureList(
             [
-                Feature.HAST_SENEST_RETTET,
                 Feature.VEJSTIKLASSE,
                 Feature.VEJTYPESKILTET,
             ]
