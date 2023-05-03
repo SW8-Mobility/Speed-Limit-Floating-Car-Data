@@ -52,6 +52,14 @@ class SKFormatter:
             Feature.HAST_GAELDENDE_HAST.value if target is None else target.value
         )
 
+        self.params = self.__params()
+
+    def __params(self) -> dict:
+        params = self.__dict__.copy()
+        df = params.pop("df")
+        params["input_df_columns"] = list(df.columns)
+        return params
+
     def generate_train_test_split(
         self,
     ) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
@@ -73,6 +81,9 @@ class SKFormatter:
         self.__encode_single_value_features()
         self.__encode_array_features()
 
+        # save df config after processing
+        self.params["processed_df_columns"] = list(self.df.columns)
+
         # generate features np array
         x = self.__generate_x()
 
@@ -87,16 +98,16 @@ class SKFormatter:
         self.df = self.df[cols].loc[self.df[cols].astype(str).drop_duplicates().index]
 
     def __generate_y(self) -> np.ndarray:
-        """Extract target from dataframe as y, and remove it 
-        from the df. 
+        """Extract target from dataframe as y, and remove it
+        from the df.
 
         Returns:
-            np.ndarray: a numpy array of target values. 
+            np.ndarray: a numpy array of target values.
         """
         self.df = self.df.rename(columns={self.target_feature: Feature.TARGET.value})
         y = self.df[Feature.TARGET.value].values
         self.df = self.df.drop([Feature.TARGET.value], axis=1)
-        return y # type: ignore
+        return y  # type: ignore
 
     def __generate_x(self) -> np.ndarray:
         """Create x ie. numpy array the features, without target.
@@ -114,8 +125,7 @@ class SKFormatter:
         return x
 
     def __encode_array_features(self) -> None:
-        """Encode the array features. They must be numpy arrays.
-        """
+        """Encode the array features. They must be numpy arrays."""
         # flatten 2d arrays to 1d
         for feature in Feature.array_2d_features() - self.discard_features:
             self.df[feature] = self.df[feature].apply(lambda row: sum(row, []))
@@ -131,15 +141,13 @@ class SKFormatter:
             self.df[feature] = self.df[feature].apply(lambda arr: np.array(arr))
 
     def __encode_single_value_features(self) -> None:
-        """Encode the non array features. They must be numpy arrays.
-        """
+        """Encode the non array features. They must be numpy arrays."""
         to_encode = Feature.array_features().not_in(self.df.columns)
         for f in to_encode:
             self.df[f] = self.df[f].apply(lambda val: np.array([val]))
 
     def __encode_categorical_features(self) -> None:
-        """One-hot encode categorical features.
-        """
+        """One-hot encode categorical features."""
         categorical_features = Feature.categorical_features() - self.discard_features
         one_hot_encoded = pd.get_dummies(self.df[categorical_features], dtype=int)
         self.df = pd.concat([one_hot_encoded, self.df], axis=1)

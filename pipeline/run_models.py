@@ -154,6 +154,8 @@ def main():
     )
     df = formatter.df
     x_train, x_test, y_train, y_test = formatter.generate_train_test_split()
+    skf_params = formatter.params
+    print(skf_params) # should be saved to file
     print("formatted. Training...")
     models = train_models_save_results(x_train, y_train)
     metrics = test_models(models, x_test, y_test, df)
