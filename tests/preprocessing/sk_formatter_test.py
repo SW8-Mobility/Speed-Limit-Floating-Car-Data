@@ -58,7 +58,7 @@ def test_encode_categorical_features_are_0_or_1():
 
 def test_generate_train_test_split_all_numbers_despite_nones():
     df = mock_dataset(10, 3)
-    df.loc[0, Feature.MINS.value][0] = None # type: ignore
+    df.loc[0, Feature.MINS.value][0] = None  # type: ignore
     df.loc[0, Feature.AGGREGATE_MIN.value] = None
     skf = SKFormatter(df)
 
@@ -68,10 +68,11 @@ def test_generate_train_test_split_all_numbers_despite_nones():
     assert np.isfinite(x_test).all()
     assert np.isfinite(y_train).all()
     assert np.isfinite(y_test).all()
+
 
 def test_generate_train_test_split_all_numbers_despite_nones():
     df = mock_dataset(10, 3)
-    df.loc[0, Feature.MINS.value][0] = None # type: ignore
+    df.loc[0, Feature.MINS.value][0] = None  # type: ignore
     df.loc[0, Feature.AGGREGATE_MIN.value] = None
     skf = SKFormatter(df)
 
@@ -82,17 +83,21 @@ def test_generate_train_test_split_all_numbers_despite_nones():
     assert np.isfinite(y_train).all()
     assert np.isfinite(y_test).all()
 
+
 def test_generate_train_test_split_arrays_in_cols_are_same_length():
     df = mock_dataset(10, 3)
-    df.loc[0, Feature.MINS.value].pop(0) # make one array inconsistent length
+    df.loc[0, Feature.MINS.value].pop(0)  # make one array inconsistent length
 
     skf = SKFormatter(df)
 
     try:
-        result = skf.generate_train_test_split()  
+        result = skf.generate_train_test_split()
         assert True
     except ValueError:
-        pytest.fail("ValueError: all the input arrays must have same number of dimensions.\nPadding is not working.")
+        pytest.fail(
+            "ValueError: all the input arrays must have same number of dimensions.\nPadding is not working."
+        )
+
 
 def test_generate_train_test_split_splits_are_correct_lengths():
     df = mock_dataset(10, 3)
@@ -100,17 +105,16 @@ def test_generate_train_test_split_splits_are_correct_lengths():
     skf = SKFormatter(df, test_size=test_size_20_percent)
 
     df = mock_dataset(10, 3)
-    df.loc[0, Feature.MINS.value][0] = None # type: ignore
+    df.loc[0, Feature.MINS.value][0] = None  # type: ignore
     df.loc[0, Feature.AGGREGATE_MIN.value] = None
     skf = SKFormatter(df)
 
     train_expected_length = 8
     test_expected_length = 2
     x_train, x_test, y_train, y_test = skf.generate_train_test_split()  # type: ignore
-    
+
     assert len(x_train) == train_expected_length
     assert len(y_train) == train_expected_length
 
     assert len(x_test) == test_expected_length
     assert len(y_test) == test_expected_length
-    
