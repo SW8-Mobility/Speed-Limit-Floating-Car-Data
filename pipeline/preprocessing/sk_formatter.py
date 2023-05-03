@@ -63,14 +63,15 @@ class SKFormatter:
         # don't train with the following features
         self.df = self.df.drop(self.discard_features, axis=1)
 
+        self.__remove_duplicates()
+
         # extract target
-        self.df = self.df.rename(columns={self.target_feature: Feature.TARGET.value})
-        y = self.df[Feature.TARGET.value].values
-        self.df = self.df.drop([Feature.TARGET.value], axis=1)
+        y = self.__generate_y()
 
         # encode features
         self.__encode_categorical_features()
         self.__encode_single_value_features()
+        self.__encode_array_features()
 
         # generate features np array
         x = self.__generate_x()
@@ -78,13 +79,43 @@ class SKFormatter:
         # x_train, x_test, y_train, y_test
         return self.__test_train_split(x, y)
 
+    def __remove_duplicates(self) -> None:
+        """Remove duplicates from dataset.
+        should ideally have been done before.
+        """
+        cols = self.df.columns
+        self.df = self.df[cols].loc[self.df[cols].astype(str).drop_duplicates().index]
+
+    def __generate_y(self) -> np.ndarray:
+        """Extract target from dataframe as y, and remove it 
+        from the df. 
+
+        Returns:
+            np.ndarray: a numpy array of target values. 
+        """
+        self.df = self.df.rename(columns={self.target_feature: Feature.TARGET.value})
+        y = self.df[Feature.TARGET.value].values
+        self.df = self.df.drop([Feature.TARGET.value], axis=1)
+        return y # type: ignore
+
     def __generate_x(self) -> np.ndarray:
         """Create x ie. numpy array the features, without target.
 
         Returns:
             np.ndarray: numpy ndarray of the features without target.
         """
+        # Combine all the features into a numpy array
+        xs = [self.df[f].values.tolist() for f in self.df.columns]  # type: ignore
+        x = np.concatenate(xs, axis=1)
 
+        # replace all nan values with 0
+        x = np.nan_to_num(x, nan=0)
+
+        return x
+
+    def __encode_array_features(self) -> None:
+        """Encode the array features. They must be numpy arrays.
+        """
         # flatten 2d arrays to 1d
         for feature in Feature.array_2d_features() - self.discard_features:
             self.df[feature] = self.df[feature].apply(lambda row: sum(row, []))
@@ -99,26 +130,15 @@ class SKFormatter:
             # Make each array a numpy array
             self.df[feature] = self.df[feature].apply(lambda arr: np.array(arr))
 
-        # Combine all the features into a numpy array
-        xs = [self.df[f].values.tolist() for f in self.df.columns]  # type: ignore
-        x = np.concatenate(xs, axis=1)
-
-        # replace all nan values with 0
-        x = np.nan_to_num(x, nan=0)
-
-        return x
-
     def __encode_single_value_features(self) -> None:
-        """
-        Encode the non array features. They must be numpy arrays.
+        """Encode the non array features. They must be numpy arrays.
         """
         to_encode = Feature.array_features().not_in(self.df.columns)
         for f in to_encode:
             self.df[f] = self.df[f].apply(lambda val: np.array([val]))
 
     def __encode_categorical_features(self) -> None:
-        """
-        One-hot encode categorical features.
+        """One-hot encode categorical features.
         """
         categorical_features = Feature.categorical_features() - self.discard_features
         one_hot_encoded = pd.get_dummies(self.df[categorical_features], dtype=int)

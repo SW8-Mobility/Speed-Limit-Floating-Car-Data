@@ -1,6 +1,7 @@
 from pipeline.preprocessing.sk_formatter import SKFormatter
 from pipeline.preprocessing.compute_features.feature import Feature
 from tests.mock_dataset import mock_dataset
+import pandas as pd
 import pytest
 import numpy as np
 
@@ -112,3 +113,18 @@ def test_generate_train_test_split_splits_are_correct_shape():
     # assert only 1d array
     assert len(y_train.shape) == 1
     assert len(y_test.shape) == 1
+
+def test_generate_train_test_split_splits_no_duplicates_despite_duplicates_in_dataset():
+    row_num = 10
+    expected_row_num = row_num
+    df = mock_dataset(row_num, 3)
+
+    # duplicate a row, and add it
+    duplicated_row = df.iloc[0].copy()
+    df.loc[len(df)] = duplicated_row # type: ignore
+
+    skf = SKFormatter(df)
+    x_train, x_test, _, _ = skf.generate_train_test_split()
+    actual_row_num = len(x_train) + len(x_test)
+
+    assert actual_row_num == expected_row_num 
