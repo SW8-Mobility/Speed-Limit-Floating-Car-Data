@@ -2,16 +2,17 @@
 """
 
 from typing import Callable, Union
-import pandas as pd # ignore: type
+import pandas as pd  # ignore: type
 from pipeline.preprocessing.compute_features.feature import Feature
 from pipeline.models.utils.scoring import SPEED_LIMITS
 import itertools
 
+
 def mock_speed_limits(count: int) -> list[int]:
-    """Mock a list of speed limits. 
+    """Mock a list of speed limits.
 
     Args:
-        count (int): how many elements in the mocked list. 
+        count (int): how many elements in the mocked list.
 
     Returns:
         list[int]: A list of mocked speed limits.
@@ -20,13 +21,13 @@ def mock_speed_limits(count: int) -> list[int]:
 
 
 def mock_road_type(count: int) -> list[str]:
-    """Mocks a list of road type. 
+    """Mocks a list of road type.
 
     Args:
-        count (int): how many elements in the mocked list. 
+        count (int): how many elements in the mocked list.
 
     Returns:
-        list[str]: list of mocked road types. 
+        list[str]: list of mocked road types.
     """
     return list(itertools.islice(itertools.cycle(["motorvej", "byvej"]), count))
 
@@ -39,16 +40,17 @@ def mock_col(trips: int, rows: int) -> Callable:
         rows (int): Number of rows in the mocked dataframe
 
     Returns:
-        Callable: a function that will generate values for the column. 
+        Callable: a function that will generate values for the column.
     """
+
     def list_comp(value: Union[list, list[list]]) -> list:
-        """Duplicate a values according the number of trips and rows. 
+        """Duplicate a values according the number of trips and rows.
 
         Args:
-            value (Union[list, list[list]]): value to duplicate 
+            value (Union[list, list[list]]): value to duplicate
 
         Returns:
-            list: a multi dimensional lists, that will work as a column. 
+            list: a multi dimensional lists, that will work as a column.
         """
         if trips > 1:
             return [[value for _ in range(trips)] for _ in range(rows)]
@@ -59,7 +61,7 @@ def mock_col(trips: int, rows: int) -> Callable:
 
 
 def mock_dataset(row_num: int = 10, trip_num: int = 3) -> pd.DataFrame:
-    """Will mock a dataframe with the features we currently have, as of 
+    """Will mock a dataframe with the features we currently have, as of
     3/5-2023.
 
     Args:
@@ -67,7 +69,7 @@ def mock_dataset(row_num: int = 10, trip_num: int = 3) -> pd.DataFrame:
         trip_num (int, optional): Number of trips in a row. Defaults to 3.
 
     Returns:
-        pd.DataFrame: A dataframe with mocked features. 
+        pd.DataFrame: A dataframe with mocked features.
     """
     col_mocker = mock_col(trip_num, row_num)
     agg_col_mocker = mock_col(1, row_num)

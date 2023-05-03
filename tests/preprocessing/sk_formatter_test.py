@@ -70,6 +70,7 @@ def test_generate_train_test_split_all_numbers_despite_nones():
     assert np.isfinite(y_train).all()
     assert np.isfinite(y_test).all()
 
+
 def test_generate_train_test_split_arrays_in_cols_are_same_length():
     df = mock_dataset(10, 3)
     df.loc[0, Feature.MINS.value].pop(0)  # make one array inconsistent length
@@ -77,7 +78,7 @@ def test_generate_train_test_split_arrays_in_cols_are_same_length():
     skf = SKFormatter(df)
 
     try:
-        skf.generate_train_test_split()  
+        skf.generate_train_test_split()
         assert True
     except ValueError:
         pytest.fail(
@@ -102,7 +103,8 @@ def test_generate_train_test_split_splits_are_correct_lengths():
 
     assert len(x_test) == test_expected_length
     assert len(y_test) == test_expected_length
-    
+
+
 def test_generate_train_test_split_splits_are_correct_shape():
     df = mock_dataset(10, 3)
     skf = SKFormatter(df)
@@ -112,10 +114,11 @@ def test_generate_train_test_split_splits_are_correct_shape():
     # check x and y have same number of rows
     assert x_train.shape[0] == y_train.shape[0]
     assert x_test.shape[0] == y_test.shape[0]
-    
+
     # assert only 1d array
     assert len(y_train.shape) == 1
     assert len(y_test.shape) == 1
+
 
 def test_generate_train_test_split_splits_no_duplicates_despite_duplicates_in_dataset():
     row_num = 10
@@ -124,10 +127,10 @@ def test_generate_train_test_split_splits_no_duplicates_despite_duplicates_in_da
 
     # duplicate a row, and add it
     duplicated_row = df.iloc[0].copy()
-    df.loc[len(df)] = duplicated_row # type: ignore
+    df.loc[len(df)] = duplicated_row  # type: ignore
 
     skf = SKFormatter(df)
     x_train, x_test, _, _ = skf.generate_train_test_split()
     actual_row_num = len(x_train) + len(x_test)
 
-    assert actual_row_num == expected_row_num 
+    assert actual_row_num == expected_row_num
