@@ -143,7 +143,7 @@ def save_metrics(metrics_dict: dict[str, dict], save_to_folder: str) -> None:
         f.write("model, mae, mape, mse, rmse, r2, ev\n")  # header
         for model, metrics in metrics_dict.items():
             f.write(f"{model}")
-            for name, val in metrics.items():
+            for val in metrics.values():
                 f.write(f", {val}")
             f.write("\n")
 
