@@ -89,10 +89,14 @@ def append_predictions_to_df(
         predictions,
         (0, len(df) - len(predictions)),
         mode="constant",  # type: ignore
-        constant_values=None,
+        constant_values=-1, # pad with -1
     )
     col_name = f"{model.value}_preds"
     df[col_name] = pd.Series(predictions_padded)
+
+    # do not keep rows, where no predictions were made
+    df = df[df[col_name] != -1]
+
     return df
 
 
