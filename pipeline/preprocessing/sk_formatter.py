@@ -56,15 +56,15 @@ class SKFormatter:
 
     def __params(self) -> dict:
         """returns the parameters for sk_formatter,
-        along with the columns for the dataframe before and 
-        after processing. 
-        This is useful, such that if parmeters are changed 
-        for features for our dataset is changed, we can find 
-        the original. A model trained on certain features, will 
+        along with the columns for the dataframe before and
+        after processing.
+        This is useful, such that if parmeters are changed
+        for features for our dataset is changed, we can find
+        the original. A model trained on certain features, will
         not work, if features in the test set are not the same!
 
         Returns:
-            dict: dictionary with parameters.  
+            dict: dictionary with parameters.
         """
         params = self.__dict__.copy()
         df = params.pop("df")
