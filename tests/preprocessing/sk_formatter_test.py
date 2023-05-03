@@ -69,19 +69,6 @@ def test_generate_train_test_split_all_numbers_despite_nones():
     assert np.isfinite(y_train).all()
     assert np.isfinite(y_test).all()
 
-def test_generate_train_test_split_all_numbers_despite_nones():
-    df = mock_dataset(10, 3)
-    df.loc[0, Feature.MINS.value][0] = None # type: ignore
-    df.loc[0, Feature.AGGREGATE_MIN.value] = None
-    skf = SKFormatter(df)
-
-    x_train, x_test, y_train, y_test = skf.generate_train_test_split()  # type: ignore
-
-    assert np.isfinite(x_train).all()
-    assert np.isfinite(x_test).all()
-    assert np.isfinite(y_train).all()
-    assert np.isfinite(y_test).all()
-
 def test_generate_train_test_split_arrays_in_cols_are_same_length():
     df = mock_dataset(10, 3)
     df.loc[0, Feature.MINS.value].pop(0) # make one array inconsistent length
@@ -89,7 +76,7 @@ def test_generate_train_test_split_arrays_in_cols_are_same_length():
     skf = SKFormatter(df)
 
     try:
-        result = skf.generate_train_test_split()  
+        skf.generate_train_test_split()  
         assert True
     except ValueError:
         pytest.fail("ValueError: all the input arrays must have same number of dimensions.\nPadding is not working.")
@@ -100,17 +87,28 @@ def test_generate_train_test_split_splits_are_correct_lengths():
     skf = SKFormatter(df, test_size=test_size_20_percent)
 
     df = mock_dataset(10, 3)
-    df.loc[0, Feature.MINS.value][0] = None # type: ignore
-    df.loc[0, Feature.AGGREGATE_MIN.value] = None
     skf = SKFormatter(df)
 
     train_expected_length = 8
     test_expected_length = 2
     x_train, x_test, y_train, y_test = skf.generate_train_test_split()  # type: ignore
-    
+
     assert len(x_train) == train_expected_length
     assert len(y_train) == train_expected_length
 
     assert len(x_test) == test_expected_length
     assert len(y_test) == test_expected_length
     
+def test_generate_train_test_split_splits_are_correct_shape():
+    df = mock_dataset(10, 3)
+    skf = SKFormatter(df)
+
+    x_train, x_test, y_train, y_test = skf.generate_train_test_split()  # type: ignore
+
+    # check x and y have same number of rows
+    assert x_train.shape[0] == y_train.shape[0]
+    assert x_test.shape[0] == y_test.shape[0]
+    
+    # assert only 1d array
+    assert len(y_train.shape) == 1
+    assert len(y_test.shape) == 1
