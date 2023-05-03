@@ -157,7 +157,7 @@ class SKFormatter:
         """
 
         # Calculate the index for splitting the dataset
-        split_idx = int(len(x) * (1 - self.test_size))
+        split_idx = int(len(x) * self.test_size)
 
         # Split the dataset into training and testing sets
         x_test, y_test = x[:split_idx], y[:split_idx]
