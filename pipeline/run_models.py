@@ -56,7 +56,7 @@ def train_models_save_results(
     ) as best_model_params_f:
         # loop through each model and perform grid search
         for model_name, model_func in model_jobs:
-            best_model, best_params = model_func(x_train, y_train) # type: ignore
+            best_model, best_params = model_func(x_train, y_train)  # type: ignore
             best_model_params_f.write(  # save the best params to file
                 f"\nmodel: {model_name.value}, params: {best_params}"
             )
