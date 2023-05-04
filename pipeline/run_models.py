@@ -1,6 +1,6 @@
 from datetime import datetime
 import numpy as np
-from typing import Any
+from typing import Any, Callable
 import joblib  # type: ignore
 from pipeline.models.models import (
     create_mlp_grid_search,
@@ -39,8 +39,8 @@ def train_models_save_results(
     """
 
     # define a list of models and their corresponding grid search functions (from models.py)
-    model_jobs = [
-        (Model.MLP, create_mlp_grid_search),
+    model_jobs: list[tuple[Model, Callable[[pd.DataFrame, pd.DataFrame], tuple[Any, dict]]]] = [
+        (Model.MLP, create_mlp_grid_search), # type: ignore
         (Model.RF, random_forest_regressor_gridsearch),
         (Model.XGB, xgboost_classifier_gridsearch),
         (Model.LOGREG, logistic_regression_gridsearch),
