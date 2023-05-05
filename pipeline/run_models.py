@@ -7,21 +7,19 @@ from pipeline.models.models import (
     random_forest_regressor_gridsearch,
     xgboost_classifier_gridsearch,
     logistic_regression_gridsearch,
-    statistical_model,
 )
 from pipeline.models.utils.model_enum import Model
 import pipeline.models.utils.scoring as scoring
 import pandas as pd  # type: ignore
 from pipeline.preprocessing.sk_formatter import SKFormatter
-import os
 
 Params = dict[str, Any]
 Models = dict[Model, Params]
+Job = tuple[Model, Callable[[pd.DataFrame, pd.DataFrame], tuple[Any, dict]]]
 
 
-def train_models_save_results(
-    x_train: np.ndarray, y_train: np.ndarray
-) -> dict[Model, Any]:
+
+def runner(model_jobs: list[Job], formatter: SKFormatter) -> None:
     """
     Creates every model from models.py, fits them, saves
     them to pickle, saves best params and returns dict
@@ -31,41 +29,38 @@ def train_models_save_results(
     # https://scikit-learn.org/stable/model_persistence.html
 
     Args:
-        x_train (np.ndarray): Training dataset
-        y_train (np.ndarray): Target for training
-
-    Returns:
-        dict[Model, Any]: dictionary of model name to trained model
+        model_jobs (list[Job]):
+        formatter (SKFormatter):
     """
+    prefix = datetime.today().strftime("%y%m%d_%H%M_")
 
-    # define a list of models and their corresponding grid search functions (from models.py)
-    model_jobs: list[
-        tuple[Model, Callable[[pd.DataFrame, pd.DataFrame], tuple[Any, dict]]]
-    ] = [
-        (Model.MLP, create_mlp_grid_search),  # type: ignore
-        (Model.RF, random_forest_regressor_gridsearch),
-        (Model.XGB, xgboost_classifier_gridsearch),
-        (Model.LOGREG, logistic_regression_gridsearch),
-        # (Model.STATMODEL, statistical_model), # TODO: Does not work currently...
-    ]
+    x_train, x_test, y_train, y_test = formatter.generate_train_test_split()
+    # TODO: Save sk_formatter params
+    # Expected signature formatter.save_params(prefix)
 
-    models: dict[Model, Any] = {}  # model name to the trained model
+    file = prefix + "metrics"
+    with open(file, "a") as f:
+        f.write("model,mae,mape,mse,rmse,r2,ev\n")  # header for metrics
 
-    with open(
-        f"{os.path.dirname(__file__)}/training_results.txt", "a"
-    ) as best_model_params_f:
-        # loop through each model and perform grid search
-        for model_name, model_func in model_jobs:
-            best_model, best_params = model_func(x_train, y_train)  # type: ignore
-            best_model_params_f.write(  # save the best params to file
-                f"\nmodel: {model_name.value}, params: {best_params}"
-            )
-            joblib.dump(  # save the model as joblib file
-                best_model, f"{model_name.value}_best_model.joblib"
-            )
-            models[model_name] = best_model
+    # Train each model using gridsearch func defined in model_jobs list
+    for model_name, model_func in model_jobs:
+        # Train model, obtaining the best model and the corresponding hyper-parameters
+        best_model, best_params = model_func(x_train, y_train)  # type: ignore
 
-    return models
+        # Get prediction and score model
+        y_pred = get_prediction(model_name, best_model, x_test)
+        append_predictions_to_df(df, y_pred, model_name)  # type: ignore
+        metrics = scoring.score_model(y_test, y_pred)
+
+        # Save the model, hyper-parameters and metrics
+        save(model_name, best_model, best_params, metrics, prefix)
+
+
+def get_prediction(model_name, model, x_test):
+    if model_name in Model.regression_models_names():
+        return scoring.classify_with_regressor(model, x_test)  # type: ignore
+    else:
+        return model.predict(x_test)
 
 
 def append_predictions_to_df(
@@ -102,70 +97,52 @@ def append_predictions_to_df(
     return df
 
 
-def test_models(
-    models: dict[Model, Any], x_test: np.ndarray, y_test: np.ndarray, df: pd.DataFrame
-) -> dict[str, dict]:
-    """
-    Tests all the models. Will return scoring metrics for each models predictions.
-
-    Args:
-        models (dict[Model, Any]): The dictionary of the best models after fitting on the train data.
-        x_test (np.ndarray): The input test data from the train-test split
-        y_test (np.ndarray): The target test data from the train-test split
-        df (pd.DataFrame): dataframe to which the predictions will be appended to.
-
-    Returns:
-        dict[str, dict]: Returns dictionary of scoring metrics for each model.
-        Also annotates the input df with predictions made by each model.
-    """
-    per_model_metrics: dict[str, dict] = {}
-
-    # initialize scored_predictions with y_test
-    for model_name, model in models.items():
-        # predict
-        if model_name.value in Model.regression_models_names():
-            y_pred = scoring.classify_with_regressor(model, x_test)  # type: ignore
-        else:
-            y_pred = model.predict(x_test)
-
-        append_predictions_to_df(df, y_pred, model_name)  # type: ignore
-
-        per_model_metrics[model_name.value] = scoring.score_model(y_test, y_pred)
-
-    return per_model_metrics
+def save(model_name, model, params, metrics, prefix):
+    filepath = f"{prefix}/{prefix}_"
+    save_model(model_name, model, filepath)
+    save_params(model_name, params, filepath)
+    save_metrics(model_name, metrics, filepath)
 
 
-def save_metrics(metrics_dict: dict[str, dict], save_to_folder: str) -> None:
-    """Save the metrics from model predictions to a file.
-    Will name file based on time created.
+def save_model(model_name, model, filepath):
+    joblib.dump(  # save the model as joblib file
+        model, f"{filepath}{model_name}.joblib"
+    )
 
-    Args:
-        metrics_dict (dict[str, dict]): dict from model name to metrics_
-        save_to_folder (str): Folder to save file
-    """
-    date = datetime.today().strftime("%d%m%y_%H%M")
-    filename = f"{save_to_folder}/{date}_metrics.txt"
-    with open(filename, "w+") as f:
-        f.write("model, mae, mape, mse, rmse, r2, ev\n")  # header
-        for model, metrics in metrics_dict.items():
-            f.write(f"{model}")
-            for val in metrics.values():
-                f.write(f", {val}")
-            f.write("\n")
+
+def save_params(model_name, params, filepath):
+    file = filepath + "params"
+    with open(file, "a") as f:
+        f.write(
+            f"\nmodel: {model_name}, params: {params}"
+            )
+
+
+def save_metrics(model_name, metrics, filepath: str) -> None:
+    file = filepath + "metrics"
+    with open(file, "a") as f:
+        f.write(f"{model_name}")
+        for val in metrics.values():
+            f.write(f", {val}")
+        f.write("\n")
 
 
 def main():
+    # define a list of models and their corresponding grid search functions (from models.py)
+    model_jobs: list[
+        tuple[Model, Callable[[pd.DataFrame, pd.DataFrame], tuple[Any, dict]]]
+    ] = [
+        (Model.MLP, create_mlp_grid_search),  # type: ignore
+        (Model.RF, random_forest_regressor_gridsearch),
+        (Model.XGB, xgboost_classifier_gridsearch),
+        (Model.LOGREG, logistic_regression_gridsearch),
+        # (Model.STATMODEL, statistical_model), # TODO: Does not work currently...
+    ]
+
     formatter = SKFormatter(
         "/share-files/pickle_files_features_and_ground_truth/2012.pkl"
     )
-    df = formatter.df
-    x_train, x_test, y_train, y_test = formatter.generate_train_test_split()
-    skf_params = formatter.params
-    print(skf_params)  # should be saved to file
-    print("formatted. Training...")
-    models = train_models_save_results(x_train, y_train)
-    metrics = test_models(models, x_test, y_test, df)
-    save_metrics(metrics, "/share-files/model_scores")
+    runner(model_jobs, formatter)
 
 
 if __name__ == "__main__":
