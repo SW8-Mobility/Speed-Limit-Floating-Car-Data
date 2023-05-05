@@ -1,141 +1,95 @@
 import pandas as pd
 import matplotlib.pyplot as plt
-import numpy as np
 import math
 from collections import Counter
-from statistics import mean
-from scipy.stats import norm
+
+
+def select_speeds(df, index_list) -> pd.DataFrame:
+    selected_rows = df.loc[df["osm_id"].isin(index_list)]
+    return selected_rows
+
 
 def flatten(l):
     return [item for sublist in l for item in sublist]
 
-def plot_speed_graf_for_segment(df: pd.DataFrame, index: int) -> None:
-    """
-    CONDITION: the df must have osm_id as index
-    Args:
-        df:
-        index:
 
-    Returns:
+def flatten_speeds(df) -> pd.DataFrame:
+    df["speeds"] = df["speeds"].apply(lambda l: flatten(l))
+    return df
 
-    """
-    df = df.loc[index]
 
-    speeds_flat = flatten(df["speeds"].iloc[0])
+def concat_speeds(df):
+    speed_list = []
+    df["speeds"].apply(lambda l: speed_list.extend(l))
 
-    floor_values = [math.floor(x) for x in speeds_flat]
+    return speed_list
 
-    # Get dictionary with {key: no. of occurences}
-    value_dic = Counter(floor_values)
+
+def floor_list(input_list):
+    return list(map(lambda x: math.floor(float(x)), input_list))
+
+
+def plot_speed_graf_for_segment(speed_list: list[int], index_list: list[int]) -> None:
+    value_dic = Counter(speed_list)
     # Convert to dictionary to list
-    list_dic = list(value_dic.items())
+    list_tuple = list(value_dic.items())
     # Sort accending wrt. key
-    list_dic.sort()
+    list_tuple.sort()
 
     x = []
     y = []
 
-    for (speed, occurences) in list_dic:
+    for speed, occurences in list_tuple:
         x.append(speed)
         y.append(occurences)
 
     plt.plot(x, y)
+    plt.xlabel("Speed (km/h)")
+    plt.ylabel("Number of occurences on segment")
+    plt.title(f"Speeds on segment {index_list[0]}-{index_list[-1]}")
     plt.show()
-    plt.savefig(f"speed_graph_osm_id_{index}.png")
+    plt.savefig(
+        f"./speed_figures/speed_graph_osm_id_{index_list[0]}-{index_list[-1]}.png"
+    )
+
+def create_speed_graph(df, osm_id_list):
+    # pick relevant rows
+    df = select_speeds(df, osm_id_list)
+
+    # Remove duplicates
+    # (from: https://jianan-lin.medium.com/typeerror-unhashable-type-list-how-to-drop-duplicates-with-lists-in-pandas-4)
+    df = df[df.columns].loc[df[df.columns].astype(str).drop_duplicates().index]
+
+    # flatten speeds
+    df = flatten_speeds(df)
+
+    # concat values
+    speed_list = concat_speeds(df)
+
+    # floor values
+    speed_list_floored = floor_list(speed_list)
+
+    # create graph
+    plot_speed_graf_for_segment(speed_list_floored, osm_id_list)
 
 def main():
     # Load in data:
     path_root = "/share-files/pickle_files_features_and_ground_truth"
-    df: pd.DataFrame = (
-        pd.read_pickle(path_root + "/2014.pkl")
-    )
+    df: pd.DataFrame = pd.read_pickle(path_root + "/2014.pkl")
+    universitet_b_80 = [
+        8149020,
+        8149021,
+        10240935,
+        10240932,
+        682803169,
+        682803170,
+        682803171,
+        682803172,
+        287131331,
+        10240934,
+    ]
 
-    # Set index
-    df = df.set_index('osm_id')
-
-    plot_speed_graf_for_segment(df, 8149020)
-
-    # Get rows with id
-    #df = df.loc[df['osm_id'] == 8149020]
-
-    # Remove duplicates
-    # (from: https://jianan-lin.medium.com/typeerror-unhashable-type-list-how-to-drop-duplicates-with-lists-in-pandas-4)
-    #no_duplicates = df[df.columns].loc[df[df.columns].astype(str).drop_duplicates().index]
-    #no_duplicates.to_pickle("one_row.pkl")
-    #no_duplicates = pd.read_pickle("one_row.pkl")
-
-    # Plot normal distribution
-
-    #speeds_flat = sum(no_duplicates["speeds"], [])
-    # speeds_flat = flatten(no_duplicates["speeds"].iloc[0])
-    #
-    # # float("{:.2f}".format(x))
-    # floor_values = [math.floor(x) for x in speeds_flat]
-    # value_dic = Counter(floor_values)
-    #
-    # x = []
-    # y = []
-    #
-    # list_dic = list(value_dic.items())
-    # list_dic.sort()
-    # print(list_dic)
-    #
-    # for (speed, occurences) in list_dic:
-    #     x.append(speed)
-    #     y.append(occurences)
-    #
-    # plt.plot(x, y)
-    # plt.show()
-    # plt.savefig("test.png")
-
-
-    # Make sure to close the plt object once done
-    #plt.close()
-
-
-    #uni_b = df.loc[df['osm_id'] == 8149020]
-    #index = []
-
-
-    #duplicate_mask = uni_b.du
-
-    #print(duplicate_mask)
-
-    # print(uni_b["hast_gaeldende_hast"])
-
-    # uni_b.to_csv("uni_b.csv")
-    #print(uni_b)
-
-
-    # # df = df.set_index('osm_id')
-    # # universitetsboulevarden = df.iloc[8149020]
-    #
-    # speeds = universitetsboulevarden["speeds"]
-    #
-    # print(speeds)
-
-    # for col in df.columns:
-    #     print(col)
-
-
-
-    # # Filter out any the coordinates of any trip, that are not on selected OSM_ID:
-    # filtered_df = filter_segments(
-    #     df, 8149020
-    # )  # <- first segment on Universitetsboulevarden, 80km/t
-    #
-    # # Remove all unrelated trips:
-    # filtered_trips_df = filter_trips(filtered_df)
-    #
-    # # Create columns containing average speeds through the segment
-    # calculate_distance(filtered_trips_df)
-    # filtered_trips_df["speeds"] = filtered_trips_df["distances"].apply(ms_to_kmh)
-    # filtered_trips_df["avg_speed"] = filtered_trips_df["speeds"].apply(mean)  # type: ignore
-    #
-    # # Plot all trips, through selected segment, with their average speed in a histogram.
-    # average_speeds = pd.Series(filtered_trips_df["avg_speed"])
-    # plot_normal_distribution(average_speeds)
-
+    create_speed_graph(df, universitet_b_80)
 
 if __name__ == "__main__":
     main()
