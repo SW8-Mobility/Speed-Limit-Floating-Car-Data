@@ -1,0 +1,2 @@
+model: statistical model, params: None
+model: logistic regression, params: {'C': 4, 'max_iter': 1000, 'penalty': 'l2', 'solver': 'newton-cg', 'tol': 0.0001}

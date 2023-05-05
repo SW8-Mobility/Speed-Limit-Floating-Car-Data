@@ -16,6 +16,16 @@ You can now use the terminal feature within docker desktop or use the command `d
 
 Any changes you make to `./scripts/api-script.py` will be reflected into the container instantly.
 
+### Running a Python script in the docker container
+
+From the root directory run
+`docker compose run [OPTIONS] python <python-file>`
+
+Useful options can be
+- --rm
+    - Removes the container after run. Should be used unless you need the container after runtime
+- -d
+    - Detached mode, aka. you can still use the terminal when running a process. Should be used if you want a process to continue running after closing your terminal
 
 ### Saving data to file
 
@@ -71,5 +81,4 @@ If it does not work, run the following command in the root of the directory, to 
 ```
 pip install -e .
 ```
-
 

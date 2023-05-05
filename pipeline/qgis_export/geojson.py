@@ -1,7 +1,6 @@
 from pipeline.preprocessing.compute_features.feature import Feature
 
-
-import pandas as pd
+import pandas as pd  # type: ignore
 
 
 def annotate_geojson_with_speedlimit(
