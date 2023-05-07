@@ -109,7 +109,9 @@ def plot_speed_graf_for_segment(
     )
 
 
-def create_speed_graph(df: pd.DataFrame, osm_id_list: list[int], custom_title: str | None = None) -> None:
+def create_speed_graph(
+    df: pd.DataFrame, osm_id_list: list[int], custom_title: str | None = None
+) -> None:
     """
     Create a speed graph from a dataframe and list of osm_id's
     Args:
