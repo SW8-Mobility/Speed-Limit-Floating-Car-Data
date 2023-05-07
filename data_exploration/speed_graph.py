@@ -1,5 +1,5 @@
 import pandas as pd
-import matplotlib.pyplot as plt # type: ignore
+import matplotlib.pyplot as plt  # type: ignore
 import math
 from collections import Counter
 
