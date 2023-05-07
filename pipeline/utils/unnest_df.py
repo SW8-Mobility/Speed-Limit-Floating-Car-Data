@@ -1,4 +1,4 @@
-import pandas as pd  # type: ignore
+import pandas as pd  # ignore: type
 
 def unnest_df(df: pd.DataFrame, nest_header: str, key_list: list[str]) -> None:
     """

@@ -1,32 +1,32 @@
 import pytest
 import pandas as pd
-from data_exploration.speed_graph import select_osm_rows, flatten_speeds, concat_speeds, floor_list
+from data_exploration.speed_graph import (
+    select_osm_rows,
+    flatten_speeds,
+    concat_speeds,
+    floor_list,
+)
+
 
 @pytest.mark.parametrize(
     "input_value, index_list, expected_value",
     [
         (
-            {
-                "osm_id": [2080, 2081],
-                "speeds": [[[10, 20]], [[30], [40]]]
-            },
+            {"osm_id": [2080, 2081], "speeds": [[[10, 20]], [[30], [40]]]},
             [2080, 2081],
-            {
-                "osm_id": [2080, 2081],
-                "speeds": [[[10, 20]], [[30],[40]]]
-            }
+            {"osm_id": [2080, 2081], "speeds": [[[10, 20]], [[30], [40]]]},
         ),
         (
             {
                 "osm_id": [2080, 2081],
-                "speeds": [[[10, 11], [11, 12]], [[10, 11], [11, 12]]] # the actual data is on this format
+                "speeds": [
+                    [[10, 11], [11, 12]],
+                    [[10, 11], [11, 12]],
+                ],  # the actual data is on this format
             },
             [2082],
-            {
-                "osm_id": [2082],
-                "speeds": [[[10, 11], [11, 12]]]
-            }
-    )
+            {"osm_id": [2082], "speeds": [[[10, 11], [11, 12]]]},
+        ),
     ],
 )
 def test_selected_speeds(input_value, index_list, expected_value):
@@ -37,29 +37,21 @@ def test_selected_speeds(input_value, index_list, expected_value):
 
     actual_df.equals(expected_df)
 
+
 @pytest.mark.parametrize(
     "input_value, expected_value",
     [
         (
             {
                 "osm_id": [2080, 2081],
-                "speeds": [[[10, 11], [11, 12]], [[10, 11], [11, 12]]]
+                "speeds": [[[10, 11], [11, 12]], [[10, 11], [11, 12]]],
             },
-            {
-                "osm_id": [2082, 2081],
-                "speeds": [[10, 11, 11, 12], [10, 11, 11, 12]]
-            }
+            {"osm_id": [2082, 2081], "speeds": [[10, 11, 11, 12], [10, 11, 11, 12]]},
         ),
         (
-            {
-                "osm_id": [2080],
-                "speeds": [[[10, 11], [11, 12]]]
-            },
-            {
-                "osm_id": [2080],
-                "speeds": [[10, 11, 11, 12]]
-            }
-        )
+            {"osm_id": [2080], "speeds": [[[10, 11], [11, 12]]]},
+            {"osm_id": [2080], "speeds": [[10, 11, 11, 12]]},
+        ),
     ],
 )
 def test_flatten(input_value, expected_value):
@@ -70,35 +62,28 @@ def test_flatten(input_value, expected_value):
 
     actual_df.equals(expected_df)
 
+
 @pytest.mark.parametrize(
     "input_value, expected_value",
     [
         (
-            {
-                "osm_id": [2082, 2081],
-                "speeds": [[10, 11, 11, 12], [10, 11, 11, 12]]
-            },
-            [10, 11, 11, 12, 10, 11, 11, 12]
+            {"osm_id": [2082, 2081], "speeds": [[10, 11, 11, 12], [10, 11, 11, 12]]},
+            [10, 11, 11, 12, 10, 11, 11, 12],
         )
-    ]
+    ],
 )
 def test_concat_speed_list(input_value, expected_value):
     input_df = pd.DataFrame(data=input_value)
 
     actual_value = concat_speeds(input_df)
 
-    assert (actual_value == expected_value)
+    assert actual_value == expected_value
+
 
 @pytest.mark.parametrize(
-    "input_value, expected_value",
-    [
-        (
-            [5.5, 10.2, 15.7],
-            [5, 10, 15]
-        )
-    ]
+    "input_value, expected_value", [([5.5, 10.2, 15.7], [5, 10, 15])]
 )
 def test_floor_list(input_value, expected_value):
     actual_value = floor_list(input_value)
 
-    assert (actual_value == expected_value)
+    assert actual_value == expected_value

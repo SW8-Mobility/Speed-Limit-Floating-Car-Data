@@ -6,10 +6,11 @@ from sklearn.pipeline import Pipeline  # type: ignore
 from sklearn.preprocessing import StandardScaler  # type: ignore
 from xgboost import XGBClassifier  # type: ignore
 import pandas as pd  # type: ignore
+from sklearn.pipeline import make_pipeline
 
 from pipeline.models.statistical_model import StatisticalModel
 
-CORE_NUM = 16  # how many cores to use in grid_search
+CORE_NUM = 15  # how many cores to use in grid_search
 RANDOM_STATE = 42
 
 
@@ -26,31 +27,25 @@ def create_mlp_grid_search(
     Returns:
         tuple[MLPClassifier, dict]: A tuple of the best MLP classifier and the best hyperparameters.
     """
-    # create pipeline with mlp and scaler
-    pipeline = Pipeline(
-        [
-            ("scaler", StandardScaler()),
-            ("mlp", MLPClassifier(max_iter=1000, random_state=42)),
-        ]
-    )
-
-    # define the hyperparameters to search over
-    parameters = {
-        "hidden_layer_sizes": [(50,), (100,), (50, 50), (100, 50)],
-        "alpha": [0.0001, 0.001, 0.01],
-        "activation": ["relu", "logistic"],
-        "solver": ["adam", "lbfgs"],
-        "learning_rate": ["constant", "adaptive"],
-        "early_stopping": [True, False],
-        "tol": [1e-3, 1e-4, 1e-5],
-        "beta_1": [0.9, 0.8, 0.7],
-        "beta_2": [0.999, 0.9, 0.8],
-        "validation_fraction": [0.1, 0.2, 0.3],
+    param_grid = {
+        "mlpclassifier__hidden_layer_sizes": [(100,), (50, 50), (20, 20, 20)],
+        "mlpclassifier__activation": ["relu", "tanh", "logistic"],
+        "mlpclassifier__solver": ["sgd", "adam"],
+        "mlpclassifier__alpha": [0.0001, 0.001, 0.01],
+        "mlpclassifier__learning_rate": ["constant", "adaptive"],
     }
+
+    # Create pipeline with StandardScaler and MLPClassifier
+    pipeline = make_pipeline(
+        StandardScaler(),
+        MLPClassifier(max_iter=1000, random_state=RANDOM_STATE, verbose=3),
+    )
 
     # perform grid search with k-fold cross-validation
     kfold = KFold(n_splits=k, shuffle=True, random_state=RANDOM_STATE)
-    grid_search = GridSearchCV(pipeline, parameters, cv=kfold, n_jobs=CORE_NUM)
+    grid_search = GridSearchCV(
+        pipeline, param_grid=param_grid, cv=kfold, n_jobs=CORE_NUM, verbose=3
+    )
     grid_search.fit(x_train, y_train)
 
     # return the best mlp model and the best hyperparameters found by the grid search
@@ -73,7 +68,7 @@ def random_forest_regressor_gridsearch(
     """
 
     # Create a random forest regressor
-    rfr = RandomForestRegressor(random_state=42)
+    rfr = RandomForestRegressor(random_state=42, verbose=3)
 
     # Set up the parameter grid to search over
     param_grid = {
@@ -87,7 +82,7 @@ def random_forest_regressor_gridsearch(
     # Create the grid search object
     kfold = KFold(n_splits=k, shuffle=True, random_state=RANDOM_STATE)
     grid_search = GridSearchCV(
-        estimator=rfr, param_grid=param_grid, cv=kfold, n_jobs=CORE_NUM
+        estimator=rfr, param_grid=param_grid, cv=kfold, n_jobs=CORE_NUM, verbose=3
     )
 
     # Fit the grid search object to the training data
@@ -110,7 +105,7 @@ def xgboost_classifier_gridsearch(
         tuple[MLPClassifier, dict]: A tuple of the best xgboost classifier and the best hyperparameters.
     """
     # Create an XGBoost classifier
-    xgb = XGBClassifier(random_state=RANDOM_STATE)
+    xgb = XGBClassifier(random_state=RANDOM_STATE, verbosity=2)
 
     # Set up the parameter grid to search over
     param_grid = {
@@ -124,7 +119,7 @@ def xgboost_classifier_gridsearch(
     # Create the grid search object
     kfold = KFold(n_splits=k, shuffle=True, random_state=RANDOM_STATE)
     grid_search = GridSearchCV(
-        estimator=xgb, param_grid=param_grid, cv=kfold, n_jobs=CORE_NUM
+        estimator=xgb, param_grid=param_grid, cv=kfold, n_jobs=CORE_NUM, verbose=3
     )
 
     # Fit the grid search object to the training data
@@ -147,19 +142,26 @@ def logistic_regression_gridsearch(
         tuple[MLPClassifier, dict]: A tuple of the best Logistic Regression Classifier and the best hyperparameters.
     """
     # Create a Logistic Regression model
-    logreg = LogisticRegression(random_state=RANDOM_STATE)
+    logreg = LogisticRegression(random_state=RANDOM_STATE, verbose=3)
 
     # Set up the parameter grid to search over
-    param_grid = {
-        "C": [0.1, 1, 10],
-        "penalty": ["l1", "l2", "elasticnet"],
-        "solver": ["saga", "liblinear"],
+    parameters = {
+        "penalty": ["l2"],
+        "tol": [1e-4, 1e-5, 1e-6],
+        "C": range(1, 11, 3),
+        "solver": ["sag", "newton-cg", "lbfgs"],
+        "max_iter": [1000],
     }
 
     # Create the grid search object
     kfold = KFold(n_splits=k, shuffle=True, random_state=RANDOM_STATE)
     grid_search = GridSearchCV(
-        estimator=logreg, param_grid=param_grid, cv=kfold, n_jobs=CORE_NUM
+        estimator=logreg,
+        param_grid=parameters,
+        cv=kfold,
+        n_jobs=CORE_NUM,
+        error_score="raise",
+        verbose=3,
     )
 
     # Fit the grid search object to the training data
@@ -168,13 +170,15 @@ def logistic_regression_gridsearch(
     return grid_search.best_estimator_, grid_search.best_params_  # type: ignore
 
 
-def statistical_model() -> StatisticalModel:
+def statistical_model(
+    x_train: pd.DataFrame, y_train: pd.DataFrame
+) -> tuple[StatisticalModel, dict]:
     """Create a basic statistical model
 
     Returns:
         StatisticalModel: a statistical model with a predict function
     """
-    return StatisticalModel()
+    return StatisticalModel(), None  # type: ignore
 
 
 if __name__ == "__main__":
