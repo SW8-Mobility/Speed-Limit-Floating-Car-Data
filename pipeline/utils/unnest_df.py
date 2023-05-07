@@ -1,6 +1,5 @@
 import pandas as pd  # type: ignore
 
-
 def unnest_df(df: pd.DataFrame, nest_header: str, key_list: list[str]) -> None:
     """
     Unnest a given key from a column, if the format is like a dictionary. The column is added to the dataframe and the
