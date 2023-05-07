@@ -1,6 +1,6 @@
 import pytest
 import pandas as pd
-from data_exploration.normal_distribution import select_speeds, flatten_speeds, concat_speeds, floor_list
+from data_exploration.speed_graph import select_osm_rows, flatten_speeds, concat_speeds, floor_list
 
 @pytest.mark.parametrize(
     "input_value, index_list, expected_value",
@@ -8,7 +8,7 @@ from data_exploration.normal_distribution import select_speeds, flatten_speeds, 
         (
             {
                 "osm_id": [2080, 2081],
-                "speeds": [[[10, 20]], [[30],[40]]]
+                "speeds": [[[10, 20]], [[30], [40]]]
             },
             [2080, 2081],
             {
@@ -33,7 +33,7 @@ def test_selected_speeds(input_value, index_list, expected_value):
     input_df = pd.DataFrame(data=input_value)
     expected_df = pd.DataFrame(data=expected_value)
 
-    actual_df = select_speeds(input_df, index_list)
+    actual_df = select_osm_rows(input_df, index_list)
 
     actual_df.equals(expected_df)
 
