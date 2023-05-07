@@ -2,7 +2,7 @@
 Will create a json file for each request. 
 """
 
-import requests # type: ignore
+import requests  # type: ignore
 import json
 import os
 
