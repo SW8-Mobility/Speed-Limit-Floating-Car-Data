@@ -4,7 +4,7 @@ import math
 from collections import Counter
 
 
-def select_osm_rows(df, index_list) -> pd.DataFrame:
+def select_osm_rows(df: pd.DataFrame, index_list: list[int]) -> pd.DataFrame:
     """
     Select rows with osm_id in index list.
     Args:
@@ -18,19 +18,19 @@ def select_osm_rows(df, index_list) -> pd.DataFrame:
     return selected_rows
 
 
-def flatten(l):
+def flatten(nested_list: list[list[any]]) -> list[any]:
     """
     Flatten a list such that [[1], [2], [3, 4]] becomes [1, 2, 3, 4]
     Args:
-        l: a list to flatten
+        nested_list: a list to flatten
 
     Returns: flattend list
 
     """
-    return [item for sublist in l for item in sublist]
+    return [item for sublist in nested_list for item in sublist]
 
 
-def flatten_speeds(df) -> pd.DataFrame:
+def flatten_speeds(df: pd.DataFrame) -> pd.DataFrame:
     """
     Flatten speeds column in dataframe using flatten()
     Args:
@@ -43,7 +43,7 @@ def flatten_speeds(df) -> pd.DataFrame:
     return df
 
 
-def concat_speeds(df):
+def concat_speeds(df: pd.DataFrame) -> list[float]:
     """
     Concatinate all speeds of a given dataframe and return as list.
     ASSUMPTION: speeds are flat lists
@@ -59,7 +59,7 @@ def concat_speeds(df):
     return speed_list
 
 
-def floor_list(input_list):
+def floor_list(input_list: list[float]) -> list[int]:
     """
     Floor all elements in list
     Args:
@@ -72,7 +72,7 @@ def floor_list(input_list):
 
 
 def plot_speed_graf_for_segment(
-    speed_list: list[int], index_list: list[int], custom_title
+    speed_list: list[int], index_list: list[int], custom_title: str | None
 ) -> None:
     """
     Plot speed graph for a list of segments. Adds file to speed_figures folder
@@ -109,7 +109,7 @@ def plot_speed_graf_for_segment(
     )
 
 
-def create_speed_graph(df, osm_id_list, custom_title=None) -> None:
+def create_speed_graph(df: pd.DataFrame, osm_id_list: list[int], custom_title: str | None = None) -> None:
     """
     Create a speed graph from a dataframe and list of osm_id's
     Args:
