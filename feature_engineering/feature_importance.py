@@ -1,4 +1,3 @@
-import copy
 import joblib
 from sklearn.inspection import permutation_importance
 from pipeline.preprocessing.sk_formatter import SKFormatter
@@ -26,36 +25,12 @@ def example_func_feature_importance():
             )
 # ------------------------------------------------------------
 
-formatter = SKFormatter(dataset="2012.pkl", dataset_size=50)
-[X_train, X_val, y_train, y_val] = formatter.generate_train_test_split()
-model = joblib.load(filename="mlp_best_model.joblib")
-
-def one_feature():
-    print(model)
+def model_members(model):
     print(model.n_features_in_)
     print(model.estimators_)
     print(model.feature_importances_)
     print(model.feature_names_in_)
-    # model.score(X_val, y_val)
-    # r = permutation_importance(model, X_val, y_val, n_repeats=30, random_state=0)
-    # for i in r.importances_mean.argsort()[::-1]:
-    #     if r.importances_mean[i] - 2 * r.importances_std[i] > 0:
-    #         print(
-    #             f"{diabetes.feature_names[i]:<8}"
-    #             f"{r.importances_mean[i]:.3f}"
-    #             f" +/- {r.importances_std[i]:.3f}"
-    #         )
-
 # ------------------------------------------------------------
-
-
-
-
-
-formatter = SKFormatter(dataset="2012.pkl", dataset_size=50)
-[X_train, X_val, y_train, y_val] = formatter.generate_train_test_split()
-
-model = joblib.load(filename="random forest_best_model.joblib")
 
 
 def calculate_feature_importance(model, X_val, y_val) -> None:
@@ -76,13 +51,21 @@ def calculate_feature_importance(model, X_val, y_val) -> None:
         for i in r.importances_mean.argsort()[::-1]:
             if r.importances_mean[i] - 2 * r.importances_std[i] > 0:
                 print(
-                    f"    {formatter.params.get('processed_df_columns'):<8}"
+                    # f"{formatter.params.get('processed_df_columns'):<8}"
                     f"{r.importances_mean[i]:.3f}"
                     f" +/- {r.importances_std[i]:.3f}"
                 )
 
+def main():
+    formatter = SKFormatter(dataset="2012.pkl", dataset_size=1000, test_size=0)
+    x_train, _, y_train, _ = formatter.generate_train_test_split()
+
+    paths = ["mlp_best_model.joblib", "logistic regression_best_model.joblib", "xgboost_best_model.joblib", "random forest_best_model.joblib"]
+    for path in paths:
+        print(f"loading model: {path}")
+        model = joblib.load(path)
+        model_members(model)
+        calculate_feature_importance(model, x_train, y_train)
 
 if __name__ == "__main__":
-    # calculate_feature_importance(model, X_val, y_val)
-    # example_func_feature_importance()
-    one_feature()
+    main()
