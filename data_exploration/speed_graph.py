@@ -1,3 +1,5 @@
+from typing import Any
+
 import pandas as pd  # type: ignore
 import matplotlib.pyplot as plt  # type: ignore
 import math
@@ -18,7 +20,7 @@ def select_osm_rows(df: pd.DataFrame, index_list: list[int]) -> pd.DataFrame:
     return selected_rows
 
 
-def flatten(nested_list: list[list[any]]) -> list[any]:
+def flatten(nested_list: list[list[any]]) -> list[Any]:
     """
     Flatten a list such that [[1], [2], [3, 4]] becomes [1, 2, 3, 4]
     Args:
@@ -28,7 +30,6 @@ def flatten(nested_list: list[list[any]]) -> list[any]:
 
     """
     return [item for sublist in nested_list for item in sublist]
-
 
 def flatten_speeds(df: pd.DataFrame) -> pd.DataFrame:
     """
@@ -42,8 +43,7 @@ def flatten_speeds(df: pd.DataFrame) -> pd.DataFrame:
     df["speeds"] = df["speeds"].apply(lambda l: flatten(l))
     return df
 
-
-def concat_speeds(df: pd.DataFrame) -> list[float]:
+def flatten_and_concat_speeds(df: pd.DataFrame) -> list[float]:
     """
     Concatinate all speeds of a given dataframe and return as list.
     ASSUMPTION: speeds are flat lists
@@ -53,6 +53,8 @@ def concat_speeds(df: pd.DataFrame) -> list[float]:
     Returns: list of all speeds in dataframe
 
     """
+    df["speeds"] = df["speeds"].apply(lambda l: flatten(l))
+
     speed_list = []
     df["speeds"].apply(lambda l: speed_list.extend(l))
 
@@ -107,6 +109,9 @@ def plot_speed_graf_for_segment(
     plt.savefig(
         f"./speed_figures/speed_graph_osm_id_{index_list[0]}-{index_list[-1]}.png"
     )
+    plt.savefig(
+        f"/speed_figures/speed_graph_osm_id_{index_list[0]}-{index_list[-1]}.png"
+    )
 
 
 def create_speed_graph(df: pd.DataFrame, osm_id_list: list[int], custom_title: str | None = None) -> None:
@@ -126,11 +131,8 @@ def create_speed_graph(df: pd.DataFrame, osm_id_list: list[int], custom_title: s
     # (from: https://jianan-lin.medium.com/typeerror-unhashable-type-list-how-to-drop-duplicates-with-lists-in-pandas-4)
     df = df[df.columns].loc[df[df.columns].astype(str).drop_duplicates().index]
 
-    # flatten speeds
-    df = flatten_speeds(df)
-
-    # concat values
-    speed_list = concat_speeds(df)
+    # flatten and concat speed values
+    speed_list = flatten_and_concat_speeds(df)
 
     # floor values
     speed_list_floored = floor_list(speed_list)

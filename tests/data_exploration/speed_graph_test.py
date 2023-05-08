@@ -3,7 +3,7 @@ import pandas as pd
 from data_exploration.speed_graph import (
     select_osm_rows,
     flatten_speeds,
-    concat_speeds,
+    flatten_and_concat_speeds,
     floor_list,
 )
 
@@ -67,15 +67,22 @@ def test_flatten(input_value, expected_value):
     "input_value, expected_value",
     [
         (
-            {"osm_id": [2082, 2081], "speeds": [[10, 11, 11, 12], [10, 11, 11, 12]]},
-            [10, 11, 11, 12, 10, 11, 11, 12],
-        )
+            {
+                "osm_id": [2080, 2081],
+                "speeds": [[[10, 11], [11, 12]], [[10, 11], [11, 12]]],
+            },
+            [10, 11, 11, 12, 10, 11, 11, 12]
+        ),
+            (
+            {"osm_id": [2080], "speeds": [[[10, 11], [11, 12]]]},
+            [10, 11, 11, 12],
+        ),
     ],
 )
-def test_concat_speed_list(input_value, expected_value):
+def test_flatten_and_concat_speed_list(input_value, expected_value):
     input_df = pd.DataFrame(data=input_value)
 
-    actual_value = concat_speeds(input_df)
+    actual_value = flatten_and_concat_speeds(input_df)
 
     assert actual_value == expected_value
 
