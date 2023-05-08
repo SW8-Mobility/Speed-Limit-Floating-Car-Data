@@ -42,7 +42,7 @@ def calculate_feature_importance(model, X_val, y_val) -> None:
     scoring = ["r2", "neg_mean_absolute_percentage_error", "neg_mean_squared_error"]
     print(model)
     r_multi = permutation_importance(
-        model, X_val, y_val, random_state=0, scoring=scoring
+        model, X_val, y_val, random_state=0, scoring=scoring, n_jobs=15
     )
 
     for metric in r_multi:
@@ -57,14 +57,14 @@ def calculate_feature_importance(model, X_val, y_val) -> None:
                 )
 
 def main():
-    formatter = SKFormatter(dataset="2012.pkl", dataset_size=1000, test_size=0)
+    formatter = SKFormatter(dataset="/share-files/pickle_files_features_and_ground_truth/2012.pkl", dataset_size=1000, test_size=0)
     x_train, _, y_train, _ = formatter.generate_train_test_split()
-
+    root = "/share-files/models/"
     paths = ["mlp_best_model.joblib", "logistic regression_best_model.joblib", "xgboost_best_model.joblib", "random forest_best_model.joblib"]
     for path in paths:
         print(f"loading model: {path}")
-        model = joblib.load(path)
-        model_members(model)
+        model = joblib.load(root+path)
+        # model_members(model)
         calculate_feature_importance(model, x_train, y_train)
 
 if __name__ == "__main__":
