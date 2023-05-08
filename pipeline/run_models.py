@@ -22,7 +22,7 @@ Models = dict[Model, Params]
 def train_models_best_params(x_train: np.ndarray, y_train: np.ndarray):
 
     model_jobs = [
-        (Model.MLP, create_mlp_best_params, MLP_BEST_PARAMS),  # type: ignore
+        (Model.MLP, create_mlp_best_params, MLP_BEST_PARAMS),  # type: ignore #TODO: is it an issue that it returns pipeline?
         # (Model.RF, random_forest_regressor_gridsearch),
         # (Model.XGB, xgboost_classifier_gridsearch),
         # (Model.LOGREG, logistic_regression_gridsearch),
