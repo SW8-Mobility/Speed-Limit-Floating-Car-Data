@@ -31,6 +31,7 @@ def flatten(nested_list: list[list[any]]) -> list[Any]:
     """
     return [item for sublist in nested_list for item in sublist]
 
+
 def flatten_speeds(df: pd.DataFrame) -> pd.DataFrame:
     """
     Flatten speeds column in dataframe using flatten()
@@ -42,6 +43,7 @@ def flatten_speeds(df: pd.DataFrame) -> pd.DataFrame:
     """
     df["speeds"] = df["speeds"].apply(lambda l: flatten(l))
     return df
+
 
 def flatten_and_concat_speeds(df: pd.DataFrame) -> list[float]:
     """
