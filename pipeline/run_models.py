@@ -145,6 +145,7 @@ def save_skformatter_params(params: dict, save_to_folder: str) -> None:
     """
     date = datetime.today().strftime("%d%m%y_%H%M")
     filename = f"{save_to_folder}/{date}_skf_parameters.txt"
+
     with open(filename, "w+") as f:
         f.write(f'{", ".join(params.keys())}\n')  # header
         for param, value in params.items():
