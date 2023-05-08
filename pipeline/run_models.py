@@ -135,6 +135,25 @@ def test_models(
     return per_model_metrics
 
 
+def save_skformatter_params(params: dict, save_to_folder: str) -> None:
+    """Save the skf parameters from model training to a file.
+    Will name file based on time created.
+
+    Args:
+        params (dict): parameters from SKFormatter
+        save_to_folder (str): Folder to save file
+    """
+    date = datetime.today().strftime("%d%m%y_%H%M")
+    filename = f"{save_to_folder}/{date}_skf_parameters.txt"
+
+    with open(filename, "w+") as f:
+        f.write(f'{", ".join(params.keys())}\n')  # header
+        for param, value in params.items():
+            f.write(f"{param}")
+            f.write(f", {value}")
+            f.write("\n")
+
+
 def save_metrics(metrics_dict: dict[str, dict], save_to_folder: str) -> None:
     """Save the metrics from model predictions to a file.
     Will name file based on time created.
@@ -143,14 +162,14 @@ def save_metrics(metrics_dict: dict[str, dict], save_to_folder: str) -> None:
         metrics_dict (dict[str, dict]): dict from model name to metrics_
         save_to_folder (str): Folder to save file
     """
-    date = datetime.today().strftime("%d%m%y_%H%M")
+    date = datetime.now().strftime("%d%m%y_%H%M")
     filename = f"{save_to_folder}/{date}_metrics.txt"
+
     with open(filename, "w+") as f:
-        f.write("model, mae, mape, mse, rmse, r2, ev\n")  # header
         for model, metrics in metrics_dict.items():
             f.write(f"{model}")
-            for val in metrics.values():
-                f.write(f", {val}")
+            for score_name, val in metrics.items():
+                f.write(f", {score_name}: {val}")
             f.write("\n")
 
 
@@ -161,7 +180,7 @@ def main():
     df = formatter.df
     x_train, x_test, y_train, y_test = formatter.generate_train_test_split()
     skf_params = formatter.params
-    print(skf_params)  # should be saved to file
+    save_skformatter_params(skf_params, "/share-files/model_skf_parameters")
     print("formatted. Training...")
     models = train_models_save_results(x_train, y_train)
     metrics = test_models(models, x_test, y_test, df)
