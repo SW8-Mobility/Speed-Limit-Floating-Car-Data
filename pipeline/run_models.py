@@ -7,17 +7,45 @@ from pipeline.models.models import (
     random_forest_regressor_gridsearch,
     xgboost_classifier_gridsearch,
     logistic_regression_gridsearch,
-    statistical_model,
+    statistical_model, create_mlp_best_params,
 )
 from pipeline.models.utils.model_enum import Model
 import pipeline.models.utils.scoring as scoring
 import pandas as pd  # type: ignore
 from pipeline.preprocessing.sk_formatter import SKFormatter
 import os
+from pipeline.models.models import MLP_BEST_PARAMS, RF_BEST_PARAMS, XGBOOST_BEST_PARAMS, LG_BEST_PARAMS
 
 Params = dict[str, Any]
 Models = dict[Model, Params]
 
+def train_models_best_params(x_train: np.ndarray, y_train: np.ndarray):
+
+    model_jobs = [
+        (Model.MLP, create_mlp_best_params, MLP_BEST_PARAMS),  # type: ignore
+        # (Model.RF, random_forest_regressor_gridsearch),
+        # (Model.XGB, xgboost_classifier_gridsearch),
+        # (Model.LOGREG, logistic_regression_gridsearch),
+        # (Model.STATMODEL, statistical_model), # TODO: Does not work currently...
+    ]
+
+    models: dict[Model, Any] = {}  # model name to the trained model
+
+    with open(
+        f"/share-files/best_params/training_results_.txt", "a" # TODO: Make sure best_params exists
+    ) as best_model_scores_f:
+        for model_name, model_func, best_params in model_jobs:
+            best_model = model_func(x_train, y_train)  # type: ignore
+
+            best_model_scores_f.write(  # save the best params to file
+                f"\nmodel: {model_name.value}, params: {best_params}"
+            )
+            joblib.dump(  # save the model as joblib file
+                best_model, f"{model_name.value}_best_model.joblib"
+            )
+            models[model_name] = best_model
+
+    return models
 
 def train_models_save_results(
     x_train: np.ndarray, y_train: np.ndarray
@@ -102,7 +130,7 @@ def append_predictions_to_df(
     return df
 
 
-def test_models(
+def test_models( #
     models: dict[Model, Any], x_test: np.ndarray, y_test: np.ndarray, df: pd.DataFrame
 ) -> dict[str, dict]:
     """
@@ -134,7 +162,6 @@ def test_models(
 
     return per_model_metrics
 
-
 def save_metrics(metrics_dict: dict[str, dict], save_to_folder: str) -> None:
     """Save the metrics from model predictions to a file.
     Will name file based on time created.
@@ -153,20 +180,69 @@ def save_metrics(metrics_dict: dict[str, dict], save_to_folder: str) -> None:
                 f.write(f", {val}")
             f.write("\n")
 
+def save_skformatter_params(params: dict, save_to_folder: str) -> None:
+    """Save the skf parameters from model training to a file.
+    Will name file based on time created.
+    Args:
+        params (dict): parameters from SKFormatter
+        save_to_folder (str): Folder to save file
+    """
+    date = datetime.today().strftime("%d%m%y_%H%M")
+    filename = f"{save_to_folder}/{date}_skf_parameters.txt"
+    with open(filename, "w+") as f:
+        f.write(f'{", ".join(params.keys())}\n')  # header
+        for param, value in params.items():
+            f.write(f"{param}")
+            f.write(f": {value}")
+            f.write("\n")
 
-def main():
+def run_models_with_grid_search():
     formatter = SKFormatter(
-        "/share-files/pickle_files_features_and_ground_truth/2012.pkl"
+        dataset= "/share-files/pickle_files_features_and_ground_truth/2012.pkl"
     )
+    # Format data
     df = formatter.df
     x_train, x_test, y_train, y_test = formatter.generate_train_test_split()
     skf_params = formatter.params
-    print(skf_params)  # should be saved to file
+    print(skf_params)
+    save_skformatter_params(skf_params, "/share-files/model_skf_parameters")
     print("formatted. Training...")
+
+    # Train models
     models = train_models_save_results(x_train, y_train)
+
+    # Test features
     metrics = test_models(models, x_test, y_test, df)
     save_metrics(metrics, "/share-files/model_scores")
 
+def run_models_with_best_params():
+    formatter = SKFormatter(
+        dataset= "/share-files/pickle_files_features_and_ground_truth/2012.pkl",
+        test_size=0
+    )
+    # Format data
+    x_train, _, y_train, _ = formatter.generate_train_test_split()
+    skf_params = formatter.params
+    print(skf_params)
+    save_skformatter_params(skf_params, "/share-files/model_skf_parameters")
+    print("formatted. Training...")
+
+    # Train models
+    models = train_models_best_params(x_train, y_train)
+
+    # Test features
+    formatter_test = SKFormatter(
+        dataset="/share-files/pickle_files_features_and_ground_truth/2013.pkl",
+        test_size=1 # Use 100% of dataset for testing
+    )
+    # Format data
+    df = formatter_test.df
+    _, x_test, _, y_test = formatter_test.generate_train_test_split()
+    metrics = test_models(models, x_test, y_test, df)
+    save_metrics(metrics, "/share-files/model_scores")
+
+def main():
+    run_models_with_best_params()
 
 if __name__ == "__main__":
     main()

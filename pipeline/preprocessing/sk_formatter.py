@@ -3,6 +3,7 @@ import numpy as np
 from pipeline.preprocessing.compute_features.feature import Feature, FeatureList
 import pandas as pd  # type: ignore
 from keras_preprocessing.sequence import pad_sequences  # type: ignore
+from datetime import datetime
 
 
 class SKFormatter:
@@ -67,6 +68,7 @@ class SKFormatter:
             dict: dictionary with parameters.
         """
         params = self.__dict__.copy()
+        params["date_created"] = datetime.today()
         df = params.pop("df")
         params["input_df_columns"] = list(df.columns)
         return params
