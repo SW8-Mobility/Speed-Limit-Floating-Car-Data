@@ -35,8 +35,8 @@ def runner(model_jobs: list[Job], formatter: SKFormatter) -> None:
     prefix = datetime.today().strftime("%y%m%d_%H%M_")
 
     x_train, x_test, y_train, y_test = formatter.generate_train_test_split()
-    # TODO: Save sk_formatter params
-    # Expected signature formatter.save_params(prefix)
+    
+    save_skformatter_params(formatter.params, prefix)
 
     file = prefix + "metrics"
     with open(file, "a") as f:
@@ -126,6 +126,25 @@ def save_metrics(model_name, metrics, filepath: str) -> None:
             f.write(f", {val}")
         f.write("\n")
 
+        
+def save_skformatter_params(params: dict, filepath: str) -> None:
+    """Save the skf parameters from model training to a file.
+    Will name file based on time created.
+
+    Args:
+        params (dict): parameters from SKFormatter
+        filepath (str): Filepath for file
+    """
+    filename = f"{filepath}skf_parameters.txt"
+
+    with open(filename, "w+") as f:
+        f.write(f'{", ".join(params.keys())}\n')  # header
+        for param, value in params.items():
+            f.write(f"{param}")
+            f.write(f", {value}")
+            f.write("\n")
+
+
 
 def main():
     # define a list of models and their corresponding grid search functions (from models.py)
@@ -143,6 +162,7 @@ def main():
         "/share-files/pickle_files_features_and_ground_truth/2012.pkl"
     )
     runner(model_jobs, formatter)
+
 
 
 if __name__ == "__main__":
