@@ -69,7 +69,7 @@ def get_prediction(model_name: str, model: Model, x_test: np.ndarray) -> np.ndar
     if model_name in Model.regression_models_names():
         return scoring.classify_with_regressor(model, x_test)  # type: ignore
     else:
-        return model.predict(x_test)
+        return model.predict(x_test)  # type: ignore
 
 
 def append_predictions_to_df(
