@@ -17,16 +17,13 @@ def test_clean_dataframe():
     with mock.patch("builtins.open", mock.mock_open(read_data=mock_file_contents)) as _:
         file_mock = open("")
         
-        actual = GroundTruthHandler.load_from_geojson(file_mock)
+        actual = GroundTruthHandler.load_from_geojson(file_mock, 3000)
 
         expected = {
             "osm_id": [21457],
             "KODE_HAST_GENEREL_HAST": [50]
         }
         expected = pd.DataFrame(data=expected)
-
-        print(expected)
-        print(actual)
 
         assert expected.equals(actual)
 
