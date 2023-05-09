@@ -136,14 +136,18 @@ class SKFormatter:
             self.df[feature] = self.df[feature].apply(lambda row: sum(row, []))
 
         for feature in Feature.array_features() - self.discard_features:
-            
             # remove nones that might occur in the arrays
             self.df[feature] = self.df[feature].apply(
                 lambda arr: [elem for elem in arr if elem is not None]
             )
+            cols = self.df
+            s = cols.shape
+            d = self.df[feature]
             # pad the arrays, so they are all the same length, necessary for sklearn
             self.df[feature] = pad_sequences(self.df[feature], padding="post", maxlen=col_num, truncating='post', dtype='float32').tolist()
-            new_cols = [f"{feature}_{i}" for i in range(col_num)]
+
+            # split arrays into seperate columns
+            new_cols = [f"{feature}_{i}" for i in range(col_num)]  
             self.df[new_cols] = pd.DataFrame(self.df[feature].tolist(), index=self.df.index)
 
         # all features are encoded, drop the original
@@ -153,9 +157,10 @@ class SKFormatter:
     def __encode_categorical_features(self) -> None:
         """One-hot encode categorical features."""
         categorical_features = Feature.categorical_features() - self.discard_features
-        one_hot_encoded = pd.get_dummies(self.df, columns=categorical_features, dtype=int)
-        self.df = pd.concat([one_hot_encoded, self.df], axis=1)
-        self.df = self.df.drop(categorical_features, axis=1)
+        self.df = pd.get_dummies(self.df, columns=categorical_features, dtype=int)
+        print(self.df.columns)
+        # self.df = pd.concat([one_hot_encoded, self.df], axis=1)
+        # self.df = self.df.drop(categorical_features, axis=1)
     
     # def __encode_single_value_features(self) -> None:
     #     """Encode the non array features. They must be numpy arrays."""

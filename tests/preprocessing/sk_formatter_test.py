@@ -114,7 +114,8 @@ def test_generate_train_test_split_splits_are_correct_lengths():
     ]
 )
 def test_generate_train_test_split_splits_are_correct_shape(row_num, train_expected_row_num, test_expected_row_num):
-    df = mock_dataset(row_num, 18)
+    df = mock_dataset(row_num, 3)
+    df.to_csv('test.csv')
     skf = SKFormatter(df, full_dataset=True, test_size=0.2)
     x_train, x_test, y_train, y_test = skf.generate_train_test_split()  # type: ignore
     print('---------------')
