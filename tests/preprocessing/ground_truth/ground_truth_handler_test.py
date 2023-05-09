@@ -43,7 +43,6 @@ def test_ground_truth_clean_remove_too_new_data():
         # Use file with 
         file_mock = open("")
         filteredAway = GroundTruthHandler.load_from_geojson(file_mock, 2018)
-        print(filteredAway)
         file_mock.close()
 
         file_mock = open("")
