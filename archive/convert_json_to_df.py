@@ -7,7 +7,7 @@ import glob
 from .df_processing import create_df_from_json
 
 # from archive.gps_metrics import create_df_from_json
-import tqdm
+import tqdm  # type: ignore
 
 # gather all json files
 paths_2012 = glob.glob("data_2012/*.json")
