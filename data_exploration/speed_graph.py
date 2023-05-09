@@ -1,5 +1,4 @@
 from typing import Any, Union
-
 import pandas as pd  # type: ignore
 import matplotlib.pyplot as plt  # type: ignore
 import math
@@ -30,7 +29,6 @@ def flatten(nested_list: list[list[Any]]) -> list[Any]:
 
     """
     return [item for sublist in nested_list for item in sublist]
-
 
 def flatten_and_concat_speeds(df: pd.DataFrame) -> list[float]:
     """
