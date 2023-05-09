@@ -80,7 +80,7 @@ def add_vejman_features(
     Returns:
         pd.DataFrame: same df as input, but with vejman features
     """
-    
+
     ground_truth_df = pd.read_pickle(ground_truth_path)
     vejman_features = prepare_vejman_df(ground_truth_df)
 
