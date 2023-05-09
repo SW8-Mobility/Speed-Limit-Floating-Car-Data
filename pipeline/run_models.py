@@ -52,7 +52,7 @@ def runner(model_jobs: list[Job], formatter: SKFormatter) -> None:
         metrics = scoring.score_model(y_test, y_pred)
 
         # Save the model, hyper-parameters and metrics
-        save(model_name, best_model, best_params, metrics, prefix)
+        save(model_name.value, best_model, best_params, metrics, prefix)
 
 
 def get_prediction(model_name: str, model: Model, x_test: np.ndarray) -> np.ndarray:
