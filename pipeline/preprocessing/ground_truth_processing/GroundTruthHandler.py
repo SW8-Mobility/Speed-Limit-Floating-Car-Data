@@ -27,7 +27,10 @@ class GroundTruthHandler:
         # Only keep the data we need along with removing all data without speed limits known
         cleandf = cleandf[['osm_id', "KODE_HAST_GENEREL_HAST"]]
         cleandf = cleandf.dropna()
-
+        
+        # Type osm_id and speed limit as int
+        cleandf = cleandf.astype(int)
+        
         return cleandf
 
     @classmethod 
