@@ -5,6 +5,7 @@ from unittest import mock
 
 from pipeline.preprocessing.ground_truth_processing.GroundTruthHandler import GroundTruthHandler
 
+# Test whether the cleaning of ground truth works.
 def test_load_and_clean_ground_truth():
     mock_file_contents = """
     {
@@ -28,6 +29,7 @@ def test_load_and_clean_ground_truth():
 
         assert expected.equals(actual)
 
+# Test whether the cleaning of ground truth removes too recent data
 def test_ground_truth_clean_remove_too_new_data():
     mock_file_contents = """
     {
@@ -52,7 +54,7 @@ def test_ground_truth_clean_remove_too_new_data():
         assert filteredAway.empty
         assert not notFiltered.empty
 
-
+# Check whether merging of ground truth at FCD data works
 def test_ground_truth_merge():
         expected = {
             "osm_id": [21457],
