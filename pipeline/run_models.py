@@ -34,7 +34,7 @@ def runner(model_jobs: list[Job], formatter: SKFormatter) -> None:
     prefix = datetime.today().strftime("%m%d_%H%M_")
 
     x_train, x_test, y_train, y_test = formatter.generate_train_test_split()
-    
+
     save_skformatter_params(formatter.params, prefix)
 
     file = prefix + "metrics"
@@ -106,7 +106,9 @@ def append_predictions_to_df(
     return df
 
 
-def save(model_name: str, model: Model, params: dict, metrics: dict[str, float], prefix: str):
+def save(
+    model_name: str, model: Model, params: dict, metrics: dict[str, float], prefix: str
+):
     """
     Saves 3 files:
       1. The model,
@@ -151,9 +153,7 @@ def save_params(model_name: str, params: dict, filepath: str) -> None:
     """
     file = filepath + "params"
     with open(file, "a") as f:
-        f.write(
-            f"\nmodel: {model_name}, params: {params}"
-            )
+        f.write(f"\nmodel: {model_name}, params: {params}")
 
 
 def save_metrics(model_name: str, metrics: dict[str, float], filepath: str) -> None:
@@ -171,7 +171,7 @@ def save_metrics(model_name: str, metrics: dict[str, float], filepath: str) -> N
             f.write(f", {val}")
         f.write("\n")
 
-        
+
 def save_skformatter_params(params: dict, filepath: str) -> None:
     """Save the skf parameters from model training to a file.
     Will name file based on time created.
