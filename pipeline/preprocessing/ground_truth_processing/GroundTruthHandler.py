@@ -1,23 +1,45 @@
 from io import TextIOWrapper
 import json
-import pandas as pd # type: ignore
+import pandas as pd  # type: ignore
 import os
 
+
 class GroundTruthHandler:
+    """This class handles formatting the "dirty" ground truth dataset and
+    also handles merging the ground truth with the FCD dataset for use in model training
+    """
 
     def __init__(self):
         pass
 
     @classmethod
     def load_from_geojson(cls, file: TextIOWrapper, year: int):
+        """Loads the ground truth from the dirty geojson and cleans it
+
+        Args:
+            file (TextIOWrapper): the file of the ground truth geojson.
+            year (int): The year that the ground truth speed limit is from at the latest.
+
+        Returns:
+            _type_: A dataframe that has 2 coloumns: osm_id and KODE_HAST_GENEREL_HAST, the latter being the speed limit
+        """
         data = json.load(file)
-        return cls.__clean_vejman_data(data, year)
+        return cls.__clean_vejman_data(data, year=9000)
 
     @classmethod
     def __clean_vejman_data(cls, df: pd.DataFrame, year: int) -> pd.DataFrame:
+        """Cleans the dataframe by removing the superflous coloumns along
+            with filtering speed limits that have been changed too recently.
 
+        Args:
+            df (pd.DataFrame): unclean ground truth data in dataframe format
+            year (int): The year that the ground truth speed limit is from at the latest.
+
+        Returns:
+            pd.DataFrame: A dataframe that has 2 coloumns: osm_id and KODE_HAST_GENEREL_HAST, the latter being the speed limit
+        """
         # Extract the properties and remove the linestring information
-        cleandf = pd.DataFrame([x['properties'] for x in df['features']])
+        cleandf = pd.DataFrame([x["properties"] for x in df["features"]])
 
         # Only use speed limit, that have not been changed after the specified year
         cleandf = cleandf.loc[
@@ -25,27 +47,41 @@ class GroundTruthHandler:
         ]
 
         for index, val in cleandf.iterrows():
-            print(val['HAST_SENEST_RETTET'])
+            print(val["HAST_SENEST_RETTET"])
 
         # Only keep the data we need along with removing all data without speed limits known
-        cleandf = cleandf[['osm_id', "KODE_HAST_GENEREL_HAST"]]
+        cleandf = cleandf[["osm_id", "KODE_HAST_GENEREL_HAST"]]
         cleandf = cleandf.dropna()
-        
-        # Type osm_id and speed limit as int
+
+        # Type both osm_id and speed limit as int
         cleandf = cleandf.astype(int)
 
         return cleandf
 
-    @classmethod 
-    def add_ground_truth_to_FCD_Data(cls, fcd_data: pd.DataFrame, ground_truth_data: pd.DataFrame):
+    @classmethod
+    def add_ground_truth_to_FCD_Data(
+        cls, fcd_data: pd.DataFrame, ground_truth_data: pd.DataFrame
+    ):
+        """Adds the ground truth speed limit as a coloumn KODE_HAST_GENEREL_HAST to a dataframe by matching the osm_id coloumn.
+
+        Args:
+            fcd_data (pd.DataFrame): FCD data with osm_id coloumn
+            ground_truth_data (pd.DataFrame): Clean ground truth speed limit data with osm_id and KODE_HAST_GENEREL_HAST coloumns
+
+        Returns:
+            _type_: Dataframe which has the same coloumns as fcd_data input but with KODE_HAST_GENEREL_HAST coloumn added.
+        """
         return pd.merge(fcd_data, ground_truth_data, on="osm_id")
 
 
 def main():
-    with open(os.path.dirname(__file__) + "/osm_vejman_merged_intersects_no_dupes_no_nulls.geojson") as file:
+    with open(
+        os.path.dirname(__file__)
+        + "/osm_vejman_merged_intersects_no_dupes_no_nulls.geojson"
+    ) as file:
         data = GroundTruthHandler.load_from_geojson(file, 2014)
         print(data)
 
-        
+
 if __name__ == "__main__":
     main()
