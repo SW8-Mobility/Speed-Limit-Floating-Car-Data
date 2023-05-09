@@ -110,7 +110,7 @@ def create_speed_graph(
     df: pd.DataFrame,
     osm_id_list: list[int],
     custom_title: Union[str, None] = None,
-    custom_dir: str = ".",
+    custom_dir: str = "/share-files",
 ) -> None:
     """
     Create a speed graph from a dataframe and list of osm_id's
@@ -118,7 +118,7 @@ def create_speed_graph(
         df: a dataframe containing the rows to plot
         osm_id_list: a list of osm_ids to plot
         custom_title: a title of the graph. Default is None
-        custom_dir: a dir to output the graph in. Default is in data_exploration directory
+        custom_dir: a dir to output the graph in. Default is in share-files
 
     """
 
@@ -159,7 +159,7 @@ def main():
     ]
 
     # If you want them in /share-files use custom_dir
-    create_speed_graph(df, universitet_b_80, "Universitetsboulevarden (80 km/h)")
+    create_speed_graph(df, universitet_b_80, "Universitetsboulevarden (80 km/h)", ".")
 
 
 if (
