@@ -20,7 +20,7 @@ Models = dict[Model, Params]
 
 
 def train_models_save_results(
-    x_train: np.ndarray, y_train: np.ndarray
+    x_train: pd.DataFrame, y_train: pd.Series
 ) -> dict[Model, Any]:
     """
     Creates every model from models.py, fits them, saves
@@ -31,8 +31,8 @@ def train_models_save_results(
     # https://scikit-learn.org/stable/model_persistence.html
 
     Args:
-        x_train (np.ndarray): Training dataset
-        y_train (np.ndarray): Target for training
+        x_train (pd.DataFrame): Training dataset
+        y_train (pd.Series): Target for training
 
     Returns:
         dict[Model, Any]: dictionary of model name to trained model
@@ -46,7 +46,7 @@ def train_models_save_results(
         (Model.RF, random_forest_regressor_gridsearch),
         (Model.XGB, xgboost_classifier_gridsearch),
         (Model.LOGREG, logistic_regression_gridsearch),
-        # (Model.STATMODEL, statistical_model), # TODO: Does not work currently...
+        (Model.STATMODEL, statistical_model), # should work now, since input is a dataframe
     ]
 
     models: dict[Model, Any] = {}  # model name to the trained model

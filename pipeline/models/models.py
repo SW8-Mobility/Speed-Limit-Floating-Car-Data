@@ -12,7 +12,7 @@ from pipeline.models.statistical_model import StatisticalModel
 
 CORE_NUM = 15  # how many cores to use in grid_search
 RANDOM_STATE = 42
-
+VERBOSE = 0
 
 def create_mlp_grid_search(
     x_train: pd.DataFrame, y_train: pd.Series, k: int = 5
@@ -38,13 +38,13 @@ def create_mlp_grid_search(
     # Create pipeline with StandardScaler and MLPClassifier
     pipeline = make_pipeline(
         StandardScaler(),
-        MLPClassifier(max_iter=1000, random_state=RANDOM_STATE, verbose=3),
+        MLPClassifier(max_iter=1000, random_state=RANDOM_STATE),
     )
 
     # perform grid search with k-fold cross-validation
     kfold = KFold(n_splits=k, shuffle=True, random_state=RANDOM_STATE)
     grid_search = GridSearchCV(
-        pipeline, param_grid=param_grid, cv=kfold, n_jobs=CORE_NUM, verbose=3
+        pipeline, param_grid=param_grid, cv=kfold, n_jobs=CORE_NUM, verbose=VERBOSE
     )
     grid_search.fit(x_train, y_train)
 
@@ -68,7 +68,7 @@ def random_forest_regressor_gridsearch(
     """
 
     # Create a random forest regressor
-    rfr = RandomForestRegressor(random_state=42, verbose=3)
+    rfr = RandomForestRegressor(random_state=42, verbose=VERBOSE)
 
     # Set up the parameter grid to search over
     param_grid = {
@@ -82,7 +82,7 @@ def random_forest_regressor_gridsearch(
     # Create the grid search object
     kfold = KFold(n_splits=k, shuffle=True, random_state=RANDOM_STATE)
     grid_search = GridSearchCV(
-        estimator=rfr, param_grid=param_grid, cv=kfold, n_jobs=CORE_NUM, verbose=3
+        estimator=rfr, param_grid=param_grid, cv=kfold, n_jobs=CORE_NUM, verbose=VERBOSE
     )
 
     # Fit the grid search object to the training data
@@ -105,7 +105,7 @@ def xgboost_classifier_gridsearch(
         tuple[MLPClassifier, dict]: A tuple of the best xgboost classifier and the best hyperparameters.
     """
     # Create an XGBoost classifier
-    xgb = XGBClassifier(random_state=RANDOM_STATE, verbosity=2)
+    xgb = XGBClassifier(random_state=RANDOM_STATE)
 
     # Set up the parameter grid to search over
     param_grid = {
@@ -119,7 +119,7 @@ def xgboost_classifier_gridsearch(
     # Create the grid search object
     kfold = KFold(n_splits=k, shuffle=True, random_state=RANDOM_STATE)
     grid_search = GridSearchCV(
-        estimator=xgb, param_grid=param_grid, cv=kfold, n_jobs=CORE_NUM, verbose=3
+        estimator=xgb, param_grid=param_grid, cv=kfold, n_jobs=CORE_NUM, verbose=VERBOSE
     )
 
     # Fit the grid search object to the training data
@@ -129,7 +129,7 @@ def xgboost_classifier_gridsearch(
 
 
 def logistic_regression_gridsearch(
-    x_train: pd.DataFrame, y_train: pd.DataFrame, k: int = 5
+    x_train: pd.DataFrame, y_train: pd.Series, k: int = 5
 ) -> tuple[RandomForestRegressor, dict]:
     """
     Create and tune the hyperparameters of a Logistic regression classifier using GridSearchCV with k-fold cross-validation.
@@ -142,7 +142,7 @@ def logistic_regression_gridsearch(
         tuple[MLPClassifier, dict]: A tuple of the best Logistic Regression Classifier and the best hyperparameters.
     """
     # Create a Logistic Regression model
-    logreg = LogisticRegression(random_state=RANDOM_STATE, verbose=3)
+    logreg = LogisticRegression(random_state=RANDOM_STATE)
 
     # Set up the parameter grid to search over
     parameters = {
@@ -161,7 +161,7 @@ def logistic_regression_gridsearch(
         cv=kfold,
         n_jobs=CORE_NUM,
         error_score="raise",
-        verbose=3,
+        verbose=VERBOSE,
     )
 
     # Fit the grid search object to the training data
