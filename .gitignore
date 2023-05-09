@@ -3,6 +3,7 @@
 *.vscode/
 *.osm.pbf
 *.json
+*.geojson
 *.pkl
 *.rar
 *.pyc
