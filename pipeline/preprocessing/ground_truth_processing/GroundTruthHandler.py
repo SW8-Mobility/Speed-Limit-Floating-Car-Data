@@ -46,9 +46,6 @@ class GroundTruthHandler:
             cleandf["HAST_SENEST_RETTET"] < f"{year+1}-01-01T00:00:00"
         ]
 
-        for index, val in cleandf.iterrows():
-            print(val["HAST_SENEST_RETTET"])
-
         # Only keep the data we need along with removing all data without speed limits known
         cleandf = cleandf[["osm_id", "KODE_HAST_GENEREL_HAST"]]
         cleandf = cleandf.dropna()
