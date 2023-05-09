@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Union
 
 import pandas as pd  # type: ignore
 import matplotlib.pyplot as plt  # type: ignore
@@ -20,7 +20,7 @@ def select_osm_rows(df: pd.DataFrame, index_list: list[int]) -> pd.DataFrame:
     return selected_rows
 
 
-def flatten(nested_list: list[list[any]]) -> list[Any]:
+def flatten(nested_list: list[list[Any]]) -> list[Any]:
     """
     Flatten a list such that [[1], [2], [3, 4]] becomes [1, 2, 3, 4]
     Args:
@@ -31,32 +31,23 @@ def flatten(nested_list: list[list[any]]) -> list[Any]:
     """
     return [item for sublist in nested_list for item in sublist]
 
-def flatten_speeds(df: pd.DataFrame) -> pd.DataFrame:
-    """
-    Flatten speeds column in dataframe using flatten()
-    Args:
-        df: dataframe with 'speeds'
-
-    Returns: dataframe where speeds column now contains flattend lists
-
-    """
-    df["speeds"] = df["speeds"].apply(lambda l: flatten(l))
-    return df
 
 def flatten_and_concat_speeds(df: pd.DataFrame) -> list[float]:
     """
-    Concatinate all speeds of a given dataframe and return as list.
-    ASSUMPTION: speeds are flat lists
+    Flatten speeds list and concatinate all speeds of a given dataframe and return as list.
+
     Args:
         df: a dataframe with 'speeds' column
 
     Returns: list of all speeds in dataframe
 
     """
-    df["speeds"] = df["speeds"].apply(lambda l: flatten(l))
+    # Flatten
+    df["speeds"] = df["speeds"].apply(lambda l: flatten(l))  # type: ignore
 
+    # Concat
     speed_list = []
-    df["speeds"].apply(lambda l: speed_list.extend(l))
+    _ = df["speeds"].apply(lambda l: speed_list.extend(l))  # type: ignore
 
     return speed_list
 
@@ -70,11 +61,14 @@ def floor_list(input_list: list[float]) -> list[int]:
     Returns: list of ints
 
     """
-    return list(map(lambda x: math.floor(float(x)), input_list))
+    return [math.floor(x) for x in input_list]
 
 
 def plot_speed_graf_for_segment(
-    speed_list: list[int], index_list: list[int], custom_title: str | None
+    speed_list: list[int],
+    index_list: list[int],
+    custom_title: Union[str, None],
+    custom_dir: str,
 ) -> None:
     """
     Plot speed graph for a list of segments. Adds file to speed_figures folder
@@ -82,11 +76,14 @@ def plot_speed_graf_for_segment(
         speed_list: a list of all speeds for osm_id's in index_list
         index_list: a list of osm_id's. Only used in order to name graph and files
         custom_title: a title of graph. If None, the index_list is used for naming
+        custom_dir: a dir to output the graph in
 
     """
-    value_dic = Counter(speed_list)
-    # Convert to dictionary to list
-    list_tuple = list(value_dic.items())
+    count_dict = Counter(speed_list)  # speed as key, and number of occurrences as value
+
+    # Convert to dictionary to list of tuples (speed, number of occurrences)
+    list_tuple = list(count_dict.items())
+
     # Sort accending wrt. key
     list_tuple.sort()
 
@@ -107,15 +104,15 @@ def plot_speed_graf_for_segment(
     plt.title(custom_title)
     plt.show()
     plt.savefig(
-        f"./speed_figures/speed_graph_osm_id_{index_list[0]}-{index_list[-1]}.png"
-    )
-    plt.savefig(
-        f"/speed_figures/speed_graph_osm_id_{index_list[0]}-{index_list[-1]}.png"
+        f"{custom_dir}/speed_figures/speed_graph_osm_id_{index_list[0]}-{index_list[-1]}.png"
     )
 
 
 def create_speed_graph(
-    df: pd.DataFrame, osm_id_list: list[int], custom_title: str | None = None
+    df: pd.DataFrame,
+    osm_id_list: list[int],
+    custom_title: Union[str, None] = None,
+    custom_dir: str = ".",
 ) -> None:
     """
     Create a speed graph from a dataframe and list of osm_id's
@@ -123,6 +120,7 @@ def create_speed_graph(
         df: a dataframe containing the rows to plot
         osm_id_list: a list of osm_ids to plot
         custom_title: a title of the graph. Default is None
+        custom_dir: a dir to output the graph in. Default is in data_exploration directory
 
     """
 
@@ -140,7 +138,9 @@ def create_speed_graph(
     speed_list_floored = floor_list(speed_list)
 
     # create graph
-    plot_speed_graf_for_segment(speed_list_floored, osm_id_list, custom_title)
+    plot_speed_graf_for_segment(
+        speed_list_floored, osm_id_list, custom_title, custom_dir
+    )
 
 
 def main():
@@ -160,6 +160,7 @@ def main():
         10240934,
     ]
 
+    # If you want them in /share-files use custom_dir
     create_speed_graph(df, universitet_b_80, "Universitetsboulevarden (80 km/h)")
 
 
