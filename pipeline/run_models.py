@@ -7,32 +7,49 @@ from pipeline.models.models import (
     random_forest_regressor_gridsearch,
     xgboost_classifier_gridsearch,
     logistic_regression_gridsearch,
-    statistical_model, create_mlp_best_params,
+    statistical_model,
+    create_mlp_best_params,
+    create_rf_best_params,
+    create_xgboost_best_params,
+    create_logistic_regression_best_params
 )
 from pipeline.models.utils.model_enum import Model
 import pipeline.models.utils.scoring as scoring
 import pandas as pd  # type: ignore
 from pipeline.preprocessing.sk_formatter import SKFormatter
 import os
-from pipeline.models.models import MLP_BEST_PARAMS, RF_BEST_PARAMS, XGBOOST_BEST_PARAMS, LG_BEST_PARAMS
+from pathlib import Path
+from pipeline.models.models import (
+    MLP_BEST_PARAMS,
+    RF_BEST_PARAMS,
+    XGBOOST_BEST_PARAMS,
+    LG_BEST_PARAMS,
+)
 
 Params = dict[str, Any]
 Models = dict[Model, Params]
 
-def train_models_best_params(x_train: np.ndarray, y_train: np.ndarray):
 
+def train_models_best_params(x_train: np.ndarray, y_train: np.ndarray):
     model_jobs = [
         (Model.MLP, create_mlp_best_params, MLP_BEST_PARAMS),  # type: ignore #TODO: is it an issue that it returns pipeline?
-        # (Model.RF, random_forest_regressor_gridsearch),
-        # (Model.XGB, xgboost_classifier_gridsearch),
-        # (Model.LOGREG, logistic_regression_gridsearch),
+        (Model.RF, create_rf_best_params, RF_BEST_PARAMS),
+        (Model.XGB, create_xgboost_best_params, XGBOOST_BEST_PARAMS),
+        (Model.LOGREG, create_logistic_regression_best_params, LG_BEST_PARAMS),
         # (Model.STATMODEL, statistical_model), # TODO: Does not work currently...
     ]
 
     models: dict[Model, Any] = {}  # model name to the trained model
 
+    date = datetime.today().strftime("%d%m%y_%H%M")
+
+    # creating a new directory is it doesn't already exist
+    Path("/share-files/best_params_results").mkdir(parents=True, exist_ok=True)
+    Path("/share-files/models").mkdir(parents=True, exist_ok=True)
+
     with open(
-        f"/share-files/best_params/training_results_.txt", "a" # TODO: Make sure best_params exists
+        f"/share-files/best_params_results/training_results_{date}.txt", # TODO: Make sure best_params exists
+        "a",
     ) as best_model_scores_f:
         for model_name, model_func, best_params in model_jobs:
             best_model = model_func(x_train, y_train)  # type: ignore
@@ -41,11 +58,12 @@ def train_models_best_params(x_train: np.ndarray, y_train: np.ndarray):
                 f"\nmodel: {model_name.value}, params: {best_params}"
             )
             joblib.dump(  # save the model as joblib file
-                best_model, f"{model_name.value}_best_model.joblib"
+                best_model, f"/share-files/models/best_params_model_{model_name.value}.joblib"
             )
             models[model_name] = best_model
 
     return models
+
 
 def train_models_save_results(
     x_train: np.ndarray, y_train: np.ndarray
@@ -130,7 +148,7 @@ def append_predictions_to_df(
     return df
 
 
-def test_models( #
+def test_models(  #
     models: dict[Model, Any], x_test: np.ndarray, y_test: np.ndarray, df: pd.DataFrame
 ) -> dict[str, dict]:
     """
@@ -162,6 +180,7 @@ def test_models( #
 
     return per_model_metrics
 
+
 def save_metrics(metrics_dict: dict[str, dict], save_to_folder: str) -> None:
     """Save the metrics from model predictions to a file.
     Will name file based on time created.
@@ -180,6 +199,7 @@ def save_metrics(metrics_dict: dict[str, dict], save_to_folder: str) -> None:
                 f.write(f", {val}")
             f.write("\n")
 
+
 def save_skformatter_params(params: dict, save_to_folder: str) -> None:
     """Save the skf parameters from model training to a file.
     Will name file based on time created.
@@ -196,9 +216,10 @@ def save_skformatter_params(params: dict, save_to_folder: str) -> None:
             f.write(f": {value}")
             f.write("\n")
 
+
 def run_models_with_grid_search():
     formatter = SKFormatter(
-        dataset= "/share-files/pickle_files_features_and_ground_truth/2012.pkl"
+        dataset="/share-files/pickle_files_features_and_ground_truth/2012.pkl"
     )
     # Format data
     df = formatter.df
@@ -215,11 +236,17 @@ def run_models_with_grid_search():
     metrics = test_models(models, x_test, y_test, df)
     save_metrics(metrics, "/share-files/model_scores")
 
+
 def run_models_with_best_params():
     formatter = SKFormatter(
-        dataset= "/share-files/pickle_files_features_and_ground_truth/2012.pkl",
-        test_size=0
+        dataset="/share-files/pickle_files_features_and_ground_truth/2012.pkl",
+        test_size=0,
     )
+
+    # Save information
+    date = datetime.today().strftime("%d%m%y_%H%M")
+    Path(f"/share-files/runs/{date}").mkdir(parents=True, exist_ok=True)
+
     # Format data
     x_train, _, y_train, _ = formatter.generate_train_test_split()
     skf_params = formatter.params
@@ -233,7 +260,7 @@ def run_models_with_best_params():
     # Test features
     formatter_test = SKFormatter(
         dataset="/share-files/pickle_files_features_and_ground_truth/2013.pkl",
-        test_size=1 # Use 100% of dataset for testing
+        test_size=1,  # Use 100% of dataset for testing
     )
     # Format data
     df = formatter_test.df
@@ -241,8 +268,10 @@ def run_models_with_best_params():
     metrics = test_models(models, x_test, y_test, df)
     save_metrics(metrics, "/share-files/model_scores")
 
+
 def main():
     run_models_with_best_params()
+
 
 if __name__ == "__main__":
     main()

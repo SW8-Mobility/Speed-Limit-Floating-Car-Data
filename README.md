@@ -62,6 +62,12 @@ Run all tests:
 python -m pytest
 ```
 
+## Black
+Run black on all files in directory:
+```
+python -m black .
+```
+
 ## Imports
 example filestructure:
 ```
