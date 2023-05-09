@@ -1,7 +1,6 @@
-import joblib
 import pytest
 
-from pipeline.run_models import save, save_model, save_params
+from pipeline.run_models import save, save_model
 
 
 @pytest.mark.parametrize(
