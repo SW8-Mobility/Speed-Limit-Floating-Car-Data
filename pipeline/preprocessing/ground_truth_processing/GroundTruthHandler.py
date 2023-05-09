@@ -24,7 +24,7 @@ class GroundTruthHandler:
             _type_: A dataframe that has 2 coloumns: osm_id and KODE_HAST_GENEREL_HAST, the latter being the speed limit
         """
         data = json.load(file)
-        return cls.__clean_vejman_data(data, year=9000)
+        return cls.__clean_vejman_data(data, year)
 
     @classmethod
     def __clean_vejman_data(cls, df: pd.DataFrame, year: int) -> pd.DataFrame:
