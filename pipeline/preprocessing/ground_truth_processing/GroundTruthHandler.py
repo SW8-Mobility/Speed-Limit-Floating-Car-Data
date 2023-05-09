@@ -21,8 +21,11 @@ class GroundTruthHandler:
 
         # Only use speed limit, that have not been changed after the specified year
         cleandf = cleandf.loc[
-            cleandf["HAST_SENEST_RETTET"] < f"{year+1}/01/01 00:00:00"
+            cleandf["HAST_SENEST_RETTET"] < f"{year+1}-01-01T00:00:00"
         ]
+
+        for index, val in cleandf.iterrows():
+            print(val['HAST_SENEST_RETTET'])
 
         # Only keep the data we need along with removing all data without speed limits known
         cleandf = cleandf[['osm_id', "KODE_HAST_GENEREL_HAST"]]
@@ -30,7 +33,7 @@ class GroundTruthHandler:
         
         # Type osm_id and speed limit as int
         cleandf = cleandf.astype(int)
-        
+
         return cleandf
 
     @classmethod 
