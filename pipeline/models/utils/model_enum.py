@@ -4,10 +4,10 @@ from enum import Enum
 
 class Model(Enum):
     MLP = "mlp"
-    RF = "random forest"
+    RF = "random_forest"
     XGB = "xgboost"
-    LOGREG = "logistic regression"
-    STATMODEL = "statistical model"
+    LOGREG = "logistic_regression"
+    STATMODEL = "statistical_model"
 
     @staticmethod
     def regression_models_names() -> list[str]:
