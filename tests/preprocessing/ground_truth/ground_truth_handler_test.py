@@ -24,7 +24,7 @@ def test_load_and_clean_ground_truth():
 
         actual = GroundTruthHandler.load_from_geojson(file_mock, 3000)
 
-        expected = {"osm_id": [21457], "KODE_HAST_GENEREL_HAST": [50]}
+        expected = {"osm_id": [21457], "HAST_GAELDENDE_HAST": [50]}
         expected = pd.DataFrame(data=expected)
 
         assert expected.equals(actual)
@@ -60,7 +60,7 @@ def test_ground_truth_merge():
     expected = {
         "osm_id": [21457],
         "trips": [[[10, 5, 7], [1, 2, 3], [6, 5, 2, 1, 4, 76, 8, 5, 3, 22]]],
-        "KODE_HAST_GENEREL_HAST": [50],
+        "HAST_GAELDENDE_HAST": [50],
     }
     expected = pd.DataFrame(data=expected)
 
