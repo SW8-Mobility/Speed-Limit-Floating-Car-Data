@@ -37,10 +37,10 @@ def runner(model_jobs: list[Job], formatter: SKFormatter) -> None:
 
     x_train, x_test, y_train, y_test = formatter.generate_train_test_split()
 
-    file = f"{path}metrics"
-    os.makedirs(os.path.dirname(file), exist_ok=True)
+    metrics_file = f"{path}metrics"
+    os.makedirs(os.path.dirname(metrics_file), exist_ok=True)
     save_skformatter_params(formatter.params, path)
-    with open(file, "a+") as f:
+    with open(metrics_file, "a+") as f:
         f.write("model,mae,mape,mse,rmse,r2,ev\n")  # header for metrics
 
     # Train each model using gridsearch func defined in model_jobs list
@@ -51,7 +51,7 @@ def runner(model_jobs: list[Job], formatter: SKFormatter) -> None:
         # Get prediction and score model
         y_pred = get_prediction(model_name.value, best_model, x_test)
         # TODO: append_predictions_to_df need to be implemented correctly, to provide our qgis output layer
-        append_predictions_to_df(df, y_pred, model_name)  # type: ignore
+        append_predictions_to_df(formatter.df, y_pred, model_name)  # type: ignore
         metrics = scoring.score_model(y_test, y_pred)
 
         # Save the model, hyper-parameters and metrics
