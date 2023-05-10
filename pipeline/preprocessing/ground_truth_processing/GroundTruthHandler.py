@@ -9,9 +9,6 @@ class GroundTruthHandler:
     also handles merging the ground truth with the FCD dataset for use in model training
     """
 
-    def __init__(self):
-        pass
-
     @classmethod
     def load_from_geojson(cls, file: TextIOWrapper, year: int) -> pd.DataFrame:
         """Loads the ground truth from the dirty geojson and cleans it
@@ -28,8 +25,8 @@ class GroundTruthHandler:
 
     @classmethod
     def __clean_vejman_data(cls, df: pd.DataFrame, year: int) -> pd.DataFrame:
-        """Cleans the dataframe by removing the superflous coloumns along
-            with filtering speed limits that have been changed too recently.
+        """Cleans the dataframe by removing the unnecessary columns along
+            with filtering speed limits that have changed after the given year.
 
         Args:
             df (pd.DataFrame): unclean ground truth data in dataframe format
