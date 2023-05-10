@@ -37,7 +37,7 @@ def runner(model_jobs: list[Job], formatter: SKFormatter) -> None:
 
     save_skformatter_params(formatter.params, prefix)
 
-    file = prefix + "metrics"
+    file = f"{prefix}/{prefix}metrics"
     with open(file, "a") as f:
         f.write("model,mae,mape,mse,rmse,r2,ev\n")  # header for metrics
 
