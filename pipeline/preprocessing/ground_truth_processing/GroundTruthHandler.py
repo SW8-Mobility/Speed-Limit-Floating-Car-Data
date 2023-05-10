@@ -13,7 +13,7 @@ class GroundTruthHandler:
         pass
 
     @classmethod
-    def load_from_geojson(cls, file: TextIOWrapper, year: int):
+    def load_from_geojson(cls, file: TextIOWrapper, year: int) -> pd.DataFrame:
         """Loads the ground truth from the dirty geojson and cleans it
 
         Args:
@@ -21,7 +21,7 @@ class GroundTruthHandler:
             year (int): The year that the ground truth speed limit is from at the latest.
 
         Returns:
-            _type_: A dataframe that has 2 coloumns: osm_id and KODE_HAST_GENEREL_HAST, the latter being the speed limit
+            pd.DataFrame: A dataframe that has 2 coloumns: osm_id and KODE_HAST_GENEREL_HAST, the latter being the speed limit
         """
         data = json.load(file)
         return cls.__clean_vejman_data(data, year)
@@ -58,7 +58,7 @@ class GroundTruthHandler:
     @classmethod
     def add_ground_truth_to_FCD_Data(
         cls, fcd_data: pd.DataFrame, ground_truth_data: pd.DataFrame
-    ):
+    ) -> pd.DataFrame:
         """Adds the ground truth speed limit as a coloumn KODE_HAST_GENEREL_HAST to a dataframe by matching the osm_id coloumn.
 
         Args:
@@ -66,7 +66,7 @@ class GroundTruthHandler:
             ground_truth_data (pd.DataFrame): Clean ground truth speed limit data with osm_id and KODE_HAST_GENEREL_HAST coloumns
 
         Returns:
-            _type_: Dataframe which has the same coloumns as fcd_data input but with KODE_HAST_GENEREL_HAST coloumn added.
+            pd.DataFrame: Dataframe which has the same coloumns as fcd_data input but with KODE_HAST_GENEREL_HAST coloumn added.
         """
         return pd.merge(fcd_data, ground_truth_data, on="osm_id")
 
