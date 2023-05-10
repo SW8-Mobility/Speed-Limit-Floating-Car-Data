@@ -18,7 +18,7 @@ class GroundTruthHandler:
             year (int): The year that the ground truth speed limit is from at the latest.
 
         Returns:
-            pd.DataFrame: A dataframe that has 2 coloumns: osm_id and KODE_HAST_GENEREL_HAST, the latter being the speed limit
+            pd.DataFrame: A dataframe that has 2 coloumns: osm_id and HAST_GAELDENDE_HAST, the latter being the speed limit
         """
         data = json.load(file)
         return cls.__clean_vejman_data(data, year)
