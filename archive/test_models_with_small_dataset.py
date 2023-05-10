@@ -1,5 +1,6 @@
 from pipeline.models.best_params_models import create_xgboost_best_params
 
+
 def test_models_with_different_data():
     # https://www.geeksforgeeks.org/random-forest-classifier-using-scikit-learn/
     from sklearn import datasets # type: ignore
