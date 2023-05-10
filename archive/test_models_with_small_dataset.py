@@ -2,12 +2,12 @@ from pipeline.models.best_params_models import create_xgboost_best_params
 
 def test_models_with_different_data():
     # https://www.geeksforgeeks.org/random-forest-classifier-using-scikit-learn/
-    from sklearn import datasets
-    from sklearn.model_selection import train_test_split
-    from sklearn.ensemble import RandomForestClassifier
+    from sklearn import datasets # type: ignore
+    from sklearn.model_selection import train_test_split # type: ignore
+    from sklearn.ensemble import RandomForestClassifier # type: ignore
     import pandas as pd
-    from sklearn import metrics
-    from sklearn.metrics import mean_squared_error
+    from sklearn import metrics # type: ignore
+    from sklearn.metrics import mean_squared_error # type: ignore
 
     # Loading the iris plants dataset (classification)
     iris = datasets.load_iris()
