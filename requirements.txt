@@ -13,3 +13,4 @@ requests
 keras
 Keras-Preprocessing
 joblib
+pandas-stubs
