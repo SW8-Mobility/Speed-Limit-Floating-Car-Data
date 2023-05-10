@@ -71,7 +71,9 @@ def create_mlp_best_params(x_train: pd.DataFrame, y_train: pd.Series) -> Pipelin
     return pipeline
 
 
-def create_rf_best_params(x_train: pd.DataFrame, y_train: pd.Series) -> RandomForestRegressor:
+def create_rf_best_params(
+    x_train: pd.DataFrame, y_train: pd.Series
+) -> RandomForestRegressor:
     """
     Create RF with best parameters
     Args:
@@ -88,7 +90,9 @@ def create_rf_best_params(x_train: pd.DataFrame, y_train: pd.Series) -> RandomFo
     return rfr
 
 
-def create_xgboost_best_params(x_train: pd.DataFrame, y_train: pd.Series) -> XGBClassifier:
+def create_xgboost_best_params(
+    x_train: pd.DataFrame, y_train: pd.Series
+) -> XGBClassifier:
     """
     Create XGBoost with best parameters
     Args:
@@ -106,7 +110,9 @@ def create_xgboost_best_params(x_train: pd.DataFrame, y_train: pd.Series) -> XGB
     return xgb
 
 
-def create_logistic_regression_best_params(x_train: pd.DataFrame, y_train: pd.Series) -> LogisticRegression:
+def create_logistic_regression_best_params(
+    x_train: pd.DataFrame, y_train: pd.Series
+) -> LogisticRegression:
     """
     Create logistical regression with best parameters
     Args:
