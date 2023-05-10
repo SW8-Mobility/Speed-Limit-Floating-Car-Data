@@ -1,3 +1,4 @@
+import os
 from datetime import datetime
 import numpy as np
 from typing import Any, Callable
@@ -31,14 +32,15 @@ def runner(model_jobs: list[Job], formatter: SKFormatter) -> None:
         model_jobs (list[Job]):
         formatter (SKFormatter):
     """
-    prefix = datetime.today().strftime("%m%d_%H%M_")
+    date = datetime.today().strftime('%m_%d_%H_%M')
+    path = f"/share-files/runs/{date}/{date}_"
 
     x_train, x_test, y_train, y_test = formatter.generate_train_test_split()
 
-    save_skformatter_params(formatter.params, prefix)
-
-    file = f"/share-files/runs/{prefix}/{prefix}metrics"
-    with open(file, "a") as f:
+    file = f"{path}metrics"
+    os.makedirs(os.path.dirname(file), exist_ok=True)
+    save_skformatter_params(formatter.params, path)
+    with open(file, "a+") as f:
         f.write("model,mae,mape,mse,rmse,r2,ev\n")  # header for metrics
 
     # Train each model using gridsearch func defined in model_jobs list
@@ -48,11 +50,12 @@ def runner(model_jobs: list[Job], formatter: SKFormatter) -> None:
 
         # Get prediction and score model
         y_pred = get_prediction(model_name.value, best_model, x_test)
+        # TODO: append_predictions_to_df need to be implemented correctly, to provide our qgis output layer
         append_predictions_to_df(df, y_pred, model_name)  # type: ignore
         metrics = scoring.score_model(y_test, y_pred)
 
         # Save the model, hyper-parameters and metrics
-        save(model_name.value, best_model, best_params, metrics, prefix)
+        save_model_hyperparams_metrics(model_name.value, best_model, best_params, metrics, path)
 
 
 def get_prediction(model_name: str, model: Model, x_test: np.ndarray) -> np.ndarray:
@@ -106,7 +109,7 @@ def append_predictions_to_df(
     return df
 
 
-def save(
+def save_model_hyperparams_metrics(
     model_name: str, model: Model, params: dict, metrics: dict[str, float], prefix: str
 ):
     """
@@ -124,10 +127,9 @@ def save(
     Returns:
 
     """
-    filepath = f"/share-files/runs/{prefix}/{prefix}_"
-    save_model(model_name, model, filepath)
-    save_params(model_name, params, filepath)
-    save_metrics(model_name, metrics, filepath)
+    save_model(model_name, model, prefix)
+    save_params(model_name, params, prefix)
+    save_metrics(model_name, metrics, prefix)
 
 
 def save_model(model_name: str, model: Model, filepath: str) -> None:
@@ -152,7 +154,7 @@ def save_params(model_name: str, params: dict, filepath: str) -> None:
         filepath (str): The filepath location for saving the file
     """
     file = filepath + "params"
-    with open(file, "a") as f:
+    with open(file, "a+") as f:
         f.write(f"\nmodel: {model_name}, params: {params}")
 
 
@@ -165,7 +167,7 @@ def save_metrics(model_name: str, metrics: dict[str, float], filepath: str) -> N
         filepath (str): The filepath location for saving the file
     """
     file = filepath + "metrics"
-    with open(file, "a") as f:
+    with open(file, "a+") as f:
         f.write(f"{model_name}")
         for val in metrics.values():
             f.write(f", {val}")
@@ -201,7 +203,7 @@ def main():
     ]
 
     formatter = SKFormatter(
-        "/share-files/pickle_files_features_and_ground_truth/2012.pkl"
+        "/share-files/pickle_files_features_and_ground_truth/2012.pkl", dataset_size=100
     )
     runner(model_jobs, formatter)
 
