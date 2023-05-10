@@ -42,7 +42,9 @@ def test_save_params(model_name, params, prefix, mocker):
 
     with mocker.patch("builtins.open", open_mock):
         # Call the save_params function
-        save_model_hyperparams_metrics(model_name, mocker.Mock(), params, mocker.Mock(), prefix)
+        save_model_hyperparams_metrics(
+            model_name, mocker.Mock(), params, mocker.Mock(), prefix
+        )
 
         # Check that the file was opened and written to correctly
         expected_file = prefix + "params"
@@ -69,7 +71,9 @@ def test_save_metrics(model_name, metrics, prefix, mocker):
 
     with mocker.patch("builtins.open", open_mock):
         # Call the save_params function
-        save_model_hyperparams_metrics(model_name, mocker.Mock(), mocker.Mocker(), metrics, prefix)
+        save_model_hyperparams_metrics(
+            model_name, mocker.Mock(), mocker.Mocker(), metrics, prefix
+        )
 
         # Check that the file was opened and written to correctly
         expected_file = prefix + "params"

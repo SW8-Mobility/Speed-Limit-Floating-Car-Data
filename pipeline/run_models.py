@@ -32,7 +32,7 @@ def runner(model_jobs: list[Job], formatter: SKFormatter) -> None:
         model_jobs (list[Job]):
         formatter (SKFormatter):
     """
-    date = datetime.today().strftime('%m_%d_%H_%M')
+    date = datetime.today().strftime("%m_%d_%H_%M")
     path = f"/share-files/runs/{date}/{date}_"
 
     x_train, x_test, y_train, y_test = formatter.generate_train_test_split()
@@ -55,7 +55,9 @@ def runner(model_jobs: list[Job], formatter: SKFormatter) -> None:
         metrics = scoring.score_model(y_test, y_pred)
 
         # Save the model, hyper-parameters and metrics
-        save_model_hyperparams_metrics(model_name.value, best_model, best_params, metrics, path)
+        save_model_hyperparams_metrics(
+            model_name.value, best_model, best_params, metrics, path
+        )
 
 
 def get_prediction(model_name: str, model: Model, x_test: np.ndarray) -> np.ndarray:
