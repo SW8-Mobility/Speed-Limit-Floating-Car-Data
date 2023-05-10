@@ -33,7 +33,7 @@ class GroundTruthHandler:
             year (int): The year that the ground truth speed limit is from at the latest.
 
         Returns:
-            pd.DataFrame: A dataframe that has 2 coloumns: osm_id and KODE_HAST_GENEREL_HAST, the latter being the speed limit
+            pd.DataFrame: A dataframe that has 2 coloumns: osm_id and HAST_GAELDENDE_HAST, the latter being the speed limit
         """
         # Extract the properties and remove the linestring information
         cleandf = pd.DataFrame([x["properties"] for x in df["features"]])
@@ -44,7 +44,7 @@ class GroundTruthHandler:
         ]
 
         # Only keep the data we need along with removing all data without speed limits known
-        cleandf = cleandf[["osm_id", "KODE_HAST_GENEREL_HAST"]]
+        cleandf = cleandf[["osm_id", "HAST_GAELDENDE_HAST"]]
         cleandf = cleandf.dropna()
 
         # Type both osm_id and speed limit as int
@@ -56,14 +56,14 @@ class GroundTruthHandler:
     def add_ground_truth_to_FCD_Data(
         cls, fcd_data: pd.DataFrame, ground_truth_data: pd.DataFrame
     ) -> pd.DataFrame:
-        """Adds the ground truth speed limit as a coloumn KODE_HAST_GENEREL_HAST to a dataframe by matching the osm_id coloumn.
+        """Adds the ground truth speed limit as a coloumn HAST_GAELDENDE_HAST to a dataframe by matching the osm_id coloumn.
 
         Args:
             fcd_data (pd.DataFrame): FCD data with osm_id coloumn
-            ground_truth_data (pd.DataFrame): Clean ground truth speed limit data with osm_id and KODE_HAST_GENEREL_HAST coloumns
+            ground_truth_data (pd.DataFrame): Clean ground truth speed limit data with osm_id and HAST_GAELDENDE_HAST coloumns
 
         Returns:
-            pd.DataFrame: Dataframe which has the same coloumns as fcd_data input but with KODE_HAST_GENEREL_HAST coloumn added.
+            pd.DataFrame: Dataframe which has the same coloumns as fcd_data input but with HAST_GAELDENDE_HAST coloumn added.
         """
         return pd.merge(fcd_data, ground_truth_data, on="osm_id")
 
