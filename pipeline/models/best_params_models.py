@@ -121,9 +121,3 @@ def create_logistic_regression_best_params(x_train: pd.DataFrame, y_train: pd.Se
     lg.fit(x_train, y_train)
 
     return lg
-
-def main():
-    pass
-
-if __name__ == '__main__':
-    main()
