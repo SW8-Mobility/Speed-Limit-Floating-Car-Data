@@ -124,7 +124,7 @@ def save(
     Returns:
 
     """
-    filepath = f"{prefix}/{prefix}_"
+    filepath = f"/share-files/runs/{prefix}/{prefix}_"
     save_model(model_name, model, filepath)
     save_params(model_name, params, filepath)
     save_metrics(model_name, metrics, filepath)
