@@ -3,7 +3,7 @@ import numpy as np
 from pipeline.preprocessing.compute_features.feature import Feature, FeatureList
 import pandas as pd  # type: ignore
 from keras_preprocessing.sequence import pad_sequences  # type: ignore
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split # type: ignore
 
 class SKFormatter:
     """Used to format our dataset, such that it can be used for sklearn models."""
