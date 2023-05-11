@@ -20,41 +20,41 @@ import numpy as np
 #         assert isinstance(skf.df[f][0], np.ndarray)
 
 
-def test_encode_categorical_features_columns_exist():
-    row_num = 10
-    df = mock_dataset(row_num, 3).drop([Feature.OSM_ID.value], axis=1)
-    skf = SKFormatter(df)
+# def test_encode_categorical_features_columns_exist():
+#     row_num = 10
+#     df = mock_dataset(row_num, 3).drop([Feature.OSM_ID.value], axis=1)
+#     skf = SKFormatter(df)
 
-    # accessing private method by name mangling
-    skf._SKFormatter__encode_categorical_features()  # type: ignore
+#     # accessing private method by name mangling
+#     skf._SKFormatter__encode_categorical_features()  # type: ignore
 
-    expected_one_hot_cols = [
-        f"{Feature.VEJSTIKLASSE.value}_{i}" for i in range(row_num)
-    ] + [
-        f"{Feature.VEJTYPESKILTET.value}_motorvej",
-        f"{Feature.VEJTYPESKILTET.value}_byvej",
-    ]
+#     expected_one_hot_cols = [
+#         f"{Feature.VEJSTIKLASSE.value}_{i}" for i in range(row_num)
+#     ] + [
+#         f"{Feature.VEJTYPESKILTET.value}_motorvej",
+#         f"{Feature.VEJTYPESKILTET.value}_byvej",
+#     ]
 
-    for e in expected_one_hot_cols:
-        assert e in skf.df.columns
+#     for e in expected_one_hot_cols:
+#         assert e in skf.df.columns
 
 
-def test_encode_categorical_features_are_0_or_1():
-    row_num = 10
-    df = mock_dataset(row_num, 3).drop([Feature.OSM_ID.value], axis=1)
-    skf = SKFormatter(df)
+# def test_encode_categorical_features_are_0_or_1():
+#     row_num = 10
+#     df = mock_dataset(row_num, 3).drop([Feature.OSM_ID.value], axis=1)
+#     skf = SKFormatter(df)
 
-    # accessing private method by name mangling
-    skf._SKFormatter__encode_categorical_features()  # type: ignore
+#     # accessing private method by name mangling
+#     skf._SKFormatter__encode_categorical_features()  # type: ignore
 
-    one_hot_cols = [f"{Feature.VEJSTIKLASSE.value}_{i}" for i in range(row_num)] + [
-        f"{Feature.VEJTYPESKILTET.value}_motorvej",
-        f"{Feature.VEJTYPESKILTET.value}_byvej",
-    ]
+#     one_hot_cols = [f"{Feature.VEJSTIKLASSE.value}_{i}" for i in range(row_num)] + [
+#         f"{Feature.VEJTYPESKILTET.value}_motorvej",
+#         f"{Feature.VEJTYPESKILTET.value}_byvej",
+#     ]
 
-    for c in one_hot_cols:
-        actual = list(skf.df[c].unique())  # unique values of a one hot columns
-        assert all(val in [0, 1] for val in actual)  # all values must be either 1 or 0
+#     for c in one_hot_cols:
+#         actual = list(skf.df[c].unique())  # unique values of a one hot columns
+#         assert all(val in [0, 1] for val in actual)  # all values must be either 1 or 0
 
 
 def test_generate_train_test_split_all_numbers_despite_nones():
@@ -76,6 +76,8 @@ def test_generate_train_test_split_only_ints_or_floats(): # TODO: there should b
     skf = SKFormatter(df)
 
     x_train, x_test, y_train, y_test = skf.generate_train_test_split()
+    for c, f in zip(x_train.dtypes, x_train.columns):
+        print(c, f, sep=": ")
     for t in x_train.dtypes:
         assert t in [np.float64, np.int64, np.int32, np.float32]
 
@@ -123,7 +125,7 @@ def test_generate_train_test_split_splits_are_correct_shape(row_num, train_expec
             Feature.HAST_SENEST_RETTET,
             Feature.DISTANCES,
         ]
-    ) + Feature.categorical_features()
+    )
     skf = SKFormatter(df, full_dataset=True, test_size=0.2, discard_features=discard_features)
     x_train, x_test, y_train, y_test = skf.generate_train_test_split()  # type: ignore
 
@@ -153,6 +155,10 @@ def test_generate_train_test_split_splits_no_duplicates_despite_duplicates_in_da
 
     # duplicate a row, and add it
     duplicated_row = df.iloc[0].copy()
+    df.loc[len(df)] = duplicated_row  # type: ignore
+    df.loc[len(df)] = duplicated_row  # type: ignore
+    df.loc[len(df)] = duplicated_row  # type: ignore
+    df.loc[len(df)] = duplicated_row  # type: ignore
     df.loc[len(df)] = duplicated_row  # type: ignore
 
     skf = SKFormatter(df)

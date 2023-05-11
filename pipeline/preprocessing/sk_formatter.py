@@ -29,10 +29,10 @@ class SKFormatter:
         """
         self.df = pd.read_pickle(dataset) if isinstance(dataset, str) else dataset
         # Setting the index of the dataframe to be the osm_id
-        self.df["index"] = self.df[Feature.OSM_ID.value]
-        self.df = self.df.set_index("index")
+        # self.df["index"] = self.df[Feature.OSM_ID.value]
+        self.__prepare_df()
 
-        self.__check_if_categorical_features_in_df()
+        self.__remove_categorical_features()
 
         self.full_dataset = full_dataset
         self.dataset_size = dataset_size
@@ -58,12 +58,19 @@ class SKFormatter:
 
         self.params = self.__params() 
 
-    def __check_if_categorical_features_in_df(self) -> None:
-        """Safety check, if there are categorical features in df. 
+    def __prepare_df(self):
+        """Remove duplicates, set number of rows, and set index to osm_id.
         """
-        for col in self.df.columns:
-            if col in Feature.categorical_features():
-                raise Exception("SKFormatter does not work with categorical features currently.")
+        self.__remove_duplicates() 
+        if not self.full_dataset:
+            self.df = self.df.head(self.dataset_size)
+        self.df = self.df.set_index(Feature.OSM_ID.value)
+
+    def __remove_categorical_features(self) -> None:
+        """Remove categorical features. 
+        """
+        for feature in Feature.categorical_features():
+            self.df.drop([feature], inplace=True, axis=1)
 
     def __params(self) -> dict:
         """returns the parameters for sk_formatter,
@@ -90,9 +97,7 @@ class SKFormatter:
         Returns:
             tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]: x_train, x_test, y_train, y_test
         """
-        self.__remove_duplicates() 
-        if not self.full_dataset:
-            self.df = self.df.head(self.dataset_size)
+
 
         # don't train with the following features
         self.df = self.df.drop(self.discard_features, axis=1)
@@ -123,6 +128,7 @@ class SKFormatter:
         """
         cols = self.df.columns
         self.df = self.df[cols].loc[self.df[cols].astype(str).drop_duplicates().index]
+        ""
 
     def __extract_y(self) -> pd.Series:
         """Extract target from dataframe as y, and remove it
