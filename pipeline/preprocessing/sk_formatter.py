@@ -95,7 +95,7 @@ class SKFormatter:
         """Generate the test train split.
 
         Returns:
-            tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]: x_train, x_test, y_train, y_test
+            tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.Series]: x_train, x_test, y_train, y_test
         """
 
         # don't train with the following features
