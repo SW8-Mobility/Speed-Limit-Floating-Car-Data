@@ -32,12 +32,14 @@ class SKFormatter:
         self.df["index"] = self.df[Feature.OSM_ID.value]
         self.df = self.df.set_index("index")
 
+        self.__check_if_categorical_features_in_df()
+
         self.full_dataset = full_dataset
         self.dataset_size = dataset_size
         self.test_size = test_size
 
         self.discard_features: FeatureList = (
-            FeatureList(
+            FeatureList( # default discard list, if no argument is provided
                 [
                     Feature.OSM_ID,
                     Feature.COORDINATES,
@@ -50,11 +52,18 @@ class SKFormatter:
             else discard_features
         )
 
-        self.target_feature: str = (
-            Feature.HAST_GAELDENDE_HAST.value if target is None else target.value
+        self.target_feature: str = ( # default target_feature, if none provided
+            Feature.HAST_GAELDENDE_HAST.value if target is None else target.value 
         )
 
-        self.params = self.__params()
+        self.params = self.__params() 
+
+    def __check_if_categorical_features_in_df(self) -> None:
+        """Safety check, if there are categorical features in df. 
+        """
+        for col in self.df.columns:
+            if col in Feature.categorical_features():
+                raise Exception("SKFormatter does not work with categorical features currently.")
 
     def __params(self) -> dict:
         """returns the parameters for sk_formatter,
@@ -89,7 +98,7 @@ class SKFormatter:
         self.df = self.df.drop(self.discard_features, axis=1)
 
         # encode features
-        self.__encode_categorical_features()
+        # self.__encode_categorical_features()
         self.__encode_array_features()
 
         # save df config after processing
@@ -158,12 +167,12 @@ class SKFormatter:
 
 
     def __encode_categorical_features(self) -> None:
-        """One-hot encode categorical features."""
-        categorical_features = Feature.categorical_features() - self.discard_features
-        self.df = pd.get_dummies(self.df, columns=categorical_features, dtype=int)
-        print(self.df.columns)
+        """DOES NOT WORK!"""
+        # categorical_features = Feature.categorical_features() - self.discard_features
+        # self.df = pd.get_dummies(self.df, columns=categorical_features, dtype=int)
         # self.df = pd.concat([one_hot_encoded, self.df], axis=1)
         # self.df = self.df.drop(categorical_features, axis=1)
+        pass
     
     # def __encode_single_value_features(self) -> None:
     #     """Encode the non array features. They must be numpy arrays."""
