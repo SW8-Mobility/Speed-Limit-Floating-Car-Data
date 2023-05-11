@@ -24,6 +24,16 @@ Model = tuple[Model, Callable[[pd.DataFrame, pd.Series], Pipeline]]
 
 
 def runner(model_jobs: list[Model], formatter: SKFormatter) -> None:
+    """
+    The runner, at a high-level, is responsible for:
+      1. Fitting the individual models of the model_jobs
+      2. Save the SKFormatter params along side the metrics of each model
+
+    Args:
+        model_jobs (list[Model]): Models for which to fit using existing best params
+        formatter (SKFormatter): SKFormatter formatting the training sets.
+    """
+
     # Obtain train and test data
     x_train, _, y_train, _ = formatter.generate_train_test_split()
     _, x_test, _, y_test = SKFormatter (
@@ -35,33 +45,30 @@ def runner(model_jobs: list[Model], formatter: SKFormatter) -> None:
     date = datetime.today().strftime("%m_%d_%H_%M")
     path = f"/share-files/runs/{date}/{date}_"
 
-    x_train, x_test, y_train, y_test = formatter.generate_train_test_split()
-
+    # Generate folders and save header for metrics
     metrics_file = f"{path}metrics"
     os.makedirs(os.path.dirname(metrics_file), exist_ok=True)
-    save_skformatter_params(formatter.params, f"{path}_skf_params")
     with open(metrics_file, "a+") as f:
         f.write("model,mae,mape,mse,rmse,r2,ev\n")  # header for metrics
 
+    # Save SKFormatter params
+    save_skformatter_params(formatter.params, f"{path}_skf_params")
+
+    # Test each of the best_models using params from earlier run
     for model_name, pipeline in model_jobs:
         # Fit model
         model = pipeline(x_train, y_train)
 
         # Test model
-        y_pred: np.ndarry
-        if model_name in Model.regression_models_names():
-            y_pred = scoring.classify_with_regressor(model, x_test)
-        else:
-            y_pred = model.predict(x_test)
+        y_pred = get_prediction(model_name.value, model, x_test)  # type: ignore
 
+        # Save metrics
         metrics = scoring.score_model(y_test, y_pred)
-
         save_metrics(model_name.value, metrics, metrics_file)
 
 
-
 def main():
-    # define a list of models and their corresponding grid search functions (from models.py)
+    # define a list of models and their corresponding model using best params
     model_jobs: list[Model] = [
         (Model.MLP, create_mlp_best_params),
         (Model.RF, create_rf_best_params),
