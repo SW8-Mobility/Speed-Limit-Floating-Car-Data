@@ -222,8 +222,6 @@ def test_get_params_after_generating_test_train_split():
     skf = SKFormatter(df)
 
     new_col_num = 20
-    vejstiklasse = [f"vejstiklasse_{i}" for i in range(10)]
-    vejtypeskiltet = ["vejtypeskiltet_byvej", "vejtypeskiltet_motorvej"]
     speeds = [f"speeds_{i}" for i in range(new_col_num)]
     means = [f"means_{i}" for i in range(new_col_num)]
     aggregate_mean = ["aggregate_mean"]
@@ -239,8 +237,6 @@ def test_get_params_after_generating_test_train_split():
     hast_gaeldende_hast = ["hast_gaeldende_hast"]
 
     processed_df_columns = [
-        *vejstiklasse,
-        *vejtypeskiltet,
         *aggregate_mean,
         *aggregate_min,
         *aggregate_max,
