@@ -130,7 +130,9 @@ def test_generate_train_test_split_splits_are_correct_shape(
             Feature.DISTANCES,
         ]
     )
-    skf = SKFormatter(df, full_dataset=True, test_size=0.2, discard_features=discard_features)
+    skf = SKFormatter(
+        df, full_dataset=True, test_size=0.2, discard_features=discard_features
+    )
     x_train, x_test, y_train, y_test = skf.generate_train_test_split()  # type: ignore
 
     # check test and train have correct number of rows
