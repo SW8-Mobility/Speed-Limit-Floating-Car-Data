@@ -60,17 +60,15 @@ class SKFormatter:
         self.params = self.__params()
 
     def __prepare_df(self):
-        """Remove duplicates, set number of rows, and set index to osm_id.
-        """
-        self.__remove_duplicates() 
+        """Remove duplicates, set number of rows, and set index to osm_id."""
+        self.__remove_duplicates()
         if not self.full_dataset:
             self.df = self.df.head(self.dataset_size)
         self.df["index"] = self.df[Feature.OSM_ID.value]
         self.df = self.df.set_index("index")
 
     def __remove_categorical_features(self) -> None:
-        """Remove categorical features. 
-        """
+        """Remove categorical features."""
         for feature in Feature.categorical_features():
             self.df.drop([feature], inplace=True, axis=1)
 
