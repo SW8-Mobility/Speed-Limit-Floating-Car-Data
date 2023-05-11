@@ -53,7 +53,7 @@ def create_mlp_grid_search(
 
 
 def random_forest_regressor_gridsearch(
-    x_train: pd.DataFrame, y_train: pd.DataFrame, k: int = 5
+    x_train: pd.DataFrame, y_train: pd.Series, k: int = 5
 ) -> tuple[RandomForestRegressor, dict]:
     """
     Create and tune the hyperparameters of a RandomForest regression model using GridSearchCV with k-fold cross-validation.
@@ -92,7 +92,7 @@ def random_forest_regressor_gridsearch(
 
 
 def xgboost_classifier_gridsearch(
-    x_train: pd.DataFrame, y_train: pd.DataFrame, k: int = 5
+    x_train: pd.DataFrame, y_train: pd.Series, k: int = 5
 ) -> tuple[RandomForestRegressor, dict]:
     """
     Create and tune the hyperparameters of an xgboost classifier using GridSearchCV with k-fold cross-validation.
@@ -171,7 +171,7 @@ def logistic_regression_gridsearch(
 
 
 def statistical_model(
-    x_train: pd.DataFrame, y_train: pd.DataFrame
+    x_train: pd.DataFrame, y_train: pd.Series
 ) -> tuple[StatisticalModel, dict]:
     """Create a basic statistical model
 

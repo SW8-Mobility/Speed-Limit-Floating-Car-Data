@@ -28,6 +28,9 @@ class SKFormatter:
             full_dataset (bool, optional): Use full dataset or not. Defaults to False.
         """
         self.df = pd.read_pickle(dataset) if isinstance(dataset, str) else dataset
+        # Setting the index of the dataframe to be the osm_id
+        self.df["index"] = self.df[Feature.OSM_ID.value]
+        self.df = self.df.set_index("index")
 
         self.full_dataset = full_dataset
         self.dataset_size = dataset_size

@@ -76,11 +76,11 @@ def test_generate_train_test_split_only_ints_or_floats(): # TODO: there should b
     skf = SKFormatter(df)
 
     x_train, x_test, y_train, y_test = skf.generate_train_test_split()
-    for t in [np.float64, np.int64, np.int32, np.float32]:
-        assert t in x_train.dtypes
+    for t in x_train.dtypes:
+        assert t in [np.float64, np.int64, np.int32, np.float32]
 
-    for t in [np.float64, np.int64, np.int32, np.float32]:
-        assert t in x_test.dtypes
+    for t in x_test.dtypes:
+        assert t in [np.float64, np.int64, np.int32, np.float32]
 
     assert y_train.dtype == np.int64
     assert y_test.dtype == np.int64
@@ -115,10 +115,18 @@ def test_generate_train_test_split_splits_are_correct_lengths():
 )
 def test_generate_train_test_split_splits_are_correct_shape(row_num, train_expected_row_num, test_expected_row_num):
     df = mock_dataset(row_num, 3)
-    df.to_csv('test.csv')
-    skf = SKFormatter(df, full_dataset=True, test_size=0.2)
+    discard_features = FeatureList(
+        [
+            Feature.OSM_ID,
+            Feature.COORDINATES,
+            Feature.CPR_VEJNAVN,
+            Feature.HAST_SENEST_RETTET,
+            Feature.DISTANCES,
+        ]
+    ) + Feature.categorical_features()
+    skf = SKFormatter(df, full_dataset=True, test_size=0.2, discard_features=discard_features)
     x_train, x_test, y_train, y_test = skf.generate_train_test_split()  # type: ignore
-    print('---------------')
+
     # check test and train have correct number of rows
     assert len(x_train) == train_expected_row_num
     assert len(y_train) == train_expected_row_num
@@ -132,8 +140,9 @@ def test_generate_train_test_split_splits_are_correct_shape(row_num, train_expec
 
     # assert there are correct number of columns
     # print(x_train.columns)
-    assert len(x_train.columns) == 157
-    assert len(x_test.columns) == 157
+    col_num_without_categorical_features = 145
+    assert len(x_train.columns) == col_num_without_categorical_features
+    assert len(x_test.columns) == col_num_without_categorical_features
     
 
 
