@@ -8,7 +8,7 @@ from pipeline.models.models import (
     random_forest_regressor_gridsearch,
     xgboost_classifier_gridsearch,
     logistic_regression_gridsearch,
-    statistical_model
+    statistical_model,
 )
 from pipeline.models.utils.model_enum import Model
 import pipeline.models.utils.scoring as scoring
@@ -35,7 +35,7 @@ def runner(model_jobs: list[Job], formatter: SKFormatter) -> dict[str, pd.Series
 
     returns:
         dict[str, pd.Series]: dict mapping model name to its predictions.
-        The predictions can be indexed by osm_id. 
+        The predictions can be indexed by osm_id.
     """
     date = datetime.today().strftime("%m_%d_%H_%M")
     path = f"/share-files/runs/{date}/{date}_"
@@ -49,7 +49,7 @@ def runner(model_jobs: list[Job], formatter: SKFormatter) -> dict[str, pd.Series
         f.write("model,mae,mape,mse,rmse,r2,ev\n")  # header for metrics
 
     # Train each model using gridsearch func defined in model_jobs list
-    predictions: dict[str, pd.Series] = {} 
+    predictions: dict[str, pd.Series] = {}
     for model_name, model_func in model_jobs:
         # Train model, obtaining the best model and the corresponding hyper-parameters
         best_model, best_params = model_func(x_train, y_train)  # type: ignore
@@ -70,7 +70,7 @@ def runner(model_jobs: list[Job], formatter: SKFormatter) -> dict[str, pd.Series
 
 def get_prediction(model_name: str, model: Model, x_test: pd.DataFrame) -> pd.Series:
     """
-    Get a prediction based on the test-set provided. 
+    Get a prediction based on the test-set provided.
     Args:
         model_name (str): The name of the model retrieving predictions for
         model (Model): The actual model, i.e. MLP, LogReg, XGB or RF
@@ -209,7 +209,10 @@ def main():
         (Model.RF, random_forest_regressor_gridsearch),
         (Model.XGB, xgboost_classifier_gridsearch),
         (Model.LOGREG, logistic_regression_gridsearch),
-        (Model.STATMODEL, statistical_model) # should work now, since input is a dataframe
+        (
+            Model.STATMODEL,
+            statistical_model,
+        ),  # should work now, since input is a dataframe
     ]
 
     formatter = SKFormatter(

@@ -3,7 +3,8 @@ import numpy as np
 from pipeline.preprocessing.compute_features.feature import Feature, FeatureList
 import pandas as pd  # type: ignore
 from keras_preprocessing.sequence import pad_sequences  # type: ignore
-from sklearn.model_selection import train_test_split # type: ignore
+from sklearn.model_selection import train_test_split  # type: ignore
+
 
 class SKFormatter:
     """Used to format our dataset, such that it can be used for sklearn models."""
@@ -39,7 +40,7 @@ class SKFormatter:
         self.test_size = test_size
 
         self.discard_features: FeatureList = (
-            FeatureList( # default discard list, if no argument is provided
+            FeatureList(  # default discard list, if no argument is provided
                 [
                     Feature.OSM_ID,
                     Feature.COORDINATES,
@@ -52,11 +53,11 @@ class SKFormatter:
             else discard_features
         )
 
-        self.target_feature: str = ( # default target_feature, if none provided
-            Feature.HAST_GAELDENDE_HAST.value if target is None else target.value 
+        self.target_feature: str = (  # default target_feature, if none provided
+            Feature.HAST_GAELDENDE_HAST.value if target is None else target.value
         )
 
-        self.params = self.__params() 
+        self.params = self.__params()
 
     def __prepare_df(self):
         """Remove duplicates, set number of rows, and set index to osm_id.
@@ -98,7 +99,6 @@ class SKFormatter:
             tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]: x_train, x_test, y_train, y_test
         """
 
-
         # don't train with the following features
         self.df = self.df.drop(self.discard_features, axis=1)
 
@@ -115,11 +115,10 @@ class SKFormatter:
         y = self.__extract_y()
 
         # x_train, x_test, y_train, y_test
-        return train_test_split(self.df, y, test_size=self.test_size, random_state=42) # type: ignore
+        return train_test_split(self.df, y, test_size=self.test_size, random_state=42)  # type: ignore
 
     def __replace_nones(self) -> None:
-        """Replace all None values with 0
-        """
+        """Replace all None values with 0"""
         self.df.fillna(0, inplace=True)
 
     def __remove_duplicates(self) -> None:
@@ -135,7 +134,7 @@ class SKFormatter:
         from the df.
 
         Returns:
-            pd.Series: Pandas series of target values. 
+            pd.Series: Pandas series of target values.
         """
         self.df = self.df.rename(columns={self.target_feature: Feature.TARGET.value})
         y = self.df[Feature.TARGET.value]
@@ -144,7 +143,7 @@ class SKFormatter:
 
     def __encode_array_features(self, col_num: int = 20) -> None:
         """Encode the array features. They must be numpy arrays.
-        Arrays become seperate columns. 
+        Arrays become seperate columns.
 
         Args:
             col_num (int, optional): How many columns are the arrays feature converted to. Defaults to 20.
@@ -162,15 +161,24 @@ class SKFormatter:
             s = cols.shape
             d = self.df[feature]
             # pad the arrays, so they are all the same length, necessary for sklearn
-            self.df[feature] = pad_sequences(self.df[feature], padding="post", maxlen=col_num, truncating='post', dtype='float32').tolist()
+            self.df[feature] = pad_sequences(
+                self.df[feature],
+                padding="post",
+                maxlen=col_num,
+                truncating="post",
+                dtype="float32",
+            ).tolist()
 
             # split arrays into seperate columns
-            new_cols = [f"{feature}_{i}" for i in range(col_num)]  
-            self.df[new_cols] = pd.DataFrame(self.df[feature].tolist(), index=self.df.index)
+            new_cols = [f"{feature}_{i}" for i in range(col_num)]
+            self.df[new_cols] = pd.DataFrame(
+                self.df[feature].tolist(), index=self.df.index
+            )
 
         # all features are encoded, drop the original
-        self.df.drop(Feature.array_features() - self.discard_features, inplace=True, axis=1)
-
+        self.df.drop(
+            Feature.array_features() - self.discard_features, inplace=True, axis=1
+        )
 
     def __encode_categorical_features(self) -> None:
         """DOES NOT WORK!"""
@@ -179,13 +187,13 @@ class SKFormatter:
         # self.df = pd.concat([one_hot_encoded, self.df], axis=1)
         # self.df = self.df.drop(categorical_features, axis=1)
         pass
-    
+
     # def __encode_single_value_features(self) -> None:
     #     """Encode the non array features. They must be numpy arrays."""
     #     to_encode = Feature.array_features().not_in(self.df.columns)
     #     for f in to_encode:
     #         self.df[f] = self.df[f].apply(lambda val: np.array([val]))
-    
+
     # Don't think these methods are necessary, but mabye they are...
 
     # def __encode_target(self) -> None:
