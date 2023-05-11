@@ -8,6 +8,7 @@ from pipeline.models.models import (
     random_forest_regressor_gridsearch,
     xgboost_classifier_gridsearch,
     logistic_regression_gridsearch,
+    statistical_model,
 )
 from pipeline.models.utils.model_enum import Model
 import pipeline.models.utils.scoring as scoring
@@ -18,10 +19,10 @@ from pipeline.preprocessing.sk_formatter import SKFormatter
 
 Params = dict[str, Any]
 Models = dict[Model, Params]
-Job = tuple[Model, Callable[[pd.DataFrame, pd.DataFrame], tuple[Any, dict]]]
+Job = tuple[Model, Callable[[pd.DataFrame, pd.Series], tuple[Any, dict]]]
 
 
-def runner(model_jobs: list[Job], formatter: SKFormatter) -> None:
+def runner(model_jobs: list[Job], formatter: SKFormatter) -> dict[str, pd.Series]:
     """
     The runner, at a high-level, is responsible for:
       1. Training the individual models of the model_jobs
@@ -33,6 +34,10 @@ def runner(model_jobs: list[Job], formatter: SKFormatter) -> None:
     Args:
         model_jobs (list[Job]):
         formatter (SKFormatter):
+
+    returns:
+        dict[str, pd.Series]: dict mapping model name to its predictions.
+        The predictions can be indexed by osm_id.
     """
     date = datetime.today().strftime("%m_%d_%H_%M")
     path = f"/share-files/runs/{date}/{date}_"
@@ -55,32 +60,35 @@ def runner(model_jobs: list[Job], formatter: SKFormatter) -> None:
     save_skformatter_params(formatter.params, path)
 
     # Train each model using gridsearch func defined in model_jobs list
+    predictions: dict[str, pd.Series] = {}
     for model_name, model_func in model_jobs:
         # Train model, obtaining the best model and the corresponding hyper-parameters
         best_model, best_params = model_func(x_train, y_train)  # type: ignore
 
         # Get prediction and score model
-        y_pred = get_prediction(model_name.value, best_model, x_test)
-        # TODO: append_predictions_to_df need to be implemented correctly, to provide our qgis output layer
-        append_predictions_to_df(formatter.df, y_pred, model_name)  # type: ignore
-        metrics = scoring.score_model(y_test, y_pred)
+        # predictions can be indexed with osm_id
+        y = get_prediction(model_name.value, best_model, x_test)
+        predictions[str(model_name.value)] = y
+        metrics = scoring.score_model(y_test, y)
 
         # Save the model, hyper-parameters and metrics
         save_model_hyperparams_metrics(
             model_name.value, best_model, best_params, metrics, path
         )
 
+    return predictions
 
-def get_prediction(model_name: str, model: Model, x_test: np.ndarray) -> np.ndarray:
+
+def get_prediction(model_name: str, model: Model, x_test: pd.DataFrame) -> pd.Series:
     """
-    Get a prediction based on the test-set provided
+    Get a prediction based on the test-set provided.
     Args:
         model_name (str): The name of the model retrieving predictions for
         model (Model): The actual model, i.e. MLP, LogReg, XGB or RF
-        x_test (np.ndarray): The test data to get predictions from
+        x_test (pd.DataFrame): The test data to get predictions from
 
     Returns:
-        np.ndarray: A numpy array of predictions
+        pd.Series: A numpy array of predictions
     """
     if model_name in Model.regression_models_names():
         return scoring.classify_with_regressor(model, x_test)  # type: ignore
@@ -212,7 +220,10 @@ def main():
         (Model.RF, random_forest_regressor_gridsearch),
         (Model.XGB, xgboost_classifier_gridsearch),
         (Model.LOGREG, logistic_regression_gridsearch),
-        # (Model.STATMODEL, statistical_model), # TODO: Does not work currently...
+        (
+            Model.STATMODEL,
+            statistical_model,
+        ),  # should work now, since input is a dataframe
     ]
 
     formatter = SKFormatter(
