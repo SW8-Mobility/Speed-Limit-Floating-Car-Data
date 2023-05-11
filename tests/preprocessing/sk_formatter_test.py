@@ -64,13 +64,14 @@ def test_generate_train_test_split_all_numbers_despite_nones():
     df.loc[0, Feature.HAST_GAELDENDE_HAST.value] = None
     skf = SKFormatter(df)
     x_train, x_test, y_train, y_test = skf.generate_train_test_split()  # type: ignore
-    
+
     assert not x_train.isnull().values.any()
     assert not x_test.isnull().values.any()
     assert not y_train.isnull().values.any()
     assert not y_test.isnull().values.any()
 
-def test_generate_train_test_split_only_ints_or_floats(): # TODO: there should be no arrays
+
+def test_generate_train_test_split_only_ints_or_floats():  # TODO: there should be no arrays
     df = mock_dataset(10, 3)
     df.loc[0, Feature.MINS.value].pop(0)  # make one array inconsistent length
     skf = SKFormatter(df)
@@ -84,6 +85,7 @@ def test_generate_train_test_split_only_ints_or_floats(): # TODO: there should b
 
     assert y_train.dtype == np.int64
     assert y_test.dtype == np.int64
+
 
 def test_generate_train_test_split_splits_are_correct_lengths():
     df = mock_dataset(10, 3)
@@ -111,20 +113,27 @@ def test_generate_train_test_split_splits_are_correct_lengths():
         (20, 16, 4),
         (100, 80, 20),
         (1000, 800, 200),
-    ]
+    ],
 )
-def test_generate_train_test_split_splits_are_correct_shape(row_num, train_expected_row_num, test_expected_row_num):
+def test_generate_train_test_split_splits_are_correct_shape(
+    row_num, train_expected_row_num, test_expected_row_num
+):
     df = mock_dataset(row_num, 3)
-    discard_features = FeatureList(
-        [
-            Feature.OSM_ID,
-            Feature.COORDINATES,
-            Feature.CPR_VEJNAVN,
-            Feature.HAST_SENEST_RETTET,
-            Feature.DISTANCES,
-        ]
-    ) + Feature.categorical_features()
-    skf = SKFormatter(df, full_dataset=True, test_size=0.2, discard_features=discard_features)
+    discard_features = (
+        FeatureList(
+            [
+                Feature.OSM_ID,
+                Feature.COORDINATES,
+                Feature.CPR_VEJNAVN,
+                Feature.HAST_SENEST_RETTET,
+                Feature.DISTANCES,
+            ]
+        )
+        + Feature.categorical_features()
+    )
+    skf = SKFormatter(
+        df, full_dataset=True, test_size=0.2, discard_features=discard_features
+    )
     x_train, x_test, y_train, y_test = skf.generate_train_test_split()  # type: ignore
 
     # check test and train have correct number of rows
@@ -143,7 +152,6 @@ def test_generate_train_test_split_splits_are_correct_shape(row_num, train_expec
     col_num_without_categorical_features = 145
     assert len(x_train.columns) == col_num_without_categorical_features
     assert len(x_test.columns) == col_num_without_categorical_features
-    
 
 
 def test_generate_train_test_split_splits_no_duplicates_despite_duplicates_in_dataset():

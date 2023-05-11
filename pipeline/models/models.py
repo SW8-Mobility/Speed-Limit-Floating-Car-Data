@@ -14,6 +14,7 @@ CORE_NUM = 15  # how many cores to use in grid_search
 RANDOM_STATE = 42
 VERBOSE = 0
 
+
 def create_mlp_grid_search(
     x_train: pd.DataFrame, y_train: pd.Series, k: int = 5
 ) -> tuple[MLPClassifier, dict]:
