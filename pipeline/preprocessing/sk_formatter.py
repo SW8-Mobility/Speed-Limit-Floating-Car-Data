@@ -70,7 +70,8 @@ class SKFormatter:
     def __remove_categorical_features(self) -> None:
         """Remove categorical features."""
         for feature in Feature.categorical_features():
-            self.df.drop([feature], inplace=True, axis=1)
+            if feature in self.df.columns:
+                self.df.drop([feature], inplace=True, axis=1)
 
     def __params(self) -> dict:
         """returns the parameters for sk_formatter,
