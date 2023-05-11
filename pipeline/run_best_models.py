@@ -11,7 +11,7 @@ from pipeline.models.best_params_models import (
     create_mlp_best_params,
     create_rf_best_params,
     create_xgboost_best_params,
-    create_logistic_regression_best_params
+    create_logistic_regression_best_params,
 )
 from pipeline.models.utils import scoring
 from pipeline.models.utils.model_enum import Model
@@ -36,10 +36,10 @@ def runner(model_jobs: list[Model], formatter: SKFormatter) -> None:
 
     # Obtain train and test data
     x_train, _, y_train, _ = formatter.generate_train_test_split()
-    _, x_test, _, y_test = SKFormatter (
+    _, x_test, _, y_test = SKFormatter(
         "/share-files/pickle_files_features_and_ground_truth/2013.pkl",
         test_size=1.0,
-        discard_features=formatter.discard_features
+        discard_features=formatter.discard_features,
     ).generate_train_test_split()
 
     date = datetime.today().strftime("%m_%d_%H_%M")
@@ -89,7 +89,7 @@ def main():
                 Feature.HAST_SENEST_RETTET,
                 Feature.DISTANCES,
             ]
-        )
+        ),
     )
 
     runner(model_jobs, formatter)
@@ -97,6 +97,6 @@ def main():
     # Run new GridSearch
     run_models.main()
 
+
 if __name__ == "__main__":
     main()
-

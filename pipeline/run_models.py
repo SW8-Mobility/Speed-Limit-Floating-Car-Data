@@ -47,7 +47,7 @@ def runner(model_jobs: list[Job], formatter: SKFormatter) -> dict[str, pd.Series
     _, x_test, _, y_test = SKFormatter(
         "/share-files/pickle_files_features_and_ground_truth/2013.pkl",
         test_size=1.0,
-        discard_features=formatter.discard_features
+        discard_features=formatter.discard_features,
     ).generate_train_test_split()
 
     # Generate folders and save header for metrics
@@ -238,7 +238,7 @@ def main():
                 Feature.HAST_SENEST_RETTET,
                 Feature.DISTANCES,
             ]
-        )
+        ),
     )
     runner(model_jobs, formatter)
 
