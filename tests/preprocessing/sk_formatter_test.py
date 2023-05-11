@@ -65,10 +65,10 @@ def test_generate_train_test_split_all_numbers_despite_nones():
     skf = SKFormatter(df)
     x_train, x_test, y_train, y_test = skf.generate_train_test_split()  # type: ignore
 
-    assert not x_train.isnull().values.any()
-    assert not x_test.isnull().values.any()
-    assert not y_train.isnull().values.any()
-    assert not y_test.isnull().values.any()
+    assert x_train.isnull().values.any() == False
+    assert x_test.isnull().values.any() == False
+    assert y_train.isnull().values.any() == False
+    assert y_test.isnull().values.any() == False
 
 
 def test_generate_train_test_split_only_ints_or_floats():  # TODO: there should be no arrays

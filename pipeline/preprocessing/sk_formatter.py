@@ -125,7 +125,6 @@ class SKFormatter:
         """
         cols = self.df.columns
         self.df = self.df[cols].loc[self.df[cols].astype(str).drop_duplicates().index]
-        ""
 
     def __extract_y(self) -> pd.Series:
         """Extract target from dataframe as y, and remove it
