@@ -72,6 +72,7 @@ def runner(
         metrics = scoring.score_model(y_test, y)
         save_metrics(model_name.value, metrics, metrics_file)
 
+    return predictions
 
 def main():
     # define a list of models and their corresponding model using best params
