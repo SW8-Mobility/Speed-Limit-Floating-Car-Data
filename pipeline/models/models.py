@@ -10,7 +10,7 @@ from sklearn.pipeline import make_pipeline
 
 from pipeline.models.statistical_model import StatisticalModel
 
-CORE_NUM = 15  # how many cores to use in grid_search
+CORE_NUM = 31  # how many cores to use in grid_search
 RANDOM_STATE = 42
 VERBOSE = 0
 
