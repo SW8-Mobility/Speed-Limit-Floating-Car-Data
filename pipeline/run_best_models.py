@@ -23,7 +23,7 @@ from pipeline.run_models import get_prediction, save_metrics, save_skformatter_p
 Model_best = tuple[Model, Callable[[pd.DataFrame, pd.Series], Pipeline]]
 
 
-def runner(model_jobs: list[Model_best], formatter: SKFormatter) -> None:
+def runner(model_jobs: list[Model_best], train_formatter: SKFormatter, test_formatter: SKFormatter) -> None:
     """
     The runner, at a high-level, is responsible for:
       1. Fitting the individual models of the model_jobs
@@ -31,16 +31,13 @@ def runner(model_jobs: list[Model_best], formatter: SKFormatter) -> None:
 
     Args:
         model_jobs (list[Model]): Models for which to fit using existing best params
-        formatter (SKFormatter): SKFormatter formatting the training sets.
+        train_formatter (SKFormatter): SKFormatter instance for formatting the training set
+        test_formatter (SKFormatter): SKFormatter instance for formatting the test set
     """
 
     # Obtain train and test data
-    x_train, _, y_train, _ = formatter.generate_train_test_split()
-    _, x_test, _, y_test = SKFormatter(
-        "/share-files/pickle_files_features_and_ground_truth/2013.pkl",
-        test_size=1.0,
-        discard_features=formatter.discard_features,
-    ).generate_train_test_split()
+    x_train, _, y_train, _ = train_formatter.generate_train_test_split()
+    _, x_test, _, y_test = test_formatter.generate_train_test_split()
 
     date = datetime.today().strftime("%m_%d_%H_%M")
     path = f"/share-files/runs/{date}/{date}_"
@@ -52,18 +49,20 @@ def runner(model_jobs: list[Model_best], formatter: SKFormatter) -> None:
         f.write("model,mae,mape,mse,rmse,r2,ev\n")  # header for metrics
 
     # Save SKFormatter params
-    save_skformatter_params(formatter.params, f"{path}_skf_params")
+    save_skformatter_params(train_formatter.params, f"{path}_skf_params")
 
     # Test each of the best_models using params from earlier run
+    predictions: dict[str, pd.Series] = {}
     for model_name, pipeline in model_jobs:
         # Fit model
         model = pipeline(x_train, y_train)
 
         # Test model
-        y_pred = get_prediction(model_name.value, model, x_test)  # type: ignore
+        y = get_prediction(model_name.value, model, x_test)  # type: ignore
+        predictions[str(model_name.value)] = y
 
         # Save metrics
-        metrics = scoring.score_model(y_test, y_pred)
+        metrics = scoring.score_model(y_test, y)
         save_metrics(model_name.value, metrics, metrics_file)
 
 
@@ -77,10 +76,9 @@ def main():
         # (Model.STATMODEL, statistical_model), # TODO: We do not have a StatModel yet
     ]
 
-    formatter = SKFormatter(
+    train_format = SKFormatter(
         "/share-files/pickle_files_features_and_ground_truth/2012.pkl",
         test_size=0.0,
-        # Patch with desired features for models
         discard_features=FeatureList(
             [
                 Feature.OSM_ID,
@@ -90,7 +88,13 @@ def main():
         ),
     )
 
-    runner(model_jobs, formatter)
+    test_format = SKFormatter(
+        "/share-files/pickle_files_features_and_ground_truth/2013.pkl",
+        test_size=1.0,
+        discard_features=train_format.discard_features,
+    )
+
+    runner(model_jobs, train_format, test_format)
 
     # Run new GridSearch
     run_models.main()
