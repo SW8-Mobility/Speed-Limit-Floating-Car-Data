@@ -23,11 +23,7 @@ from pipeline.run_models import get_prediction, save_metrics, save_skformatter_p
 Model_best = tuple[Model, Callable[[pd.DataFrame, pd.Series], Pipeline]]
 
 
-def runner(
-    model_jobs: list[Model_best],
-    train_formatter: SKFormatter,
-    test_formatter: SKFormatter,
-) -> None:
+def runner(model_jobs: list[Model_best], train_formatter: SKFormatter, test_formatter: SKFormatter) -> dict[str, pd.Series]:
     """
     The runner, at a high-level, is responsible for:
       1. Fitting the individual models of the model_jobs
@@ -37,6 +33,9 @@ def runner(
         model_jobs (list[Model]): Models for which to fit using existing best params
         train_formatter (SKFormatter): SKFormatter instance for formatting the training set
         test_formatter (SKFormatter): SKFormatter instance for formatting the test set
+    Returns:
+        dict[str, pd.Series]: dict mapping model name to its predictions.
+        The predictions can be indexed by osm_id.
     """
 
     # Obtain train and test data
