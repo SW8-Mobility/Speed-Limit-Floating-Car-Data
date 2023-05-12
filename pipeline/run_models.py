@@ -236,8 +236,6 @@ def main():
             [
                 Feature.OSM_ID,
                 Feature.COORDINATES,
-                Feature.CPR_VEJNAVN,
-                Feature.HAST_SENEST_RETTET,
                 Feature.DISTANCES,
             ]
         ),
