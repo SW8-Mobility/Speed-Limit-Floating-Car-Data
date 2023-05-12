@@ -6,7 +6,7 @@ def test_models_with_different_data():
     from sklearn import datasets  # type: ignore
     from sklearn.model_selection import train_test_split  # type: ignore
     from sklearn.ensemble import RandomForestClassifier  # type: ignore
-    import pandas as pd # type: ignore
+    import pandas as pd  # type: ignore
     from sklearn import metrics  # type: ignore
     from sklearn.metrics import mean_squared_error  # type: ignore
 

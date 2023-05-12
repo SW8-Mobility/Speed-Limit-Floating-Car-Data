@@ -1,5 +1,5 @@
 import pytest
-import pandas as pd # type: ignore
+import pandas as pd  # type: ignore
 from data_exploration.speed_graph import (
     select_osm_rows,
     flatten_and_concat_speeds,
