@@ -1,6 +1,6 @@
 import os
 from datetime import datetime
-from typing import Callable
+from typing import Any, Callable
 
 import numpy as np  # type: ignore
 import pandas as pd  # type: ignore

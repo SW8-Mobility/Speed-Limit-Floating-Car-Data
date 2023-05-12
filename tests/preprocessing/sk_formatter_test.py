@@ -1,7 +1,7 @@
 from pipeline.preprocessing.sk_formatter import SKFormatter
 from pipeline.preprocessing.compute_features.feature import Feature, FeatureList
 from tests.mock_dataset import mock_dataset
-import pandas as pd
+import pandas as pd # type: ignore
 import pytest
 import numpy as np
 
