@@ -2,8 +2,8 @@ import os
 from datetime import datetime
 from typing import Callable
 
-import numpy as np  # type: ignore
-import pandas as pd  # type: ignore
+import numpy as np # type: ignore
+import pandas as pd # type: ignore
 from sklearn.pipeline import Pipeline
 
 from pipeline import run_models
@@ -20,10 +20,10 @@ from pipeline.preprocessing.compute_features.feature import FeatureList, Feature
 from pipeline.preprocessing.sk_formatter import SKFormatter
 from pipeline.run_models import get_prediction, save_metrics, save_skformatter_params
 
-Model = tuple[Model, Callable[[pd.DataFrame, pd.Series], Pipeline]]
+Model_best = tuple[Model, Callable[[pd.DataFrame, pd.Series], Pipeline]]
 
 
-def runner(model_jobs: list[Model], formatter: SKFormatter) -> None:
+def runner(model_jobs: list[Model_best], formatter: SKFormatter) -> None:
     """
     The runner, at a high-level, is responsible for:
       1. Fitting the individual models of the model_jobs
@@ -69,7 +69,7 @@ def runner(model_jobs: list[Model], formatter: SKFormatter) -> None:
 
 def main():
     # define a list of models and their corresponding model using best params
-    model_jobs: list[Model] = [
+    model_jobs: list[Model_best] = [
         (Model.MLP, create_mlp_best_params),
         (Model.RF, create_rf_best_params),
         (Model.XGB, create_xgboost_best_params),
