@@ -1,6 +1,9 @@
 import os
 from datetime import datetime
+
 import numpy as np
+import pandas as pd  # type: ignore
+
 from typing import Any, Callable
 import joblib  # type: ignore
 from pipeline.models.models import (
@@ -12,7 +15,6 @@ from pipeline.models.models import (
 )
 from pipeline.models.utils.model_enum import Model
 import pipeline.models.utils.scoring as scoring
-import pandas as pd  # type: ignore
 
 from pipeline.preprocessing.compute_features.feature import FeatureList, Feature
 from pipeline.preprocessing.sk_formatter import SKFormatter
