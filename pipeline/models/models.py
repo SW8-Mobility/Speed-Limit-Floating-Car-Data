@@ -9,8 +9,9 @@ import pandas as pd  # type: ignore
 from sklearn.pipeline import make_pipeline
 
 from pipeline.models.statistical_model import StatisticalModel
+import multiprocessing
 
-CORE_NUM = 31  # how many cores to use in grid_search
+CORE_NUM = multiprocessing.cpu_count() - 1  # how many cores to use in grid_search
 RANDOM_STATE = 42
 VERBOSE = 0
 
