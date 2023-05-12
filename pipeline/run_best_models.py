@@ -2,8 +2,8 @@ import os
 from datetime import datetime
 from typing import Callable
 
-import numpy as np # type: ignore
-import pandas as pd # type: ignore
+import numpy as np  # type: ignore
+import pandas as pd  # type: ignore
 from sklearn.pipeline import Pipeline
 
 from pipeline import run_models
