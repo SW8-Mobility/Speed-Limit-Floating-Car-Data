@@ -24,7 +24,9 @@ Models = dict[Model, Params]
 Job = tuple[Model, Callable[[pd.DataFrame, pd.Series], tuple[Any, dict]]]
 
 
-def runner(model_jobs: list[Job], train_formatter: SKFormatter, test_formatter: SKFormatter) -> dict[str, pd.Series]:
+def runner(
+    model_jobs: list[Job], train_formatter: SKFormatter, test_formatter: SKFormatter
+) -> dict[str, pd.Series]:
     """
     The runner, at a high-level, is responsible for:
       1. Training the individual models of the model_jobs
@@ -247,7 +249,6 @@ def main():
         test_size=1.0,
         discard_features=train_format.discard_features,
     )
-
 
     runner(model_jobs, train_format, test_format)
 
