@@ -64,15 +64,21 @@ def runner(model_jobs: list[Job], formatter: SKFormatter) -> dict[str, pd.Series
     # Train each model using gridsearch func defined in model_jobs list
     predictions: dict[str, pd.Series] = {}
     for model_name, model_func in model_jobs:
+        print(f"------------{model_name.value}------------")
+        start_time = datetime.now()
+        print(f"Doing gridsearch, start time: {start_time.strftime('%m-%d_%H:%M')}")
         # Train model, obtaining the best model and the corresponding hyper-parameters
         best_model, best_params = model_func(x_train, y_train)  # type: ignore
-
+        end_time = datetime.now()
+        print(f"Finished gridsearch, end time: {end_time.strftime('%m-%d_%H:%M')}")
+        print(f"Gridsearch and fitting took: {end_time-start_time}")
         # Get prediction and score model
         # predictions can be indexed with osm_id
         y = get_prediction(model_name.value, best_model, x_test)
         predictions[str(model_name.value)] = y
         metrics = scoring.score_model(y_test, y)
 
+        print("Saving now ...")
         # Save the model, hyper-parameters and metrics
         save_model_hyperparams_metrics(
             model_name.value, best_model, best_params, metrics, path
