@@ -24,7 +24,7 @@ Models = dict[Model, Params]
 Job = tuple[Model, Callable[[pd.DataFrame, pd.Series], tuple[Any, dict]]]
 
 
-def runner(model_jobs: list[Job], formatter: SKFormatter) -> dict[str, pd.Series]:
+def runner(model_jobs: list[Job], train_formatter: SKFormatter, test_formatter: SKFormatter) -> dict[str, pd.Series]:
     """
     The runner, at a high-level, is responsible for:
       1. Training the individual models of the model_jobs
@@ -34,10 +34,10 @@ def runner(model_jobs: list[Job], formatter: SKFormatter) -> dict[str, pd.Series
     # https://scikit-learn.org/stable/model_persistence.html
 
     Args:
-        model_jobs (list[Job]):
-        formatter (SKFormatter):
-
-    returns:
+        model_jobs (list[Job]): List of training jobs to run
+        train_formatter (SKFormatter): SKFormatter instance for formatting the training set
+        test_formatter (SKFormatter): SKFormatter instance for formatting the test set
+    Returns:
         dict[str, pd.Series]: dict mapping model name to its predictions.
         The predictions can be indexed by osm_id.
     """
@@ -45,12 +45,8 @@ def runner(model_jobs: list[Job], formatter: SKFormatter) -> dict[str, pd.Series
     path = f"/share-files/runs/{date}/{date}_"
 
     # Obtain train and test data
-    x_train, _, y_train, _ = formatter.generate_train_test_split()
-    _, x_test, _, y_test = SKFormatter(
-        "/share-files/pickle_files_features_and_ground_truth/2013.pkl",
-        test_size=1.0,
-        discard_features=formatter.discard_features,
-    ).generate_train_test_split()
+    x_train, _, y_train, _ = train_formatter.generate_train_test_split()
+    _, x_test, _, y_test = test_formatter.generate_train_test_split()
 
     # Generate folders and save header for metrics
     metrics_file = f"{path}metrics"
@@ -59,7 +55,7 @@ def runner(model_jobs: list[Job], formatter: SKFormatter) -> dict[str, pd.Series
         f.write("model,mae,mape,mse,rmse,r2,ev\n")  # header for metrics
 
     # Save SKFormatter params
-    save_skformatter_params(formatter.params, path)
+    save_skformatter_params(train_formatter.params, path)
 
     # Train each model using gridsearch func defined in model_jobs list
     predictions: dict[str, pd.Series] = {}
@@ -234,10 +230,9 @@ def main():
         ),  # should work now, since input is a dataframe
     ]
 
-    formatter = SKFormatter(
+    train_format = SKFormatter(
         "/share-files/pickle_files_features_and_ground_truth/2012.pkl",
         test_size=0.0,
-        # Patch with desired features for models
         discard_features=FeatureList(
             [
                 Feature.OSM_ID,
@@ -246,7 +241,15 @@ def main():
             ]
         ),
     )
-    runner(model_jobs, formatter)
+
+    test_format = SKFormatter(
+        "/share-files/pickle_files_features_and_ground_truth/2013.pkl",
+        test_size=1.0,
+        discard_features=train_format.discard_features,
+    )
+
+
+    runner(model_jobs, train_format, test_format)
 
 
 if __name__ == "__main__":
