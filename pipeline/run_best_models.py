@@ -20,7 +20,7 @@ from pipeline.preprocessing.compute_features.feature import FeatureList, Feature
 from pipeline.preprocessing.sk_formatter import SKFormatter
 from pipeline.run_models import get_prediction, save_metrics, save_skformatter_params
 
-Model_best = tuple[Model, Callable[[pd.DataFrame, pd.Series], Pipeline]]
+Model_best = tuple[Model, Callable[[pd.DataFrame, pd.Series], Any]]
 
 
 def runner(
