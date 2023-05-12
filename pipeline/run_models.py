@@ -1,3 +1,4 @@
+import os
 from datetime import datetime
 import numpy as np
 from typing import Any, Callable
@@ -13,59 +14,75 @@ from pipeline.models.utils.model_enum import Model
 import pipeline.models.utils.scoring as scoring
 import pandas as pd  # type: ignore
 from pipeline.preprocessing.sk_formatter import SKFormatter
-import os
 
 Params = dict[str, Any]
 Models = dict[Model, Params]
+Job = tuple[Model, Callable[[pd.DataFrame, pd.Series], tuple[Any, dict]]]
 
 
-def train_models_save_results(
-    x_train: np.ndarray, y_train: np.ndarray
-) -> dict[Model, Any]:
+def runner(model_jobs: list[Job], formatter: SKFormatter) -> dict[str, pd.Series]:
     """
-    Creates every model from models.py, fits them, saves
-    them to pickle, saves best params and returns dict
-    mapping model names to the fitted model.
+    The runner, at a high-level, is responsible for:
+      1. Training the individual models of the model_jobs
+      2. Save the SKFormatter params along side the models themselves, their params and metrics
 
     use joblib for saving models to file:
     # https://scikit-learn.org/stable/model_persistence.html
 
     Args:
-        x_train (np.ndarray): Training dataset
-        y_train (np.ndarray): Target for training
+        model_jobs (list[Job]):
+        formatter (SKFormatter):
+
+    returns:
+        dict[str, pd.Series]: dict mapping model name to its predictions.
+        The predictions can be indexed by osm_id.
+    """
+    date = datetime.today().strftime("%m_%d_%H_%M")
+    path = f"/share-files/runs/{date}/{date}_"
+
+    x_train, x_test, y_train, y_test = formatter.generate_train_test_split()
+
+    metrics_file = f"{path}metrics"
+    os.makedirs(os.path.dirname(metrics_file), exist_ok=True)
+    save_skformatter_params(formatter.params, path)
+    with open(metrics_file, "a+") as f:
+        f.write("model,mae,mape,mse,rmse,r2,ev\n")  # header for metrics
+
+    # Train each model using gridsearch func defined in model_jobs list
+    predictions: dict[str, pd.Series] = {}
+    for model_name, model_func in model_jobs:
+        # Train model, obtaining the best model and the corresponding hyper-parameters
+        best_model, best_params = model_func(x_train, y_train)  # type: ignore
+
+        # Get prediction and score model
+        # predictions can be indexed with osm_id
+        y = get_prediction(model_name.value, best_model, x_test)
+        predictions[str(model_name.value)] = y
+        metrics = scoring.score_model(y_test, y)
+
+        # Save the model, hyper-parameters and metrics
+        save_model_hyperparams_metrics(
+            model_name.value, best_model, best_params, metrics, path
+        )
+
+    return predictions
+
+
+def get_prediction(model_name: str, model: Model, x_test: pd.DataFrame) -> pd.Series:
+    """
+    Get a prediction based on the test-set provided.
+    Args:
+        model_name (str): The name of the model retrieving predictions for
+        model (Model): The actual model, i.e. MLP, LogReg, XGB or RF
+        x_test (pd.DataFrame): The test data to get predictions from
 
     Returns:
-        dict[Model, Any]: dictionary of model name to trained model
+        pd.Series: A numpy array of predictions
     """
-
-    # define a list of models and their corresponding grid search functions (from models.py)
-    model_jobs: list[
-        tuple[Model, Callable[[pd.DataFrame, pd.DataFrame], tuple[Any, dict]]]
-    ] = [
-        (Model.MLP, create_mlp_grid_search),  # type: ignore
-        (Model.RF, random_forest_regressor_gridsearch),
-        (Model.XGB, xgboost_classifier_gridsearch),
-        (Model.LOGREG, logistic_regression_gridsearch),
-        # (Model.STATMODEL, statistical_model), # TODO: Does not work currently...
-    ]
-
-    models: dict[Model, Any] = {}  # model name to the trained model
-
-    with open(
-        f"{os.path.dirname(__file__)}/training_results.txt", "a"
-    ) as best_model_params_f:
-        # loop through each model and perform grid search
-        for model_name, model_func in model_jobs:
-            best_model, best_params = model_func(x_train, y_train)  # type: ignore
-            best_model_params_f.write(  # save the best params to file
-                f"\nmodel: {model_name.value}, params: {best_params}"
-            )
-            joblib.dump(  # save the model as joblib file
-                best_model, f"{model_name.value}_best_model.joblib"
-            )
-            models[model_name] = best_model
-
-    return models
+    if model_name in Model.regression_models_names():
+        return scoring.classify_with_regressor(model, x_test)  # type: ignore
+    else:
+        return model.predict(x_test)  # type: ignore
 
 
 def append_predictions_to_df(
@@ -102,70 +119,106 @@ def append_predictions_to_df(
     return df
 
 
-def test_models(
-    models: dict[Model, Any], x_test: np.ndarray, y_test: np.ndarray, df: pd.DataFrame
-) -> dict[str, dict]:
+def save_model_hyperparams_metrics(
+    model_name: str, model: Model, params: dict, metrics: dict[str, float], prefix: str
+):
     """
-    Tests all the models. Will return scoring metrics for each models predictions.
-
+    Saves 3 files:
+      1. The model,
+      2. Hyper-parameters, and
+      3. Metrics
     Args:
-        models (dict[Model, Any]): The dictionary of the best models after fitting on the train data.
-        x_test (np.ndarray): The input test data from the train-test split
-        y_test (np.ndarray): The target test data from the train-test split
-        df (pd.DataFrame): dataframe to which the predictions will be appended to.
+        model_name (str): Name of the model currently being saved
+        model (Model): The model currently being saved
+        params (dict): The dict of params to save
+        metrics (dict[str, float]): The dictionary of metrics to save
+        prefix (str): The folder location for saving the files
 
     Returns:
-        dict[str, dict]: Returns dictionary of scoring metrics for each model.
-        Also annotates the input df with predictions made by each model.
+
     """
-    per_model_metrics: dict[str, dict] = {}
-
-    # initialize scored_predictions with y_test
-    for model_name, model in models.items():
-        # predict
-        if model_name.value in Model.regression_models_names():
-            y_pred = scoring.classify_with_regressor(model, x_test)  # type: ignore
-        else:
-            y_pred = model.predict(x_test)
-
-        append_predictions_to_df(df, y_pred, model_name)  # type: ignore
-
-        per_model_metrics[model_name.value] = scoring.score_model(y_test, y_pred)
-
-    return per_model_metrics
+    save_model(model_name, model, prefix)
+    save_params(model_name, params, prefix)
+    save_metrics(model_name, metrics, prefix)
 
 
-def save_metrics(metrics_dict: dict[str, dict], save_to_folder: str) -> None:
-    """Save the metrics from model predictions to a file.
+def save_model(model_name: str, model: Model, filepath: str) -> None:
+    """
+    Saves the model to disk in the filepath location as a joblib file
+    Args:
+        model_name (str): Name of the model currently being saved
+        model (Model): The model currently being saved
+        filepath (str): The filepath location for saving the file
+    """
+    joblib.dump(  # save the model as joblib file
+        model, f"{filepath}{model_name}.joblib"
+    )
+
+
+def save_params(model_name: str, params: dict, filepath: str) -> None:
+    """
+    Saves the params to disk in the filepath location
+    Args:
+        model_name (str): Name of the model currently being saved
+        params (dict): The dict of params to save
+        filepath (str): The filepath location for saving the file
+    """
+    file = filepath + "params"
+    with open(file, "a+") as f:
+        f.write(f"\nmodel: {model_name}, params: {params}")
+
+
+def save_metrics(model_name: str, metrics: dict[str, float], filepath: str) -> None:
+    """
+    Saves the metrics dict to disk in the filepath location.
+    Args:
+        model_name (str): Name of the model currently being saved
+        metrics (dict[str, float]): The dictionary of metrics to save
+        filepath (str): The filepath location for saving the file
+    """
+    file = filepath + "metrics"
+    with open(file, "a+") as f:
+        f.write(f"{model_name}")
+        for val in metrics.values():
+            f.write(f", {val}")
+        f.write("\n")
+
+
+def save_skformatter_params(params: dict, filepath: str) -> None:
+    """Save the skf parameters from model training to a file.
     Will name file based on time created.
 
     Args:
-        metrics_dict (dict[str, dict]): dict from model name to metrics_
-        save_to_folder (str): Folder to save file
+        params (dict): parameters from SKFormatter
+        filepath (str): Filepath for file
     """
-    date = datetime.today().strftime("%d%m%y_%H%M")
-    filename = f"{save_to_folder}/{date}_metrics.txt"
+    filename = f"{filepath}skf_parameters.txt"
+
     with open(filename, "w+") as f:
-        f.write("model, mae, mape, mse, rmse, r2, ev\n")  # header
-        for model, metrics in metrics_dict.items():
-            f.write(f"{model}")
-            for val in metrics.values():
-                f.write(f", {val}")
+        f.write(f'{", ".join(params.keys())}\n')  # header
+        for param, value in params.items():
+            f.write(f"{param}")
+            f.write(f", {value}")
             f.write("\n")
 
 
 def main():
+    # define a list of models and their corresponding grid search functions (from models.py)
+    model_jobs: list[Job] = [
+        (Model.MLP, create_mlp_grid_search),
+        (Model.RF, random_forest_regressor_gridsearch),
+        (Model.XGB, xgboost_classifier_gridsearch),
+        (Model.LOGREG, logistic_regression_gridsearch),
+        (
+            Model.STATMODEL,
+            statistical_model,
+        ),  # should work now, since input is a dataframe
+    ]
+
     formatter = SKFormatter(
-        "/share-files/pickle_files_features_and_ground_truth/2012.pkl"
+        "/share-files/pickle_files_features_and_ground_truth/2012.pkl", dataset_size=100
     )
-    df = formatter.df
-    x_train, x_test, y_train, y_test = formatter.generate_train_test_split()
-    skf_params = formatter.params
-    print(skf_params)  # should be saved to file
-    print("formatted. Training...")
-    models = train_models_save_results(x_train, y_train)
-    metrics = test_models(models, x_test, y_test, df)
-    save_metrics(metrics, "/share-files/model_scores")
+    runner(model_jobs, formatter)
 
 
 if __name__ == "__main__":

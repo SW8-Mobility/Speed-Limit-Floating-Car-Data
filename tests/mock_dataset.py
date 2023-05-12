@@ -90,7 +90,7 @@ def mock_dataset(row_num: int = 10, trip_num: int = 3) -> pd.DataFrame:
         Feature.ROLLING_AVERAGES.value: col_mocker([70 for _ in range(trip_num - 1)]),
         Feature.MEDIANS.value: col_mocker(72),
         Feature.AGGREGATE_MEDIAN.value: agg_col_mocker(72),
-        Feature.VCR.value: col_mocker([70 for _ in range(trip_num - 1)]),
+        Feature.VCR.value: col_mocker([20.5 for _ in range(trip_num - 1)]),
         Feature.CPR_VEJNAVN.value: [f"street_{i}" for i in range(row_num)],
         Feature.HAST_GENEREL_HAST.value: mock_speed_limits(row_num),
         Feature.HAST_GAELDENDE_HAST.value: mock_speed_limits(row_num),
