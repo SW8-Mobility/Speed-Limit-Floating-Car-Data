@@ -2,7 +2,7 @@
 """
 
 from typing import Callable, Union
-import pandas as pd  # ignore: type
+import pandas as pd  # type: ignore
 from pipeline.preprocessing.compute_features.feature import Feature
 from pipeline.models.utils.scoring import SPEED_LIMITS
 import itertools
