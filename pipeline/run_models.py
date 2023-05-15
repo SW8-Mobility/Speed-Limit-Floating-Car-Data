@@ -19,6 +19,9 @@ import pipeline.models.utils.scoring as scoring
 from pipeline.preprocessing.compute_features.feature import FeatureList, Feature
 from pipeline.preprocessing.sk_formatter import SKFormatter
 
+import warnings
+warnings.filterwarnings("ignore")
+
 Params = dict[str, Any]
 Models = dict[Model, Params]
 Job = tuple[Model, Callable[[pd.DataFrame, pd.Series], tuple[Any, dict]]]
@@ -47,6 +50,7 @@ def runner(
     path = f"/share-files/runs/{date}/{date}_"
 
     # Obtain train and test data
+    print("Generate train-test split")
     x_train, _, y_train, _ = train_formatter.generate_train_test_split()
     _, x_test, _, y_test = test_formatter.generate_train_test_split()
 
@@ -64,11 +68,11 @@ def runner(
     for model_name, model_func in model_jobs:
         print(f"------------{model_name.value}------------")
         start_time = datetime.now()
-        print(f"Doing gridsearch, start time: {start_time.strftime('%m-%d_%H:%M')}")
+        print(f"Doing gridsearch, start time: {start_time.strftime('%m-%d@%H:%M')}")
         # Train model, obtaining the best model and the corresponding hyper-parameters
         best_model, best_params = model_func(x_train, y_train)  # type: ignore
         end_time = datetime.now()
-        print(f"Finished gridsearch, end time: {end_time.strftime('%m-%d_%H:%M')}")
+        print(f"Finished gridsearch, end time: {end_time.strftime('%m-%d@%H:%M')}")
         print(f"Gridsearch and fitting took: {end_time-start_time}")
         # Get prediction and score model
         # predictions can be indexed with osm_id
@@ -232,9 +236,10 @@ def main():
         ),  # should work now, since input is a dataframe
     ]
 
+    print("Formatting train_set (2012)")
     train_format = SKFormatter(
-        "/share-files/pickle_files_features_and_ground_truth/2012.pkl",
-        test_size=0.0,
+        "/share-files/raw_data_pkl/features_and_ground_truth_2012.pkl",
+        test_size=0.001,
         discard_features=FeatureList(
             [
                 Feature.OSM_ID,
@@ -242,12 +247,15 @@ def main():
                 Feature.DISTANCES,
             ]
         ),
+	full_dataset=True
     )
 
+    print("Formatting test_set (2013)")
     test_format = SKFormatter(
-        "/share-files/pickle_files_features_and_ground_truth/2013.pkl",
-        test_size=1.0,
+        "/share-files/raw_data_pkl/features_and_ground_truth_2013.pkl",
+        test_size=0.999,
         discard_features=train_format.discard_features,
+	full_dataset=train_format.full_dataset
     )
 
     runner(model_jobs, train_format, test_format)

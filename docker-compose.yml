@@ -1,7 +1,7 @@
 services:
   python:
     build: .
-    env_file: .env
     volumes:
       - .:/Speed-Limit-Floating-Car-Data
+      - /share-files/share-files:/share-files
     working_dir: /Speed-Limit-Floating-Car-Data

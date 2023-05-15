@@ -38,16 +38,16 @@ def classify_with_regressor(model, x: pd.Series) -> pd.Series:
     return quantize_results(predictions)
 
 
-def quantize_results(predictions: pd.Series) -> pd.Series:
+def quantize_results(predictions: np.ndarray) -> pd.Series:
     """Snaps each prediction to the closest speed limit.
 
     Args:
-        predictions (pd.Series): list of predictions made by regression model.
+        predictions (np.ndarray): list of predictions made by regression model.
 
     Returns:
         pd.Series: each prediction in the list quantized
     """
-    return predictions.apply(find_closest_speed_limit)
+    return [find_closest_speed_limit(x) for x in predictions]
 
 
 def mean_absolute_percentage_error(ground_truth, prediction) -> float:

@@ -62,8 +62,8 @@ class SKFormatter:
         self.__remove_duplicates()
         if not self.full_dataset:
             self.df = self.df.head(self.dataset_size)
-        self.df["index"] = self.df[Feature.OSM_ID.value]
-        self.df = self.df.set_index("index")
+        #self.df["index"] = self.df[Feature.OSM_ID.value]
+        #self.df = self.df.set_index("index")
 
     def __remove_categorical_features(self) -> None:
         """Remove categorical features."""

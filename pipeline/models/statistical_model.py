@@ -16,4 +16,4 @@ class StatisticalModel:
         Returns:
             pd.Series: list of predictions.
         """
-        return quantize_results(x[Feature.AGGREGATE_MEDIAN.value].value)
+        return quantize_results(x[Feature.AGGREGATE_MEDIAN.value].values)
