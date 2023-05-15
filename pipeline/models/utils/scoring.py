@@ -24,7 +24,7 @@ def find_closest_speed_limit(speed: float) -> float:
         return before
 
 
-def classify_with_regressor(model, x: pd.Series) -> pd.Series:
+def classify_with_regressor(model, x: pd.Series) -> list[float]:
     """calls predict on the model and quantizes the result.
 
     Args:
@@ -32,22 +32,22 @@ def classify_with_regressor(model, x: pd.Series) -> pd.Series:
         x (pd.Series): the features to predict with
 
     Returns:
-        pd.Series: list of predictions quantized
+        list[float]: list of predictions quantized
     """
     predictions = model.predict(x)
     return quantize_results(predictions)
 
 
-def quantize_results(predictions: pd.Series) -> pd.Series:
+def quantize_results(predictions: np.ndarray) -> list[float]:
     """Snaps each prediction to the closest speed limit.
 
     Args:
-        predictions (pd.Series): list of predictions made by regression model.
+        predictions (np.ndarray): list of predictions made by regression model.
 
     Returns:
-        pd.Series: each prediction in the list quantized
+        list[float]: each prediction in the list quantized
     """
-    return predictions.apply(find_closest_speed_limit)
+    return [find_closest_speed_limit(x) for x in predictions]
 
 
 def mean_absolute_percentage_error(ground_truth, prediction) -> float:
