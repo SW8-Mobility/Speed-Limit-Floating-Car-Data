@@ -108,4 +108,4 @@ def score_model(ground_truth, prediction) -> dict[str, Any]:
 if __name__ == "__main__":
     pred = [10, 10, 20, 30, 30]
     true = [10, 10, 20, 20, 30]
-    print(score_model(pred, true))
+    print(score_model(true, pred))
