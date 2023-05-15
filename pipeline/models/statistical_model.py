@@ -16,6 +16,6 @@ class StatisticalModel:
             x (pd.DataFrame): Datafame to predict on.
 
         Returns:
-            np.ndarray: list of predictions.
+            list[float]: list of predictions.
         """
-        return quantize_results(x[Feature.AGGREGATE_MEDIAN.value].values)
+        return quantize_results(x[Feature.AGGREGATE_MEDIAN.value].values)  # type: ignore
