@@ -77,7 +77,7 @@ def per_label_f1(ground_truth, prediction) -> dict[int, float]:
     """
     labels = list(set(ground_truth))  # get unique labels
     labels.sort()  # sort from low to high
-    score_arr: list[float] = f1_score(ground_truth, prediction, average=None)  # type: ignore
+    score_arr: list[float] = f1_score(ground_truth, prediction, average=None, labels=labels)  # type: ignore
     return {k: val for k, val in zip(labels, score_arr)}
 
 
