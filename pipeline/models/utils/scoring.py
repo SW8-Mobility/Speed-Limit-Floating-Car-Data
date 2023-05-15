@@ -24,7 +24,7 @@ def find_closest_speed_limit(speed: float) -> float:
         return before
 
 
-def classify_with_regressor(model, x: pd.Series) -> np.ndarray:
+def classify_with_regressor(model, x: pd.Series) -> list[float]:
     """calls predict on the model and quantizes the result.
 
     Args:
@@ -38,14 +38,14 @@ def classify_with_regressor(model, x: pd.Series) -> np.ndarray:
     return quantize_results(predictions)
 
 
-def quantize_results(predictions: np.ndarray) -> np.ndarray:
+def quantize_results(predictions: np.ndarray) -> list[float]:
     """Snaps each prediction to the closest speed limit.
 
     Args:
         predictions (np.ndarray): list of predictions made by regression model.
 
     Returns:
-        np.ndarray: each prediction in the list quantized
+        list[float]: each prediction in the list quantized
     """
     return [find_closest_speed_limit(x) for x in predictions]
 

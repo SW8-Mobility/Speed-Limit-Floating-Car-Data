@@ -9,7 +9,7 @@ import numpy as np
 class StatisticalModel:
     """Basic statistical model for predicting speed limits"""
 
-    def predict(self, x: pd.DataFrame) -> np.ndarray:
+    def predict(self, x: pd.DataFrame) -> list[float]:
         """Simply return the aggregate median as the prediction.
 
         Args:
