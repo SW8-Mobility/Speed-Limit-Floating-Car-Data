@@ -29,7 +29,7 @@ class Feature(Enum):
     # vejman features
     CPR_VEJNAVN = "cpr_vejnavn"
     HAST_GENEREL_HAST = "hast_generel_hast"
-    HAST_GAELDENDE_HAST = "HAST_GAELDENDE_HAST"
+    HAST_GAELDENDE_HAST = "hast_gaeldende_hast"
     VEJSTIKLASSE = "vejstiklasse"
     VEJTYPESKILTET = "vejtypeskiltet"
     HAST_SENEST_RETTET = "hast_senest_rettet"

@@ -78,7 +78,7 @@ def random_forest_regressor_gridsearch(
         "max_depth": [5, 10, 20, 50, None],
         "min_samples_split": [2, 5, 10],
         "min_samples_leaf": [1, 2, 4],
-        "max_features": ["1.0", "sqrt", "log2"],
+        "max_features": ["auto", "sqrt", "log2"],
     }
 
     # Create the grid search object
