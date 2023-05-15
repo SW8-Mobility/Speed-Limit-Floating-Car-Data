@@ -2,6 +2,7 @@ from sklearn.metrics import mean_absolute_error, mean_squared_error, explained_v
 import numpy as np
 import pandas as pd  # type: ignore
 from bisect import bisect_left
+from typing import Any
 
 SPEED_LIMITS = [15, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130]
 
@@ -38,7 +39,7 @@ def classify_with_regressor(model, x: pd.Series) -> list[float]:
     return quantize_results(predictions)
 
 
-def quantize_results(predictions: np.ndarray) -> np.ndarray:
+def quantize_results(predictions: np.ndarray) -> list[float]:
     """Snaps each prediction to the closest speed limit.
 
     Args:
@@ -80,7 +81,7 @@ def per_label_f1(ground_truth, prediction) -> dict[int, float]:
     return {k: val for k, val in zip(labels, score_arr)}
 
 
-def score_model(ground_truth, prediction) -> dict[str, float]:
+def score_model(ground_truth, prediction) -> dict[str, Any]:
     """Scoring function with metrics used for regression models. Will compute:
     mean_absolute_error, mean_absolute_percentage_error, mean_squared_error, mean_squared_error,
     r2, and explained variance.
