@@ -1,6 +1,9 @@
 import os
 from datetime import datetime
+
 import numpy as np
+import pandas as pd  # type: ignore
+
 from typing import Any, Callable
 import joblib  # type: ignore
 from pipeline.models.models import (
@@ -12,15 +15,22 @@ from pipeline.models.models import (
 )
 from pipeline.models.utils.model_enum import Model
 import pipeline.models.utils.scoring as scoring
-import pandas as pd  # type: ignore
+
+from pipeline.preprocessing.compute_features.feature import FeatureList, Feature
 from pipeline.preprocessing.sk_formatter import SKFormatter
+
+import warnings
+
+warnings.filterwarnings("ignore")
 
 Params = dict[str, Any]
 Models = dict[Model, Params]
 Job = tuple[Model, Callable[[pd.DataFrame, pd.Series], tuple[Any, dict]]]
 
 
-def runner(model_jobs: list[Job], formatter: SKFormatter) -> dict[str, pd.Series]:
+def runner(
+    model_jobs: list[Job], train_formatter: SKFormatter, test_formatter: SKFormatter
+) -> dict[str, pd.Series]:
     """
     The runner, at a high-level, is responsible for:
       1. Training the individual models of the model_jobs
@@ -30,36 +40,48 @@ def runner(model_jobs: list[Job], formatter: SKFormatter) -> dict[str, pd.Series
     # https://scikit-learn.org/stable/model_persistence.html
 
     Args:
-        model_jobs (list[Job]):
-        formatter (SKFormatter):
-
-    returns:
+        model_jobs (list[Job]): List of training jobs to run
+        train_formatter (SKFormatter): SKFormatter instance for formatting the training set
+        test_formatter (SKFormatter): SKFormatter instance for formatting the test set
+    Returns:
         dict[str, pd.Series]: dict mapping model name to its predictions.
         The predictions can be indexed by osm_id.
     """
     date = datetime.today().strftime("%m_%d_%H_%M")
     path = f"/share-files/runs/{date}/{date}_"
 
-    x_train, x_test, y_train, y_test = formatter.generate_train_test_split()
+    # Obtain train and test data
+    print("Generate train-test split")
+    x_train, _, y_train, _ = train_formatter.generate_train_test_split()
+    _, x_test, _, y_test = test_formatter.generate_train_test_split()
 
+    # Generate folders and save header for metrics
     metrics_file = f"{path}metrics"
     os.makedirs(os.path.dirname(metrics_file), exist_ok=True)
-    save_skformatter_params(formatter.params, path)
     with open(metrics_file, "a+") as f:
         f.write("model,mae,mape,mse,rmse,r2,ev\n")  # header for metrics
+
+    # Save SKFormatter params
+    save_skformatter_params(train_formatter.params, path)
 
     # Train each model using gridsearch func defined in model_jobs list
     predictions: dict[str, pd.Series] = {}
     for model_name, model_func in model_jobs:
+        print(f"------------{model_name.value}------------")
+        start_time = datetime.now()
+        print(f"Doing gridsearch, start time: {start_time.strftime('%m-%d@%H:%M')}")
         # Train model, obtaining the best model and the corresponding hyper-parameters
         best_model, best_params = model_func(x_train, y_train)  # type: ignore
-
+        end_time = datetime.now()
+        print(f"Finished gridsearch, end time: {end_time.strftime('%m-%d@%H:%M')}")
+        print(f"Gridsearch and fitting took: {end_time-start_time}")
         # Get prediction and score model
         # predictions can be indexed with osm_id
         y = get_prediction(model_name.value, best_model, x_test)
         predictions[str(model_name.value)] = y
         metrics = scoring.score_model(y_test, y)
 
+        print("Saving now ...")
         # Save the model, hyper-parameters and metrics
         save_model_hyperparams_metrics(
             model_name.value, best_model, best_params, metrics, path
@@ -215,10 +237,29 @@ def main():
         ),  # should work now, since input is a dataframe
     ]
 
-    formatter = SKFormatter(
-        "/share-files/pickle_files_features_and_ground_truth/2012.pkl", dataset_size=100
+    print("Formatting train_set (2012)")
+    train_format = SKFormatter(
+        "/share-files/raw_data_pkl/features_and_ground_truth_2012.pkl",
+        test_size=0.001,
+        discard_features=FeatureList(
+            [
+                Feature.OSM_ID,
+                Feature.COORDINATES,
+                Feature.DISTANCES,
+            ]
+        ),
+        full_dataset=True,
     )
-    runner(model_jobs, formatter)
+
+    print("Formatting test_set (2013)")
+    test_format = SKFormatter(
+        "/share-files/raw_data_pkl/features_and_ground_truth_2013.pkl",
+        test_size=0.999,
+        discard_features=train_format.discard_features,
+        full_dataset=train_format.full_dataset,
+    )
+
+    runner(model_jobs, train_format, test_format)
 
 
 if __name__ == "__main__":
