@@ -1,3 +1,9 @@
+"""
+Script that creates a latex table from our metrics.
+Put metrics in metrics.txt in this folder, and the 
+latex table will be outputted to metrics_latex.txt.
+"""
+
 import pandas as pd
 
 metrics_df = pd.read_csv("metric.txt")
