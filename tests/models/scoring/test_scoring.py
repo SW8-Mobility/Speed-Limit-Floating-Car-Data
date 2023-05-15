@@ -46,6 +46,7 @@ def test_mean_absolute_percentage_error(ground_truth, predictions, expected):
         == expected
     )
 
+
 @pytest.mark.parametrize(
     "ground_truth, predictions, expected",
     [
@@ -62,4 +63,3 @@ def test_per_label_f1(ground_truth, predictions, expected):
 
     for expected_val, actual_val in zip(expected.keys(), actual.keys()):
         assert expected_val == pytest.approx(actual_val, 0.0001)
-    
