@@ -1,4 +1,4 @@
-import pandas as pd 
+import pandas as pd
 
 metrics_df = pd.read_csv("metric.txt")
 metrics_df['model'] = metrics_df['model'].apply(lambda model_name: model_name.replace('_', ' '))
