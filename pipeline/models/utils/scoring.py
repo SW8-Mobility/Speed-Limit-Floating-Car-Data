@@ -63,20 +63,22 @@ def mean_absolute_percentage_error(ground_truth, prediction) -> float:
     y_true, y_pred = np.array(ground_truth), np.array(prediction)
     return np.mean(np.abs((y_true - y_pred) / y_true)) * 100  # type: ignore
 
+
 def per_label_f1(ground_truth, prediction) -> dict[int, float]:
-    """Calculate f1 score for each label. ie each speed limit. 
+    """Calculate f1 score for each label. ie each speed limit.
 
     Args:
         ground_truth (Array-like object): ground truth
         prediction (Array-like object): prediction made by a model
 
     Returns:
-        dict[int, float]: dict of label (speed limit) to f1_score 
+        dict[int, float]: dict of label (speed limit) to f1_score
     """
-    labels=list(set(ground_truth))  # get unique labels
+    labels = list(set(ground_truth))  # get unique labels
     labels.sort()  # sort from low to high
-    score_arr: list[float] = f1_score(ground_truth, prediction, average=None) # type: ignore
+    score_arr: list[float] = f1_score(ground_truth, prediction, average=None)  # type: ignore
     return {k: val for k, val in zip(labels, score_arr)}
+
 
 def score_model(ground_truth, prediction) -> dict[str, float]:
     """Scoring function with metrics used for regression models. Will compute:
@@ -102,7 +104,7 @@ def score_model(ground_truth, prediction) -> dict[str, float]:
     }  # type: ignore
 
 
-if __name__ == '__main__':
-    pred = [10,10,20,30,30]
-    true = [10,10,20,20,30]
+if __name__ == "__main__":
+    pred = [10, 10, 20, 30, 30]
+    true = [10, 10, 20, 20, 30]
     print(score_model(pred, true))
