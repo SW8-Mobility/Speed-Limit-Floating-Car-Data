@@ -24,7 +24,7 @@ def find_closest_speed_limit(speed: float) -> float:
         return before
 
 
-def classify_with_regressor(model, x: pd.Series) -> list[float]:
+def classify_with_regressor(model, x: pd.DataFrame) -> list[float]:
     """calls predict on the model and quantizes the result.
 
     Args:
