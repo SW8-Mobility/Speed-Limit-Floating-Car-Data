@@ -20,6 +20,7 @@ from pipeline.preprocessing.compute_features.feature import FeatureList, Feature
 from pipeline.preprocessing.sk_formatter import SKFormatter
 
 import warnings
+
 warnings.filterwarnings("ignore")
 
 Params = dict[str, Any]
@@ -247,7 +248,7 @@ def main():
                 Feature.DISTANCES,
             ]
         ),
-	full_dataset=True
+        full_dataset=True,
     )
 
     print("Formatting test_set (2013)")
@@ -255,7 +256,7 @@ def main():
         "/share-files/raw_data_pkl/features_and_ground_truth_2013.pkl",
         test_size=0.999,
         discard_features=train_format.discard_features,
-	full_dataset=train_format.full_dataset
+        full_dataset=train_format.full_dataset,
     )
 
     runner(model_jobs, train_format, test_format)
