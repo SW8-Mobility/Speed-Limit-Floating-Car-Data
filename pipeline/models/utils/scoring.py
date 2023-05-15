@@ -1,4 +1,4 @@
-from sklearn.metrics import mean_absolute_error, mean_squared_error, explained_variance_score, r2_score  # type: ignore
+from sklearn.metrics import mean_absolute_error, mean_squared_error, explained_variance_score, r2_score, f1_score, classification_report  # type: ignore
 import numpy as np
 import pandas as pd  # type: ignore
 from bisect import bisect_left
@@ -38,7 +38,7 @@ def classify_with_regressor(model, x: pd.Series) -> list[float]:
     return quantize_results(predictions)
 
 
-def quantize_results(predictions: np.ndarray) -> list[float]:
+def quantize_results(predictions: np.ndarray) -> np.ndarray:
     """Snaps each prediction to the closest speed limit.
 
     Args:
@@ -63,6 +63,20 @@ def mean_absolute_percentage_error(ground_truth, prediction) -> float:
     y_true, y_pred = np.array(ground_truth), np.array(prediction)
     return np.mean(np.abs((y_true - y_pred) / y_true)) * 100  # type: ignore
 
+def per_label_f1(ground_truth, prediction) -> dict[int, float]:
+    """Calculate f1 score for each label. ie each speed limit. 
+
+    Args:
+        ground_truth (Array-like object): ground truth
+        prediction (Array-like object): prediction made by a model
+
+    Returns:
+        dict[int, float]: dict of label (speed limit) to f1_score 
+    """
+    labels=list(set(ground_truth))  # get unique labels
+    labels.sort()  # sort from low to high
+    score_arr: list[float] = f1_score(ground_truth, prediction, average=None) # type: ignore
+    return {k: val for k, val in zip(labels, score_arr)}
 
 def score_model(ground_truth, prediction) -> dict[str, float]:
     """Scoring function with metrics used for regression models. Will compute:
@@ -83,4 +97,12 @@ def score_model(ground_truth, prediction) -> dict[str, float]:
         "rmse": mean_squared_error(ground_truth, prediction, squared=False),
         "r2": r2_score(ground_truth, prediction),
         "ev": explained_variance_score(ground_truth, prediction),
+        "avg_f1": f1_score(ground_truth, prediction, average="macro"),
+        "per_label_f1": per_label_f1(ground_truth, prediction),
     }  # type: ignore
+
+
+if __name__ == '__main__':
+    pred = [10,10,20,30,30]
+    true = [10,10,20,20,30]
+    print(score_model(pred, true))
