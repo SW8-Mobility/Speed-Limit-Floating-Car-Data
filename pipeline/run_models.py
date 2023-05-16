@@ -27,6 +27,7 @@ Params = dict[str, Any]
 Models = dict[Model, Params]
 Job = tuple[Model, Callable[[pd.DataFrame, pd.Series], tuple[Any, dict]]]
 
+
 def runner(
     model_jobs: list[Job], formatters: list[SKFormatter]
 ) -> dict[str, pd.Series]:
@@ -70,9 +71,7 @@ def runner(
         metrics = scoring.score_model(y_test, y)
 
         # Save the model, hyper-parameters and metrics
-        save_model_hyperparams_metrics(
-            name, best_model, best_params, metrics, prefix
-        )
+        save_model_hyperparams_metrics(name, best_model, best_params, metrics, prefix)
 
     return predictions
 
@@ -82,7 +81,9 @@ def save_metrics_header(prefix):
         f.write("model,mae,mape,mse,rmse,r2,ev,f1_avg,f1_pr_label\n")
 
 
-def get_train_test_split(formatters: list[SKFormatter], prefix: str) -> [pd.DataFrame, pd.DataFrame, pd.Series, pd.Series]:
+def get_train_test_split(
+    formatters: list[SKFormatter], prefix: str
+) -> [pd.DataFrame, pd.DataFrame, pd.Series, pd.Series]:
     if len(formatters) == 2:
         x_train, _, y_train, _ = formatters[0].generate_train_test_split()
         _, x_test, _, y_test = formatters[1].generate_train_test_split()
