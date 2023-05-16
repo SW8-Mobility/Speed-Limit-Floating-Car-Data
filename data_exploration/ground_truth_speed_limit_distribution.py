@@ -1,7 +1,7 @@
 import pandas as pd
 from pipeline.preprocessing.compute_features.feature import Feature
 
-share_files = "/share-files/raw_pkl_files/"
+share_files = "/share-files/raw_data_pkl/"
 
 path = "features_and_ground_truth_combined.pkl"
 
