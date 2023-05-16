@@ -28,9 +28,7 @@ Models = dict[Model, Params]
 Job = tuple[Model, Callable[[pd.DataFrame, pd.Series], tuple[Any, dict]]]
 
 
-def runner(
-    model_jobs: list[Job], formatter: SKFormatter
-) -> dict[str, pd.Series]: 
+def runner(model_jobs: list[Job], formatter: SKFormatter) -> dict[str, pd.Series]:
     """
     The runner, at a high-level, is responsible for:
       1. Training the individual models of the model_jobs
@@ -57,7 +55,9 @@ def runner(
     metrics_file = f"{path}metrics"
     os.makedirs(os.path.dirname(metrics_file), exist_ok=True)
     with open(metrics_file, "a+") as f:
-        f.write("model,mae,mape,mse,rmse,r2,ev,f1_avg,f1_pr_label\n")  # header for metrics
+        f.write(
+            "model,mae,mape,mse,rmse,r2,ev,f1_avg,f1_pr_label\n"
+        )  # header for metrics
 
     # Save SKFormatter params
     save_skformatter_params(formatter.params, path)
