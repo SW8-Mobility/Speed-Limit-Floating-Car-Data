@@ -30,7 +30,7 @@ Job = tuple[Model, Callable[[pd.DataFrame, pd.Series], tuple[Any, dict]]]
 
 def runner(
     model_jobs: list[Job], formatter: SKFormatter
-) -> dict[str, pd.Series]:
+) -> dict[str, pd.Series]: 
     """
     The runner, at a high-level, is responsible for:
       1. Training the individual models of the model_jobs
