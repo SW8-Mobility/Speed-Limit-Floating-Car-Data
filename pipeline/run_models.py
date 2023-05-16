@@ -287,10 +287,10 @@ def main():
         ),
     ]
 
-    print("Formatting train_set (2012)")
-    train_format = SKFormatter(
-        "/share-files/raw_data_pkl/features_and_ground_truth_2012.pkl",
-        test_size=0.001,
+    print("Formatting...")
+    formatter = SKFormatter(
+        "/share-files/raw_data_pkl/features_and_ground_truth_combined.pkl",
+        test_size=0.25,
         discard_features=FeatureList(
             [
                 Feature.OSM_ID,
@@ -301,15 +301,7 @@ def main():
         full_dataset=True,
     )
 
-    print("Formatting test_set (2013)")
-    test_format = SKFormatter(
-        "/share-files/raw_data_pkl/features_and_ground_truth_2013.pkl",
-        test_size=0.999,
-        discard_features=train_format.discard_features,
-        full_dataset=train_format.full_dataset,
-    )
-
-    runner(model_jobs, [train_format, test_format])
+    runner(model_jobs, [formatter])
 
 
 if __name__ == "__main__":
