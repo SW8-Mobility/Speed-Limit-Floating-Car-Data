@@ -11,7 +11,6 @@ paths = [
 
 for p in paths:
     df = pd.read_pickle(p)
-    # remove duplicates
     road_dist_df = df[Feature.VEJTYPESKILTET.value].value_counts(normalize=True) * 100
 
     print(road_dist_df)
