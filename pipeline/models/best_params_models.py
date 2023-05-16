@@ -7,9 +7,8 @@ from xgboost import XGBClassifier  # type: ignore
 import pandas as pd  # type: ignore
 from sklearn.pipeline import make_pipeline
 
-CORE_NUM = 15  # how many cores to use in grid_search
 RANDOM_STATE = 42
-# Best params are currently from Nesheim's run with no array features
+# Best params are currently from our run with no array features
 MLP_BEST_PARAMS = {
     "max_iter": 1000,
     "random_state": RANDOM_STATE,

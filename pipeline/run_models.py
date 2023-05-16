@@ -1,6 +1,9 @@
 import os
 from datetime import datetime
+
 import numpy as np
+import pandas as pd  # type: ignore
+
 from typing import Any, Callable
 import joblib  # type: ignore
 from pipeline.models.models import (
@@ -12,60 +15,128 @@ from pipeline.models.models import (
 )
 from pipeline.models.utils.model_enum import Model
 import pipeline.models.utils.scoring as scoring
-import pandas as pd  # type: ignore
+
+from pipeline.preprocessing.compute_features.feature import FeatureList, Feature
 from pipeline.preprocessing.sk_formatter import SKFormatter
+
+import warnings
+
+warnings.filterwarnings("ignore")
 
 Params = dict[str, Any]
 Models = dict[Model, Params]
 Job = tuple[Model, Callable[[pd.DataFrame, pd.Series], tuple[Any, dict]]]
 
 
-def runner(model_jobs: list[Job], formatter: SKFormatter) -> dict[str, pd.Series]:
+def runner(
+    model_jobs: list[Job], formatters: list[SKFormatter]
+) -> dict[str, pd.Series]:
     """
     The runner, at a high-level, is responsible for:
       1. Training the individual models of the model_jobs
       2. Save the SKFormatter params along side the models themselves, their params and metrics
 
-    use joblib for saving models to file:
-    # https://scikit-learn.org/stable/model_persistence.html
-
     Args:
-        model_jobs (list[Job]):
-        formatter (SKFormatter):
-
-    returns:
+        model_jobs (list[Job]): List of training jobs to run
+        formatters (list[SKFormatter]): List of SKFormatters for formatting the training and test set
+    Returns:
         dict[str, pd.Series]: dict mapping model name to its predictions.
         The predictions can be indexed by osm_id.
     """
-    date = datetime.today().strftime("%m_%d_%H_%M")
-    path = f"/share-files/runs/{date}/{date}_"
+    date = datetime.today().strftime("%m_%d-%H_%M")
 
-    x_train, x_test, y_train, y_test = formatter.generate_train_test_split()
+    # Generate folders and save header for metrics
+    folder = f"/share-files/runs/{date}/"
+    os.makedirs(folder, exist_ok=True)
+    prefix = f"{folder}{date}_"
 
-    metrics_file = f"{path}metrics"
-    os.makedirs(os.path.dirname(metrics_file), exist_ok=True)
-    save_skformatter_params(formatter.params, path)
-    with open(metrics_file, "a+") as f:
-        f.write("model,mae,mape,mse,rmse,r2,ev\n")  # header for metrics
+    # Save header of metrics file
+    save_metrics_header(prefix)
+
+    # Obtain train and test data
+    print("Generate train-test split")
+    x_train, x_test, y_train, y_test = get_train_test_split(formatters, prefix)
 
     # Train each model using gridsearch func defined in model_jobs list
     predictions: dict[str, pd.Series] = {}
     for model_name, model_func in model_jobs:
+        name = model_name.value
+
         # Train model, obtaining the best model and the corresponding hyper-parameters
-        best_model, best_params = model_func(x_train, y_train)  # type: ignore
+        best_model, best_params = train_model(name, model_func, x_train, y_train)
 
         # Get prediction and score model
-        # predictions can be indexed with osm_id
-        y = get_prediction(model_name.value, best_model, x_test)
-        predictions[str(model_name.value)] = y
+        y = get_prediction(name, best_model, x_test)
+        predictions[name] = y
         metrics = scoring.score_model(y_test, y)
 
         # Save the model, hyper-parameters and metrics
-        save_model_hyperparams_metrics(
-            model_name.value, best_model, best_params, metrics, path
-        )
+        save_model_hyperparams_metrics(name, best_model, best_params, metrics, prefix)
 
     return predictions
+
+
+def save_metrics_header(prefix: str) -> None:
+    """
+    Saves the header for the metrics file
+
+    Args:
+        prefix (str): The prefix of the file to be saved
+    """
+    with open(f"{prefix}metrics", "a+") as f:
+        f.write("model,mae,mape,mse,rmse,r2,ev,f1_avg,f1_pr_label\n")
+
+
+def get_train_test_split(
+    formatters: list[SKFormatter], prefix: str
+) -> tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.Series]:
+    """
+    Returns the test_train split according to how many formatters are provided.
+    In general 1 formatter is provided if using the combined dataset, and 2 if using one file for training and another for testing
+
+    Args:
+        formatters (list[SKFormatter]): The formatters for formatting the datasets
+        prefix (str): The prefix of the file to be saved
+    Returns:
+        tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.Series]: A 4-tuple containing the training and test splits of the data
+    """
+    if len(formatters) == 2:
+        x_train, _, y_train, _ = formatters[0].generate_train_test_split()
+        _, x_test, _, y_test = formatters[1].generate_train_test_split()
+        save_skformatter_params(formatters[0].params, f"{prefix}train_")
+        save_skformatter_params(formatters[1].params, f"{prefix}test_")
+    else:
+        x_train, x_test, y_train, y_test = formatters[0].generate_train_test_split()
+        save_skformatter_params(formatters[0].params, f"{prefix}")
+    return x_train, x_test, y_train, y_test
+
+
+def train_model(
+    name: str,
+    model_func: Callable[[pd.DataFrame, pd.Series], tuple[Any, dict]],
+    x_train: pd.DataFrame,
+    y_train: pd.Series,
+) -> tuple[Any, dict]:
+    """
+    Prints the start and end time for training and fitting the model.
+    Trains and fits the model, returning the model and its hyper-parameters
+
+    Args:
+        name (str): The name of the model being trained
+        model_func (Callable[[pd.DataFrame, pd.Series], tuple[Any, dict]]):  The corresponding function for training and fitting
+        x_train (pd.DataFrame): The training data used for learning the model
+        y_train (pd.Series): The training labels used for fitting the model
+    Returns:
+        tuple[Any, dict]: Returns the model and the corresponding hyper-parameters
+    """
+    print(f"------------{name}------------")
+    start_time = datetime.now()
+    print(f"Doing gridsearch, start time: {start_time.strftime('%m-%d@%H:%M')}")
+    best_model, best_params = model_func(x_train, y_train)  # type: ignore
+    end_time = datetime.now()
+    print(f"Finished gridsearch, end time: {end_time.strftime('%m-%d@%H:%M')}")
+    print(f"Gridsearch and fitting took: {end_time - start_time}")
+    return best_model, best_params
 
 
 def get_prediction(model_name: str, model: Model, x_test: pd.DataFrame) -> pd.Series:
@@ -96,7 +167,7 @@ def append_predictions_to_df(
         model (Model): Which model made the predictions
 
     Returns:
-        pd.DataFrame: Annoted dataframe
+        pd.DataFrame: Annotated dataframe
     """
 
     # The first test_size number of rows are used for testing
@@ -137,6 +208,7 @@ def save_model_hyperparams_metrics(
     Returns:
 
     """
+    print(f"Saving {model_name} now ...")
     save_model(model_name, model, prefix)
     save_params(model_name, params, prefix)
     save_metrics(model_name, metrics, prefix)
@@ -212,13 +284,24 @@ def main():
         (
             Model.STATMODEL,
             statistical_model,
-        ),  # should work now, since input is a dataframe
+        ),
     ]
 
+    print("Formatting...")
     formatter = SKFormatter(
-        "/share-files/pickle_files_features_and_ground_truth/2012.pkl", dataset_size=100
+        "/share-files/raw_data_pkl/features_and_ground_truth_combined.pkl",
+        test_size=0.25,
+        discard_features=FeatureList(
+            [
+                Feature.OSM_ID,
+                Feature.COORDINATES,
+                Feature.DISTANCES,
+            ]
+        ),
+        full_dataset=True,
     )
-    runner(model_jobs, formatter)
+
+    runner(model_jobs, [formatter])
 
 
 if __name__ == "__main__":

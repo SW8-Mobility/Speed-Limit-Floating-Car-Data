@@ -1,7 +1,7 @@
 from pipeline.preprocessing.sk_formatter import SKFormatter
 from pipeline.preprocessing.compute_features.feature import Feature, FeatureList
 from tests.mock_dataset import mock_dataset
-import pandas as pd
+import pandas as pd  # type: ignore
 import pytest
 import numpy as np
 
@@ -236,7 +236,9 @@ def test_get_params_after_generating_test_train_split():
     aggregate_median = ["aggregate_median"]
     vcr = [f"vcr_{i}" for i in range(new_col_num)]
     hast_generel_hast = ["hast_generel_hast"]
-    hast_gaeldende_hast = ["hast_gaeldende_hast"]
+    hast_gaeldende_hast = [
+        "HAST_GAELDENDE_HAST"
+    ]  # To adhere to new feature enum CAPS by Cleth (TM)
 
     processed_df_columns = [
         *aggregate_mean,
@@ -266,6 +268,7 @@ def test_get_params_after_generating_test_train_split():
 
     skf.generate_train_test_split()
     actual_params = skf.params
+
     for (expected_name, expected_value), (actual_name, actual_value) in zip(
         expected_params, actual_params.items()
     ):
