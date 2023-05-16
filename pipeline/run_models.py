@@ -27,6 +27,7 @@ Params = dict[str, Any]
 Models = dict[Model, Params]
 Job = tuple[Model, Callable[[pd.DataFrame, pd.Series], tuple[Any, dict]]]
 
+
 def runner(
     model_jobs: list[Job], formatters: list[SKFormatter]
 ) -> dict[str, pd.Series]:
@@ -70,9 +71,7 @@ def runner(
         metrics = scoring.score_model(y_test, y)
 
         # Save the model, hyper-parameters and metrics
-        save_model_hyperparams_metrics(
-            name, best_model, best_params, metrics, prefix
-        )
+        save_model_hyperparams_metrics(name, best_model, best_params, metrics, prefix)
 
     return predictions
 
