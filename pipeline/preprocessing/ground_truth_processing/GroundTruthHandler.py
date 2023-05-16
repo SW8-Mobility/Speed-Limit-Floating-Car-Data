@@ -42,13 +42,15 @@ class GroundTruthHandler:
         cleandf = cleandf.loc[
             cleandf["HAST_SENEST_RETTET"] < f"{year+1}-01-01T00:00:00"
         ]
-
+        
         # Only keep the data we need along with removing all data without speed limits known
         cleandf = cleandf[["osm_id", "HAST_GAELDENDE_HAST"]]
         cleandf = cleandf.dropna()
 
         # Type both osm_id and speed limit as int
-        cleandf = cleandf.astype(int)
+        cleandf['osm_id'] = cleandf["osm_id"].astype(int)
+        cleandf['HAST_GAELDENDE_HAST'] = cleandf["HAST_GAELDENDE_HAST"].astype(int)
+
 
         return cleandf
 
