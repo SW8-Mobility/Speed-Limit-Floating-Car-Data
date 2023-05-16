@@ -81,7 +81,9 @@ def save_metrics_header(prefix):
         f.write("model,mae,mape,mse,rmse,r2,ev,f1_avg,f1_pr_label\n")
 
 
-def get_train_test_split(formatters: list[SKFormatter], prefix: str) -> tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.Series]:
+def get_train_test_split(
+    formatters: list[SKFormatter], prefix: str
+) -> tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.Series]:
     if len(formatters) == 2:
         x_train, _, y_train, _ = formatters[0].generate_train_test_split()
         _, x_test, _, y_test = formatters[1].generate_train_test_split()
