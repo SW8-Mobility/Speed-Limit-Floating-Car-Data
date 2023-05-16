@@ -1,7 +1,7 @@
 import pandas as pd
 from pipeline.preprocessing.compute_features.feature import Feature
 
-share_files = "/share-files/pickle_files_features_and_ground_truth/"
+share_files = "/share-files/raw_data_pkl/"
 
 paths = [
     share_files + "vejtype_2012.pkl",
