@@ -111,7 +111,12 @@ def get_train_test_split(
     return x_train, x_test, y_train, y_test
 
 
-def train_model(name: str, model_func: Callable[[pd.DataFrame, pd.Series], tuple[Any, dict]], x_train: pd.DataFrame, y_train: pd.Series) -> tuple[Any, dict]:
+def train_model(
+    name: str,
+    model_func: Callable[[pd.DataFrame, pd.Series], tuple[Any, dict]],
+    x_train: pd.DataFrame,
+    y_train: pd.Series,
+) -> tuple[Any, dict]:
     """
     Prints the start and end time for training and fitting the model.
     Trains and fits the model, returning the model and its hyper-parameters
