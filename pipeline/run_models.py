@@ -76,7 +76,13 @@ def runner(
     return predictions
 
 
-def save_metrics_header(prefix):
+def save_metrics_header(prefix: str) -> None:
+    """
+    Saves the header for the metrics file
+
+    Args:
+        prefix (str): The prefix of the file to be saved
+    """
     with open(f"{prefix}metrics", "a+") as f:
         f.write("model,mae,mape,mse,rmse,r2,ev,f1_avg,f1_pr_label\n")
 
@@ -84,6 +90,16 @@ def save_metrics_header(prefix):
 def get_train_test_split(
     formatters: list[SKFormatter], prefix: str
 ) -> tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.Series]:
+    """
+    Returns the test_train split according to how many formatters are provided.
+    In general 1 formatter is provided if using the combined dataset, and 2 if using one file for training and another for testing
+
+    Args:
+        formatters (list[SKFormatter]): The formatters for formatting the datasets
+        prefix (str): The prefix of the file to be saved
+    Returns:
+        tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.Series]: A 4-tuple containing the training and test splits of the data
+    """
     if len(formatters) == 2:
         x_train, _, y_train, _ = formatters[0].generate_train_test_split()
         _, x_test, _, y_test = formatters[1].generate_train_test_split()
@@ -95,7 +111,19 @@ def get_train_test_split(
     return x_train, x_test, y_train, y_test
 
 
-def train_model(name, model_func, x_train, y_train):
+def train_model(name: str, model_func: Callable[[pd.DataFrame, pd.Series], tuple[Any, dict]], x_train: pd.DataFrame, y_train: pd.Series) -> tuple[Any, dict]:
+    """
+    Prints the start and end time for training and fitting the model.
+    Trains and fits the model, returning the model and its hyper-parameters
+
+    Args:
+        name (str): The name of the model being trained
+        model_func (Callable[[pd.DataFrame, pd.Series], tuple[Any, dict]]):  The corresponding function for training and fitting
+        x_train (pd.DataFrame): The training data used for learning the model
+        y_train (pd.Series): The training labels used for fitting the model
+    Returns:
+        tuple[Any, dict]: Returns the model and the corresponding hyper-parameters
+    """
     print(f"------------{name}------------")
     start_time = datetime.now()
     print(f"Doing gridsearch, start time: {start_time.strftime('%m-%d@%H:%M')}")
