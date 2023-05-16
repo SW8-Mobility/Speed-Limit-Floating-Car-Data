@@ -11,7 +11,7 @@ paths = [
 
 for p in paths:
     df = pd.read_pickle(p)
-    
+
     # Get distribution and total amount of occurrences
     road_dist_df = df[Feature.VEJTYPESKILTET.value].value_counts(normalize=True) * 100
     road_amount_df = df[Feature.VEJTYPESKILTET.value].value_counts()
