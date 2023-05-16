@@ -12,5 +12,7 @@ paths = [
 for p in paths:
     df = pd.read_pickle(p)
     road_dist_df = df[Feature.VEJTYPESKILTET.value].value_counts(normalize=True) * 100
+    road_amount_df = df[Feature.VEJTYPESKILTET.value].value_counts()
 
     print(road_dist_df)
+    print(road_amount_df)
