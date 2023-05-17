@@ -31,7 +31,7 @@ class Feature(Enum):
     HAST_GENEREL_HAST = "hast_generel_hast"
     HAST_GAELDENDE_HAST = "HAST_GAELDENDE_HAST"
     VEJSTIKLASSE = "vejstiklasse"
-    VEJTYPESKILTET = "vejtypeskiltet"
+    VEJTYPESKILTET = "VEJTYPESKILTET"
     HAST_SENEST_RETTET = "hast_senest_rettet"
     TARGET = "target"
 

@@ -48,7 +48,8 @@ class GroundTruthHandler:
         cleandf = cleandf.dropna()
 
         # Type both osm_id and speed limit as int
-        cleandf = cleandf.astype(int)
+        cleandf["osm_id"] = cleandf["osm_id"].astype(int)
+        cleandf["HAST_GAELDENDE_HAST"] = cleandf["HAST_GAELDENDE_HAST"].astype(int)
 
         return cleandf
 
