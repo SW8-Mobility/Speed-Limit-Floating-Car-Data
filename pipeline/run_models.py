@@ -84,7 +84,7 @@ def save_metrics_header(prefix: str) -> None:
         prefix (str): The prefix of the file to be saved
     """
     with open(f"{prefix}metrics", "a+") as f:
-        f.write("model,mae,mape,mse,rmse,r2,ev,f1_avg,f1_pr_label\n")
+        f.write("model,mae,mape,mse,rmse,r2,ev,f1_avg,accuracy,f1_pr_label\n")
 
 
 def get_train_test_split(
