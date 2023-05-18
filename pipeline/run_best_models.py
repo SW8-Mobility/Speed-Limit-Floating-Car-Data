@@ -2,6 +2,7 @@ import os
 from datetime import datetime
 from typing import Any, Callable
 
+import joblib
 import numpy as np  # type: ignore
 import pandas as pd  # type: ignore
 from sklearn.pipeline import Pipeline  # type: ignore
@@ -18,7 +19,8 @@ from pipeline.models.utils.model_enum import Model
 from pipeline.preprocessing.compute_features.feature import FeatureList, Feature
 
 from pipeline.preprocessing.sk_formatter import SKFormatter
-from pipeline.run_models import get_prediction, save_metrics, save_skformatter_params
+from pipeline.run_models import get_prediction, save_metrics, save_skformatter_params, get_train_test_split, \
+    save_metrics_header, save_model_hyperparams_metrics
 
 Model_best = tuple[Model, Callable[[pd.DataFrame, pd.Series], Any]]
 
@@ -77,17 +79,9 @@ def runner(
 
 def main():
     # define a list of models and their corresponding model using best params
-    model_jobs: list[Model_best] = [
-        (Model.MLP, create_mlp_best_params),
-        (Model.RF, create_rf_best_params),
-        (Model.XGB, create_xgboost_best_params),
-        (Model.LOGREG, create_logistic_regression_best_params),
-        # (Model.STATMODEL, statistical_model), # TODO: We do not have a StatModel yet
-    ]
-
-    train_format = SKFormatter(
-        "/share-files/pickle_files_features_and_ground_truth/2012.pkl",
-        test_size=0.0,
+    formatter = SKFormatter(
+        "/share-files/raw_data_pkl/features_and_ground_truth_combined.pkl",
+        test_size=0.25,
         discard_features=FeatureList(
             [
                 Feature.OSM_ID,
@@ -95,18 +89,43 @@ def main():
                 Feature.DISTANCES,
             ]
         ),
+        full_dataset=True,
     )
 
-    test_format = SKFormatter(
-        "/share-files/pickle_files_features_and_ground_truth/2013.pkl",
-        test_size=1.0,
-        discard_features=train_format.discard_features,
-    )
+    date = datetime.today().strftime("%m_%d-%H_%M")
 
-    runner(model_jobs, train_format, test_format)
+    # Generate folders and save header for metrics
+    folder = f"/share-files/runs/{date}/"
+    os.makedirs(folder, exist_ok=True)
+    prefix = f"{folder}{date}_"
 
-    # Run new GridSearch
-    run_models.main()
+    # Save header of metrics file
+    save_metrics_header(prefix)
+
+    # Obtain train and test data
+    print("Generate train-test split")
+    _, x_test, _, y_test = get_train_test_split([formatter], prefix)
+
+    # Train each model using gridsearch func defined in model_jobs list
+    predictions: dict[str, pd.Series] = {}
+    model_folder = "/share-files/runs/05_15_14_27/"
+    models = [
+        (Model.MLP.value, f"{model_folder}05_15_14_27_mlp.joblib"),
+        (Model.RF.value, f"{model_folder}05_15_14_27_random_forest.joblib"),
+        (Model.XGB.value, f"{model_folder}05_15_14_27_xgboost.joblib"),
+        (Model.LOGREG.value, f"{model_folder}05_15_14_27_logistic_regression.joblib")
+        ]
+    for name, model_path in models:
+        # Train model, obtaining the best model and the corresponding hyper-parameters
+        model = joblib.load(model_path)
+
+        # Get prediction and score model
+        y = get_prediction(name, model, x_test)
+        predictions[name] = y
+        metrics = scoring.score_model(y_test, y)
+
+        # Save the model, hyper-parameters and metrics
+        save_metrics(name, metrics, prefix)
 
 
 if __name__ == "__main__":

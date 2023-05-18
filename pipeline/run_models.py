@@ -84,7 +84,7 @@ def save_metrics_header(prefix: str) -> None:
         prefix (str): The prefix of the file to be saved
     """
     with open(f"{prefix}metrics", "a+") as f:
-        f.write("model,mae,mape,mse,rmse,r2,ev,f1_avg,accuracy,f1_pr_label\n")
+        f.write("model,mae,mape,mse,rmse,r2,ev,accuracy,f1_avg,f1_pr_label\n")
 
 
 def get_train_test_split(
@@ -287,10 +287,14 @@ def main():
         ),
     ]
 
+    df = pd.read_pickle("/share-files/raw_data_pkl/features_and_ground_truth_combined.pkl")
+    mask = df['HAST_GAELDENDE_HAST'] > 40
+    data = df[mask]
+
     print("Formatting...")
     formatter = SKFormatter(
-        "/share-files/raw_data_pkl/features_and_ground_truth_combined.pkl",
-        test_size=0.25,
+        dataset=data,
+        test_size=0.15,
         discard_features=FeatureList(
             [
                 Feature.OSM_ID,
