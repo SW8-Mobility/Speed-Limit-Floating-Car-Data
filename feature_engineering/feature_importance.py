@@ -1,5 +1,7 @@
 import joblib
 from sklearn.inspection import permutation_importance
+
+from pipeline.preprocessing.compute_features.feature import FeatureList, Feature
 from pipeline.preprocessing.sk_formatter import SKFormatter
 import glob
 
@@ -20,7 +22,7 @@ def example_func_feature_importance():
     for i in r.importances_mean.argsort()[::-1]:
         if r.importances_mean[i] - 2 * r.importances_std[i] > 0:
             print(
-                f"{diabetes.feature_names[i]:<8}"
+                f"{model.fe:<8}"
                 f"{r.importances_mean[i]:.3f}"
                 f" +/- {r.importances_std[i]:.3f}"
             )
@@ -57,18 +59,64 @@ def calculate_feature_importance(model, X_val, y_val) -> None:
                     f" +/- {r.importances_std[i]:.3f}"
                 )
 
-def main():
-    model_folder = "/share-files/share-files/runs/05_12_12_18/"
-    paths = glob.glob(model_folder + '*.joblib')
+def calc_permutation_importance(model, x, y) -> None:
+    result = permutation_importance(model, x, y, n_repeats=10, random_state=0)
+    shifted_res = [i + abs(min(result.importances_mean)) for i in result.importances_mean]
+    min_importance = min(shifted_res)
+    max_importance = max(shifted_res)
+    normalized_importances = [(imp - min_importance) / (max_importance - min_importance) for imp in shifted_res]
+    n = 20 # Divide by 7 due to having 7 array features
+    column_names = [Feature.AGGREGATE_MIN.value, Feature.AGGREGATE_MAX.value, Feature.AGGREGATE_MEAN.value, Feature.AGGREGATE_MEDIAN.value, Feature.MEANS.value, Feature.MINS.value, Feature.MAXS.value, Feature.MEDIANS.value, Feature.SPEEDS.value, Feature.ROLLING_AVERAGES.value, Feature.VCR.value]
+    averaged_values = []
+    i = 0
+    while i <= len(normalized_importances):
+        if i >= 4:
+            average = sum(normalized_importances[i:i + n]) / n
+        else:
+            average = normalized_importances[i]
+        averaged_values.append(average)
+        i += n if i >= 4 else 1
 
-    formatter = SKFormatter(dataset="/share-files/share-files/raw_data_pkl/features_and_ground_truth_2012.pkl", dataset_size=1000, test_size=0.01)
+    result = list(zip(column_names, averaged_values))
+    for res in result:
+        print(res)
+
+
+def main():
+    model_folder = "/share-files/runs/05_15_14_27/"
+
+    formatter = SKFormatter(dataset="/share-files/raw_data_pkl/features_and_ground_truth_combined.pkl", full_dataset=True, test_size=0.25, discard_features=FeatureList(
+            [
+                Feature.OSM_ID,
+                Feature.COORDINATES,
+                Feature.DISTANCES,
+            ]
+        ))
     x_train, _, y_train, _ = formatter.generate_train_test_split()
 
-    for path in paths[:1]:
-        print(f"loading model: {path}")
-        model = joblib.load(path)
-        # model_members(model)
-        calculate_feature_importance(model, x_train, y_train)
+#    model = joblib.load(model_folder + '05_15_14_27_mlp.joblib')
+#    calc_permutation_importance(model, x_train, y_train)
+
+#    model = joblib.load(model_folder + '05_15_14_27_random_forest.joblib')
+#    calc_permutation_importance(model, x_train, y_train)
+
+    model = joblib.load(model_folder + '05_15_14_27_xgboost.joblib')
+    r = permutation_importance(model, x_train, y_train, n_repeats=30, random_state=0)
+
+    cols = list(x_train.columns)
+    for i in r.importances_mean.argsort()[::-1]:
+        #if r.importances_mean[i] - 2 * r.importances_std[i] > 0:
+        print(
+            f"{cols[i][1]:<8}"
+            f"{r.importances_mean[i]:.3f}"
+            f" +/- {r.importances_std[i]:.3f}"
+        )
+
+
+#    model = joblib.load(model_folder + '05_15_14_27_logistic_regression.joblib')
+#    calc_permutation_importance(model, x_train, y_train)
+
+
 
 if __name__ == "__main__":
     main()
