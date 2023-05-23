@@ -1,7 +1,7 @@
 import pandas as pd
 from pipeline.preprocessing.compute_features.feature import Feature
 
-""" This script calculates the distribution of roat types in the ground truth dataset.
+""" This script calculates the distribution of road types in our dataset.
 """
 
 share_files = "/share-files/raw_data_pkl/"

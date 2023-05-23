@@ -1,4 +1,12 @@
-from sklearn.metrics import mean_absolute_error, mean_squared_error, explained_variance_score, r2_score, f1_score, classification_report  # type: ignore
+from sklearn.metrics import (
+    mean_absolute_error, 
+    mean_squared_error, 
+    explained_variance_score, 
+    r2_score, 
+    f1_score, 
+    accuracy_score,
+    classification_report, 
+)  # type: ignore
 import numpy as np
 import pandas as pd  # type: ignore
 from bisect import bisect_left
@@ -100,6 +108,7 @@ def score_model(ground_truth, prediction) -> dict[str, Any]:
         "rmse": mean_squared_error(ground_truth, prediction, squared=False),
         "r2": r2_score(ground_truth, prediction),
         "ev": explained_variance_score(ground_truth, prediction),
+        "accuracy ": accuracy_score(ground_truth, prediction),
         "avg_f1": f1_score(ground_truth, prediction, average="macro"),
         "per_label_f1": per_label_f1(ground_truth, prediction),
     }  # type: ignore
